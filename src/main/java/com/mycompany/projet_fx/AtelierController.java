@@ -35,3 +35,4 @@ public class AtelierController {
             System.out.println("Aucune classe sélectionnée !");
         }
 }
+}
