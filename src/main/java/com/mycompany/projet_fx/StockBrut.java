@@ -10,4 +10,5 @@ package com.mycompany.projet_fx;
  */
 public class StockBrut {
     //test
+    //test2
 }
