@@ -1,30 +1,22 @@
 package com.mycompany.projet_fx;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
+import javafx.scene.Parent;
 import javafx.stage.Stage;
 
-
-/**
- * JavaFX App
- */
 public class App extends Application {
-
     @Override
-    public void start(Stage stage) {
-        var javaVersion = SystemInfo.javaVersion();
-        var javafxVersion = SystemInfo.javafxVersion();
-
-        var label = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        var scene = new Scene(new StackPane(label), 640, 480);
+    public void start(Stage stage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("atelierlayout.fxml"));
+        Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setTitle("Gestion des ateliers");
         stage.show();
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
-
 }
