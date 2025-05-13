@@ -9,5 +9,5 @@ package com.mycompany.projet_fx;
  * @author Matis
  */
 public class StockBrut {
-    
+    //test
 }
