@@ -1,0 +1,50 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.projet;
+
+/**
+ *
+ * @author Matis
+ */
+public class Personne {
+    private String idpersonne;
+    private String Nom;
+    private String Prenom;
+
+    public String getIdpersonne() {
+        return idpersonne;
+    }
+
+    public void setIdpersonne(String idpersonne) {
+        this.idpersonne = idpersonne;
+    }
+
+    public String getNom() {
+        return Nom;
+    }
+
+    public void setNom(String nom) {
+        this.Nom = nom;
+    }
+
+    public String getPrenom() {
+        return Prenom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.Prenom = prenom;
+    }
+
+    public Personne(String idpersonne, String nom, String prenom) {
+        this.idpersonne = idpersonne;
+        this.Nom = nom;
+        this.Prenom = prenom;
+    }
+    public void affiche(){
+    System.out.print("idpersonne ="+idpersonne);
+    System.out.print("Nom ="+Nom);
+    System.out.print("Prenom ="+Prenom);
+}
+}
