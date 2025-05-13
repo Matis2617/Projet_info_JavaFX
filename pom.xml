@@ -31,7 +31,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.4</version>
                 <configuration>
-                    <mainClass>com.mycompany.projet_fx.App</mainClass>
+                    <mainClass>com.mycompany.projet_fx.AtelierInterface</mainClass>
                 </configuration>
                 <executions>
                     <execution>
