@@ -100,5 +100,10 @@ public class Machine extends Equipement{
     System.out.print("etat ="+etat);
     System.out.print("refmachine ="+refmachine);
     System.out.print("dmachine ="+dmachine);
+    System.out.print("Type"+Type);
+    System.out.print("abscisse ="+abscisse);
+    System.out.print("ordonnee ="+ordonnee);
+    System.out.print("cout ="+c);
+    System.out.print("temps ="+t);
 }
 }

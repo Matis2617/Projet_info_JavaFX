@@ -34,5 +34,6 @@ public class Equipement {
    
    public void affiche(){
     System.out.print("id_equipement ="+id_equipement);
+    System.out.print("refEquipement ="+refEquipement);
 }
 }

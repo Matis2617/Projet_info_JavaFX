@@ -70,5 +70,7 @@ public class Operateur extends Personne {
     System.out.print("nom ="+nom);
     System.out.print("pronom ="+prenom);
     System.out.print("competences ="+competences);
+    System.out.print("id_op ="+id_op);
+    System.out.print("etat ="+etat);
 }
 }
