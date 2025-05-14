@@ -11,6 +11,7 @@ public class AtelierInterface extends Application {
 
     private BorderPane root;
     private Atelier atelier;
+    private TextField nomAtelierField;
 
     @Override
     public void start(Stage primaryStage) {
@@ -56,13 +57,22 @@ public class AtelierInterface extends Application {
     private void afficherAccueil() {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Bienvenue dans le système de gestion d'atelier."));
-        box.getChildren().add(new Label("Utilisez le menu pour accéder aux différentes sections."));
+        box.getChildren().add(new Label("Utilisez le menu pour accéder aux différentes classes."));
         root.setCenter(box);
     }
 
     private void afficherAtelier() {
         VBox box = new VBox(10);
-        box.getChildren().add(new Label("Nom de l'atelier : " + atelier.getNom()));
+        Label label = new Label("Nom de l'atelier : " + atelier.getNom());
+        nomAtelierField = new TextField(atelier.getNom());
+
+        Button modifierButton = new Button("Modifier le nom");
+        modifierButton.setOnAction(e -> {
+            atelier.setNom(nomAtelierField.getText());
+            label.setText("Nom de l'atelier : " + atelier.getNom());
+        });
+
+        box.getChildren().addAll(label, nomAtelierField, modifierButton);
         box.getChildren().add(new Label("Nombre d'équipements : " + atelier.getEquipement().size()));
         box.getChildren().add(new Label("Nombre d'opérateurs : " + atelier.getOperateur().size()));
         root.setCenter(box);
