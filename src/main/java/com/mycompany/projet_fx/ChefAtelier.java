@@ -13,5 +13,8 @@ public class ChefAtelier extends Personne {
     public ChefAtelier(String idpersonne, String nom, String prenom) {
         super(idpersonne, nom, prenom);
     }
-    
+    @Override
+    public String affiche() {
+        return super.affiche() + ", Role = Chef d'Atelier";
+    }
 }

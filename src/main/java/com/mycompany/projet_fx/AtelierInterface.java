@@ -12,6 +12,10 @@ public class AtelierInterface extends Application {
     private BorderPane root;
     private Atelier atelier;
     private TextField nomAtelierField;
+    private TextField nomPersonneField;
+    private TextField prenomPersonneField;
+    private TextField competencesField;
+    private ComboBox<String> roleComboBox;
 
     @Override
     public void start(Stage primaryStage) {
@@ -32,6 +36,7 @@ public class AtelierInterface extends Application {
         MenuItem equipementItem = new MenuItem("Équipements");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem operateurItem = new MenuItem("Opérateurs");
+        MenuItem ajouterPersonneItem = new MenuItem("Ajouter une Personne");
 
         menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem);
         menuBar.getMenus().add(menu);
@@ -46,6 +51,7 @@ public class AtelierInterface extends Application {
         equipementItem.setOnAction(e -> afficherEquipements());
         machineItem.setOnAction(e -> afficherMachines());
         operateurItem.setOnAction(e -> afficherOperateurs());
+        ajouterPersonneItem.setOnAction(e -> afficherAjouterPersonne());
 
         afficherAccueil();
 
@@ -75,6 +81,11 @@ public class AtelierInterface extends Application {
         box.getChildren().addAll(label, nomAtelierField, modifierButton);
         box.getChildren().add(new Label("Nombre d'équipements : " + atelier.getEquipement().size()));
         box.getChildren().add(new Label("Nombre d'opérateurs : " + atelier.getOperateur().size()));
+        
+        if (atelier.getChefAtelier() != null) {
+            box.getChildren().add(new Label("Chef d'atelier : " + atelier.getChefAtelier().affiche()));
+        }
+
         root.setCenter(box);
     }
 
@@ -135,6 +146,48 @@ public class AtelierInterface extends Application {
         });
 
         box.getChildren().add(ajouter);
+        root.setCenter(box);
+    }
+    
+    private void afficherAjouterPersonne() {
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Ajouter une personne :"));
+
+        nomPersonneField = new TextField();
+        nomPersonneField.setPromptText("Nom");
+
+        prenomPersonneField = new TextField();
+        prenomPersonneField.setPromptText("Prénom");
+
+        competencesField = new TextField();
+        competencesField.setPromptText("Compétences");
+
+        roleComboBox = new ComboBox<>();
+        roleComboBox.getItems().addAll("Opérateur", "Chef d'Atelier");
+        roleComboBox.setPromptText("Rôle");
+
+        Button ajouter = new Button("Ajouter la personne");
+        ajouter.setOnAction(e -> {
+            String idPersonne = "ID" + (atelier.getOperateur().size() + 1);
+            String nom = nomPersonneField.getText();
+            String prenom = prenomPersonneField.getText();
+            String competences = competencesField.getText();
+            String role = roleComboBox.getValue();
+
+            if (role != null) {
+                if (role.equals("Opérateur")) {
+                    Operateur o = new Operateur(idPersonne, nom, prenom, competences, 1, Machine.ETAT.disponible);
+                    atelier.getOperateur().add(o);
+                } else if (role.equals("Chef d'Atelier")) {
+                    ChefAtelier chef = new ChefAtelier(idPersonne, nom, prenom);
+                    atelier.setChefAtelier(chef);
+                }
+            }
+
+            afficherAjouterPersonne();
+        });
+
+        box.getChildren().addAll(nomPersonneField, prenomPersonneField, competencesField, roleComboBox, ajouter);
         root.setCenter(box);
     }
 
