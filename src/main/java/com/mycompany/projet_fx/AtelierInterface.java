@@ -1,36 +1,128 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projet_fx;
-
-/**
- *
- * @author Matis
- */
-
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import java.util.ArrayList;
 
 public class AtelierInterface extends Application {
 
+    private BorderPane root;
+    private Atelier atelier;
+
     @Override
     public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Dis Bonjour !");
-        btn.setOnAction(event -> System.out.println("Bonjour tout le monde !"));
+        primaryStage.setTitle("Interface de Gestion d'Atelier");
 
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
+        // Initialisation de base
+        atelier = new Atelier("Atelier 1", new ArrayList<>());
 
-        Scene scene = new Scene(root, 300, 250);
-        primaryStage.setTitle("Interface Atelier");
+        // Menu
+        MenuBar menuBar = new MenuBar();
+        Menu menu = new Menu("Navigation");
+
+        MenuItem accueilItem = new MenuItem("Accueil");
+        MenuItem atelierItem = new MenuItem("Atelier");
+        MenuItem equipementItem = new MenuItem("Équipements");
+        MenuItem machineItem = new MenuItem("Machines");
+        MenuItem operateurItem = new MenuItem("Opérateurs");
+
+        menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem);
+        menuBar.getMenus().add(menu);
+
+        // Layout principal
+        root = new BorderPane();
+        root.setTop(menuBar);
+
+        // Actions
+        accueilItem.setOnAction(e -> afficherAccueil());
+        atelierItem.setOnAction(e -> afficherAtelier());
+        equipementItem.setOnAction(e -> afficherEquipements());
+        machineItem.setOnAction(e -> afficherMachines());
+        operateurItem.setOnAction(e -> afficherOperateurs());
+
+        afficherAccueil();
+
+        Scene scene = new Scene(root, 900, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void afficherAccueil() {
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Bienvenue dans le système de gestion d'atelier."));
+        box.getChildren().add(new Label("Utilisez le menu pour accéder aux différentes sections."));
+        root.setCenter(box);
+    }
+
+    private void afficherAtelier() {
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Nom de l'atelier : " + atelier.getNom()));
+        box.getChildren().add(new Label("Nombre d'équipements : " + atelier.getEquipements().size()));
+        root.setCenter(box);
+    }
+
+    private void afficherEquipements() {
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Liste des équipements :"));
+        for (Equipement eq : atelier.getEquipements()) {
+            Label label = new Label(eq.affiche());
+            box.getChildren().add(label);
+        }
+
+        Button ajouter = new Button("Ajouter un équipement");
+        ajouter.setOnAction(e -> {
+            Equipement eq = new Equipement("Eq" + (atelier.getEquipements().size() + 1));
+            atelier.getEquipements().add(eq);
+            afficherEquipements();
+        });
+
+        box.getChildren().add(ajouter);
+        root.setCenter(box);
+    }
+
+    private void afficherMachines() {
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Liste des machines :"));
+        for (Equipement eq : atelier.getEquipements()) {
+            if (eq instanceof Machine) {
+                Label label = new Label(eq.affiche());
+                box.getChildren().add(label);
+            }
+        }
+
+        Button ajouter = new Button("Ajouter une machine");
+        ajouter.setOnAction(e -> {
+            Machine m = new Machine("Machine" + (atelier.getEquipements().size() + 1));
+            atelier.getEquipements().add(m);
+            afficherMachines();
+        });
+
+        box.getChildren().add(ajouter);
+        root.setCenter(box);
+    }
+
+    private void afficherOperateurs() {
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Liste des opérateurs :"));
+        for (Equipement eq : atelier.getEquipements()) {
+            if (eq instanceof Operateur) {
+                Label label = new Label(eq.affiche());
+                box.getChildren().add(label);
+            }
+        }
+
+        Button ajouter = new Button("Ajouter un opérateur");
+        ajouter.setOnAction(e -> {
+            Operateur o = new Operateur("Op" + (atelier.getEquipements().size() + 1));
+            atelier.getEquipements().add(o);
+            afficherOperateurs();
+        });
+
+        box.getChildren().add(ajouter);
+        root.setCenter(box);
     }
 
     public static void main(String[] args) {

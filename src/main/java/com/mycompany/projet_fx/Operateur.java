@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.projet;
+package com.mycompany.projet_fx;
 
-import com.mycompany.projet.Machine.ETAT;
+import com.mycompany.projet_fx.Machine.ETAT;
 //permet d'utilis/*er ETAT dans cette classe
 
 /**
