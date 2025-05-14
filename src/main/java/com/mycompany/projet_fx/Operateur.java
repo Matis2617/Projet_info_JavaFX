@@ -47,6 +47,6 @@ public class Operateur extends Personne {
         this.etat = etat;
     }
     @Override public String affiche(){
-    return "competences ="+competences+"id_op ="+id_op+"etat ="+etat;
+    return super.affiche()+"competences ="+competences+"id_op ="+id_op+"etat ="+etat;
 }
 }
