@@ -96,6 +96,6 @@ public class Machine extends Equipement{
     }
     
     @Override public String affiche(){
-    return super.affiche()+"etat ="+etat+",refmachine ="+refmachine+"dmachine ="+dmachine+"Type ="+Type+"abscisse ="+abscisse+"ordonnee ="+ordonnee+"cout ="+c+"temps ="+t;
+    return super.affiche()+" etat ="+etat+", refmachine = "+refmachine+", dmachine = "+dmachine+", Type = "+Type+", abscisse = "+abscisse+", ordonnee = "+ordonnee+", cout = "+c+", temps = "+t;
 }
 }
