@@ -64,7 +64,7 @@ public class AtelierInterface extends Application {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Nom de l'atelier : " + atelier.getNom()));
         box.getChildren().add(new Label("Nombre d'équipements : " + atelier.getEquipement().size()));
-        box.getChildren().add(new Label("Nombre d'opérateurs : " + operateur.getOperateurs().size()));
+        box.getChildren().add(new Label("Nombre d'opérateurs : " + atelier.getOperateur().size()));
         root.setCenter(box);
     }
 
@@ -108,21 +108,20 @@ public class AtelierInterface extends Application {
         root.setCenter(box);
     }
 
-    private void afficherOperateurs() {
+    private void afficherOperateur() {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Liste des opérateurs :"));
-        for (Equipement eq : atelier.getEquipement()) {
-            if (eq instanceof Operateur) {
-                Label label = new Label(eq.affiche());
+        for (Operateur op : atelier.getOperateur()) {
+                Label label = new Label(op.affiche());
                 box.getChildren().add(label);
             }
         }
 
         Button ajouter = new Button("Ajouter un opérateur");
         ajouter.setOnAction(e -> {
-            Operateur o = new Operateur("ID" + (atelier.getEquipement().size() + 1),"Nom","Prenom","Competences",1,Machine.ETAT.disponible);
-            atelier.getEquipement().add(o);
-            afficherOperateurs();
+            Operateur o = new Operateur("ID" + (atelier.getOperateur().size() + 1),"Nom","Prenom","Competences",1,Machine.ETAT.disponible);
+            atelier.getOperateur().add(o);
+            afficherOperateur();
         });
 
         box.getChildren().add(ajouter);
