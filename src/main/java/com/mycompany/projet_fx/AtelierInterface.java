@@ -186,12 +186,11 @@ public class AtelierInterface extends Application {
                     personne = new ChefAtelier(idPersonne, nom, prenom);
                     atelier.setChefAtelier((ChefAtelier) personne);
                 }
-                atelier.getPersonnes().add(personne);
                 afficherPersonnes();
             }
         });
         personnesListView = new ListView<>();
-        personnesListView.getItems().addAll(atelier.getPersonnes());
+        personnesListView.getItems().setAll(atelier.getPersonnes());
 
         Button supprimer = new Button("Supprimer la personne sélectionnée");
         supprimer.setOnAction(e -> {
