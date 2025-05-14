@@ -171,19 +171,20 @@ public class AtelierInterface extends Application {
 
         Button ajouter = new Button("Ajouter la personne");
         ajouter.setOnAction(e -> {
-            String idPersonne = "ID" + (atelier.getOperateur().size() + 1);
+            String idPersonne = "ID" + (atelier.getPersonnes().size() + 1);
             String nom = nomPersonneField.getText();
             String prenom = prenomPersonneField.getText();
             String competences = competencesField.getText();
             String role = roleComboBox.getValue();
 
             if (role != null) {
+                Personne personne;
                 if (role.equals("Opérateur")) {
-                    Operateur o = new Operateur(idPersonne, nom, prenom, competences, 1, Machine.ETAT.disponible);
-                    atelier.getOperateur().add(o);
+                    personne = new Operateur(idPersonne, nom, prenom, competences, 1, Machine.ETAT.disponible);
+                    atelier.getOperateur().add((Operateur) personne);
                 } else if (role.equals("Chef d'Atelier")) {
-                    ChefAtelier chef = new ChefAtelier(idPersonne, nom, prenom);
-                    atelier.setChefAtelier(chef);
+                    personne = new ChefAtelier(idPersonne, nom, prenom);
+                    atelier.setChefAtelier((ChefAtelier) personne);
                 }
                 atelier.getPersonnes().add(personne);
                 afficherPersonnes();
