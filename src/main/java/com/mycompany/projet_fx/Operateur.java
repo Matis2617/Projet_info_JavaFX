@@ -12,27 +12,9 @@ import com.mycompany.projet_fx.Machine.ETAT;
  * @author Matis
  */
 public class Operateur extends Personne {
-    private String nom;
-    private String prenom;
     private String competences;
     private int id_op;
     private ETAT etat;
-
-    @Override public String getNom() {
-        return nom;
-    }
-
-    @Override public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    @Override public String getPrenom() {
-        return prenom;
-    }
-
-    @Override public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
 
     public String getCompetences() {
         return competences;
@@ -58,20 +40,13 @@ public class Operateur extends Personne {
         this.etat = etat;
     }
 
-    public Operateur(String nom, String prenom, String competences, int id_op, ETAT etat,String idpersonne,String Nom, String Prenom) {
+    public Operateur(String idpersonne,String Nom, String Prenom, String competences, int id_op, ETAT etat) {
         super(idpersonne,Nom,Prenom);
-        this.nom = nom;
-        this.prenom = prenom;
         this.competences = competences;
         this.id_op = id_op;
         this.etat = etat;
     }
     @Override public String affiche(){
-    System.out.print("nom ="+nom);
-    System.out.print("pronom ="+prenom);
-    System.out.print("competences ="+competences);
-    System.out.print("id_op ="+id_op);
-    System.out.print("etat ="+etat);
-    return "nom ="+nom+",prenom ="+prenom+"competences ="+competences+"id_op ="+id_op+"etat ="+etat;
+    return "competences ="+competences+"id_op ="+id_op+"etat ="+etat;
 }
 }

@@ -84,7 +84,7 @@ public class Machine extends Equipement{
         this.etat = etat;
     }
 
-    public Machine(int refmachine, String dmachine, String Type, float abscisse, float ordonnee, float c, float t, ETAT etat, int id_equipement) {
+    public Machine( int id_equipement, int refmachine, String dmachine, String Type, float abscisse, float ordonnee, float c, float t, ETAT etat) {
         super(id_equipement);
         this.refmachine = refmachine;
         this.dmachine = dmachine;

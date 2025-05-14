@@ -76,7 +76,7 @@ public class AtelierInterface extends Application {
 
         Button ajouter = new Button("Ajouter un équipement");
         ajouter.setOnAction(e -> {
-            Equipement eq = new Equipement("Eq" + (atelier.getEquipement().size() + 1));
+            Equipement eq = new Equipement(atelier.getEquipement().size() + 1);
             atelier.getEquipement().add(eq);
             afficherEquipements();
         });
@@ -97,7 +97,7 @@ public class AtelierInterface extends Application {
 
         Button ajouter = new Button("Ajouter une machine");
         ajouter.setOnAction(e -> {
-            Machine m = new Machine("Machine" + (atelier.getEquipement().size() + 1));
+            Machine m = new Machine(atelier.getEquipement().size() + 1,1,"Machine","Type",0,0,0,0,Machine.ETAT.disponible);
             atelier.getEquipement().add(m);
             afficherMachines();
         });
@@ -118,7 +118,7 @@ public class AtelierInterface extends Application {
 
         Button ajouter = new Button("Ajouter un opérateur");
         ajouter.setOnAction(e -> {
-            Operateur o = new Operateur("Op" + (atelier.getEquipement().size() + 1));
+            Operateur o = new Operateur("ID" + (atelier.getEquipement().size() + 1),"Nom","Prenom","Competences",1,Machine.ETAT.disponible);
             atelier.getEquipement().add(o);
             afficherOperateurs();
         });
