@@ -33,6 +33,6 @@ public class Equipement {
     }
    
    public String affiche(){
-    return "id_equipement = "+id_equipement+", refEquipement = "+refEquipement;
+    return "identifiant = "+id_equipement+", référence = "+refEquipement;
 }
 }
