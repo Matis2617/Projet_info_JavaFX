@@ -8,6 +8,26 @@ package com.mycompany.projet_fx;
  *
  * @author Matis
  */
+import java.util.ArrayList;
+
 public class StockBrut {
+   private ArrayList <Produit> produits;
    
+   public Stockbrut(){
+       this.produits = new ArrayList<>();
+   }
+   public void ajouterProduit (Produit produit){
+       produits.add(produit);
+   }
+   public void supprimerProduit (Produit produit){
+       produits.remove(produit);
+   }
+   public int getNombreProduits(){
+       return produits.size();
+   }
+   public void afficherStock(){
+       for (Produit produit : produits){
+           produit.affiche();
+       }
+   }
 }
