@@ -9,6 +9,52 @@ import java.util.ArrayList;
 
 public class AtelierInterface extends Application {
 
+class Equipement {
+    private String nom;
+
+    public Equipement(String nom) {
+        this.nom = nom;
+    }
+
+    public String affiche() {
+        return nom;
+    }
+}
+
+// Sous-classe pour les machines
+class Machine extends Equipement {
+    public Machine(String nom) {
+        super(nom);
+    }
+}
+
+// Sous-classe pour les opérateurs
+class Operateur extends Equipement {
+    public Operateur(String nom) {
+        super(nom);
+    }
+}
+
+// Classe Atelier
+class Atelier {
+    private int id;
+    private String nom;
+    private ArrayList<Equipement> equipements;
+
+    public Atelier(int id, String nom, ArrayList<Equipement> equipements) {
+        this.id = id;
+        this.nom = nom;
+        this.equipements = equipements;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public ArrayList<Equipement> getEquipement() {
+        return equipements;
+    }
+}
     private BorderPane root;
     private Atelier atelier;
 
@@ -19,7 +65,7 @@ public class AtelierInterface extends Application {
         ArrayList<Equipement> equipement = new ArrayList<>();
 
         // Initialisation de base
-        atelier = new Atelier(1,"Atelier Oscar",equipement);
+        atelier = new Atelier(id,nom,equipement);
 
         // Menu
         MenuBar menuBar = new MenuBar();
