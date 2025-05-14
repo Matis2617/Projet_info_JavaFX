@@ -24,7 +24,7 @@ public class AtelierInterface extends Application {
         
         ArrayList<Equipement> equipements = new ArrayList<>();
         ArrayList<Operateur> operateurs = new ArrayList<>();
-        ArrayList<Personne> personnes = new ArrayList<>();
+        ArrayList<Personne> personne = new ArrayList<>();
 
         // Initialisation de base
         atelier = new Atelier(1,"Atelier de ...",equipements,operateurs);
