@@ -108,20 +108,20 @@ public class AtelierInterface extends Application {
         root.setCenter(box);
     }
 
-    private void afficherOperateur() {
+    private void afficherOperateurs() {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Liste des opérateurs :"));
         for (Operateur op : atelier.getOperateur()) {
                 Label label = new Label(op.affiche());
                 box.getChildren().add(label);
-            }
+            
         }
 
         Button ajouter = new Button("Ajouter un opérateur");
         ajouter.setOnAction(e -> {
             Operateur o = new Operateur("ID" + (atelier.getOperateur().size() + 1),"Nom","Prenom","Competences",1,Machine.ETAT.disponible);
             atelier.getOperateur().add(o);
-            afficherOperateur();
+            afficherOperateurs();
         });
 
         box.getChildren().add(ajouter);
