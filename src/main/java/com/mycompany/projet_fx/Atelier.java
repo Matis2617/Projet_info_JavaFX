@@ -15,6 +15,7 @@ public class Atelier {
     ArrayList<Equipement> equipement;
     ArrayList<Operateur> operateur;
     private ChefAtelier ChefAtelier;
+    ArrayList<Personne> personnes;
 
     public ArrayList<Operateur> getOperateur() {
         return operateur;
@@ -61,6 +62,14 @@ public class Atelier {
 
     public void setChefAtelier(ChefAtelier chefAtelier) {
         this.ChefAtelier = chefAtelier;
+    }
+
+    public ArrayList<Personne> getPersonnes() {
+        return personnes;
+    }
+
+    public void setPersonnes(ArrayList<Personne> personnes) {
+        this.personnes = personnes;
     }
     
 }

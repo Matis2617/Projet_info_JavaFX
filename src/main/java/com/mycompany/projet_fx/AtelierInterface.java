@@ -16,6 +16,7 @@ public class AtelierInterface extends Application {
     private TextField prenomPersonneField;
     private TextField competencesField;
     private ComboBox<String> roleComboBox;
+    private ListView<Personne> personnesListView;
 
     @Override
     public void start(Stage primaryStage) {
@@ -23,6 +24,7 @@ public class AtelierInterface extends Application {
         
         ArrayList<Equipement> equipements = new ArrayList<>();
         ArrayList<Operateur> operateurs = new ArrayList<>();
+        ArrayList<Personne> personnes = new ArrayList<>();
 
         // Initialisation de base
         atelier = new Atelier(1,"Atelier de ...",equipements,operateurs);
@@ -36,7 +38,8 @@ public class AtelierInterface extends Application {
         MenuItem equipementItem = new MenuItem("Équipements");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem operateurItem = new MenuItem("Opérateurs");
-        MenuItem ajouterPersonneItem = new MenuItem("Ajouter une Personne");
+        MenuItem personnesItem = new MenuItem("Personnes");
+        
 
         menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem);
         menuBar.getMenus().add(menu);
@@ -51,7 +54,7 @@ public class AtelierInterface extends Application {
         equipementItem.setOnAction(e -> afficherEquipements());
         machineItem.setOnAction(e -> afficherMachines());
         operateurItem.setOnAction(e -> afficherOperateurs());
-        ajouterPersonneItem.setOnAction(e -> afficherAjouterPersonne());
+        personnesItem.setOnAction(e -> afficherPersonnes());
 
         afficherAccueil();
 
@@ -149,7 +152,7 @@ public class AtelierInterface extends Application {
         root.setCenter(box);
     }
     
-    private void afficherAjouterPersonne() {
+    private void afficherPersonnes() {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Ajouter une personne :"));
 
@@ -182,11 +185,27 @@ public class AtelierInterface extends Application {
                     ChefAtelier chef = new ChefAtelier(idPersonne, nom, prenom);
                     atelier.setChefAtelier(chef);
                 }
+                atelier.getPersonnes().add(personne);
+                afficherPersonnes();
             }
-
-            afficherAjouterPersonne();
         });
+        personnesListView = new ListView<>();
+        personnesListView.getItems().addAll(atelier.getPersonnes());
 
+        Button supprimer = new Button("Supprimer la personne sélectionnée");
+        supprimer.setOnAction(e -> {
+            Personne selectedPersonne = personnesListView.getSelectionModel().getSelectedItem();
+            if (selectedPersonne != null) {
+                atelier.getPersonnes().remove(selectedPersonne);
+                if (selectedPersonne instanceof Operateur) {
+                    atelier.getOperateur().remove(selectedPersonne);
+                } else if (selectedPersonne instanceof ChefAtelier) {
+                    atelier.setChefAtelier(null);
+                }
+                afficherPersonnes();
+            }
+        });
+        
         box.getChildren().addAll(nomPersonneField, prenomPersonneField, competencesField, roleComboBox, ajouter);
         root.setCenter(box);
     }
