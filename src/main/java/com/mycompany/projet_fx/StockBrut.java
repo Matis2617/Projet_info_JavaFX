@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class StockBrut {
    private ArrayList <Produit> produits;
    
-   public Stockbrut(){
+   public StockBrut(){
        this.produits = new ArrayList<>();
    }
    public void ajouterProduit (Produit produit){
