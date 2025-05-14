@@ -5,7 +5,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import java.util.ArrayList;
 
 public class AtelierInterface extends Application {
 
@@ -17,7 +16,7 @@ public class AtelierInterface extends Application {
         primaryStage.setTitle("Interface de Gestion d'Atelier");
 
         // Initialisation de base
-        atelier = new Atelier("Atelier 1", new ArrayList<>());
+        atelier = new Atelier("Atelier 1");
 
         // Menu
         MenuBar menuBar = new MenuBar();
@@ -129,3 +128,4 @@ public class AtelierInterface extends Application {
         launch(args);
     }
 }
+    
