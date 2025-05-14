@@ -43,6 +43,6 @@ public class Personne {
         this.Prenom = prenom;
     }
     public String affiche(){
-    return "idpersonne = "+idpersonne+", Nom = "+Nom+", Prenom ="+Prenom;
+    return "identifiant = "+idpersonne+", Nom = "+Nom+", Prenom ="+Prenom;
 }
 }

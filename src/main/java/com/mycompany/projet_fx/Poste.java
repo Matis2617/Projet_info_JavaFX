@@ -48,6 +48,6 @@ public class Poste extends Equipement{
     @Override public String affiche(){
     System.out.print("refposte ="+refposte);
     System.out.print("dposte ="+dposte);
-    return "reposte ="+refposte+",dposte ="+dposte;
+    return "référence ="+refposte+",dposte ="+dposte;
 }
 }
