@@ -11,7 +11,17 @@ package com.mycompany.projet_fx;
 import java.util.ArrayList;
 public class Atelier {
     private int id;
+    private String nom;
     ArrayList<Equipement> equipement;
+
+        
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
 
     public int getId() {
         return id;
@@ -29,10 +39,10 @@ public class Atelier {
         this.equipement = equipement;
     }
 
-    public Atelier(int id, ArrayList<Equipement> equipement) {
+     public Atelier(int id, String nom, ArrayList<Equipement> equipement) {
         this.id = id;
+        this.nom = nom;
         this.equipement = equipement;
     }
-    
     
 }

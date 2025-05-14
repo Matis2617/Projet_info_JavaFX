@@ -16,7 +16,7 @@ public class AtelierInterface extends Application {
         primaryStage.setTitle("Interface de Gestion d'Atelier");
 
         // Initialisation de base
-        atelier = new Atelier("Atelier Oscar");
+        atelier = new Atelier(1,equipements);
 
         // Menu
         MenuBar menuBar = new MenuBar();
