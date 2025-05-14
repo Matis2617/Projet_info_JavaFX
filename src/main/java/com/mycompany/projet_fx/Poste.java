@@ -45,9 +45,9 @@ public class Poste extends Equipement{
         this.machines = machines;
     }
     
-    @Override public void affiche(){
+    @Override public String affiche(){
     System.out.print("refposte ="+refposte);
     System.out.print("dposte ="+dposte);
-    
+    return "reposte ="+refposte+",dposte ="+dposte;
 }
 }
