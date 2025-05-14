@@ -13,6 +13,15 @@ public class Atelier {
     private int id;
     private String nom;
     ArrayList<Equipement> equipement;
+    ArrayList<Operateur> operateur;
+
+    public ArrayList<Operateur> getOperateur() {
+        return operateur;
+    }
+
+    public void setOperateurs(ArrayList<Operateur> operateur) {
+        this.operateur = operateur;
+    }
 
         
     public String getNom() {
@@ -39,10 +48,11 @@ public class Atelier {
         this.equipement = equipement;
     }
 
-     public Atelier(int id, String nom, ArrayList<Equipement> equipement) {
+     public Atelier(int id, String nom, ArrayList<Equipement> equipement,ArrayList<Operateur> operateur) {
         this.id = id;
         this.nom = nom;
         this.equipement = equipement;
+        this.operateur = operateur;
     }
     
 }

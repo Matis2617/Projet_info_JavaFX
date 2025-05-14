@@ -17,9 +17,10 @@ public class AtelierInterface extends Application {
         primaryStage.setTitle("Interface de Gestion d'Atelier");
         
         ArrayList<Equipement> equipements = new ArrayList<>();
+        ArrayList<Operateur> operateurs = new ArrayList<>();
 
         // Initialisation de base
-        atelier = new Atelier(1,"Atelier Oscar",equipements);
+        atelier = new Atelier(1,"Atelier Oscar",equipements,operateurs);
 
         // Menu
         MenuBar menuBar = new MenuBar();
@@ -63,6 +64,7 @@ public class AtelierInterface extends Application {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Nom de l'atelier : " + atelier.getNom()));
         box.getChildren().add(new Label("Nombre d'équipements : " + atelier.getEquipement().size()));
+        box.getChildren().add(new Label("Nombre d'opérateurs : " + operateur.getOperateurs().size()));
         root.setCenter(box);
     }
 
