@@ -66,11 +66,12 @@ public class Operateur extends Personne {
         this.id_op = id_op;
         this.etat = etat;
     }
-    @Override public void affiche(){
+    @Override public String affiche(){
     System.out.print("nom ="+nom);
     System.out.print("pronom ="+prenom);
     System.out.print("competences ="+competences);
     System.out.print("id_op ="+id_op);
     System.out.print("etat ="+etat);
+    return "nom ="+nom+",prenom ="+prenom+"competences ="+competences+"id_op ="+id_op+"etat ="+etat;
 }
 }

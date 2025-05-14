@@ -96,14 +96,7 @@ public class Machine extends Equipement{
         this.etat = etat;
     }
     
-    @Override public void affiche(){
-    System.out.print("etat ="+etat);
-    System.out.print("refmachine ="+refmachine);
-    System.out.print("dmachine ="+dmachine);
-    System.out.print("Type"+Type);
-    System.out.print("abscisse ="+abscisse);
-    System.out.print("ordonnee ="+ordonnee);
-    System.out.print("cout ="+c);
-    System.out.print("temps ="+t);
+    @Override public String affiche(){
+    return "etat ="+etat+",refmachine ="+refmachine+"dmachine ="+dmachine+"Type ="+Type+"abscisse ="+abscisse+"ordonnee ="+ordonnee+"cout ="+c+"temps ="+t;
 }
 }

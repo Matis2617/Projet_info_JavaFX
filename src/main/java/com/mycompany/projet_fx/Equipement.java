@@ -32,8 +32,7 @@ public class Equipement {
         this.id_equipement = id_equipement;
     }
    
-   public void affiche(){
-    System.out.print("id_equipement ="+id_equipement);
-    System.out.print("refEquipement ="+refEquipement);
+   public String affiche(){
+    return "id_equiement ="+id_equipement+",refEquiement ="+refEquipement;
 }
 }

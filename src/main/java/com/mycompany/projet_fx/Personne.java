@@ -42,9 +42,7 @@ public class Personne {
         this.Nom = nom;
         this.Prenom = prenom;
     }
-    public void affiche(){
-    System.out.print("idpersonne ="+idpersonne);
-    System.out.print("Nom ="+Nom);
-    System.out.print("Prenom ="+Prenom);
+    public String affiche(){
+    return "idpersonne ="+idpersonne+",Nom ="+Nom+"Prenom ="+Prenom;
 }
 }
