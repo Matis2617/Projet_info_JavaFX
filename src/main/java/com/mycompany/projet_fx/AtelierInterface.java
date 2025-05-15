@@ -24,10 +24,10 @@ public class AtelierInterface extends Application {
         
         ArrayList<Equipement> equipements = new ArrayList<>();
         ArrayList<Operateur> operateurs = new ArrayList<>();
-        ArrayList<Personne> personne = new ArrayList<>();
+        ArrayList<Personne> personnes = new ArrayList<>();
 
         // Initialisation de base
-        atelier = new Atelier(1,"Atelier de ...",equipements,operateurs);
+        atelier = new Atelier(1,"Atelier de ...",equipements,operateurs,personnes);
 
         // Menu
         MenuBar menuBar = new MenuBar();
@@ -82,8 +82,8 @@ public class AtelierInterface extends Application {
         });
 
         box.getChildren().addAll(label, nomAtelierField, modifierButton);
-        box.getChildren().add(new Label("Nombre d'équipements : " + atelier.getEquipement().size()));
-        box.getChildren().add(new Label("Nombre d'opérateurs : " + atelier.getOperateur().size()));
+        box.getChildren().add(new Label("Nombre d'équipements : " + atelier.getEquipements().size()));
+        box.getChildren().add(new Label("Nombre d'opérateurs : " + atelier.getOperateurs().size()));
         
         if (atelier.getChefAtelier() != null) {
             box.getChildren().add(new Label("Chef d'atelier : " + atelier.getChefAtelier().affiche()));
@@ -95,15 +95,15 @@ public class AtelierInterface extends Application {
     private void afficherEquipements() {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Liste des équipements :"));
-        for (Equipement eq : atelier.getEquipement()) {
+        for (Equipement eq : atelier.getEquipements()) {
             Label label = new Label(eq.affiche());
             box.getChildren().add(label);
         }
 
         Button ajouter = new Button("Ajouter un équipement");
         ajouter.setOnAction(e -> {
-            Equipement eq = new Equipement(atelier.getEquipement().size() + 1);
-            atelier.getEquipement().add(eq);
+            Equipement eq = new Equipement(atelier.getEquipements().size() + 1);
+            atelier.getEquipements().add(eq);
             afficherEquipements();
         });
 
@@ -114,7 +114,7 @@ public class AtelierInterface extends Application {
     private void afficherMachines() {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Liste des machines :"));
-        for (Equipement eq : atelier.getEquipement()) {
+        for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) {
                 Label label = new Label(eq.affiche());
                 box.getChildren().add(label);
@@ -123,8 +123,8 @@ public class AtelierInterface extends Application {
 
         Button ajouter = new Button("Ajouter une machine");
         ajouter.setOnAction(e -> {
-            Machine m = new Machine(atelier.getEquipement().size() + 1,1,"Machine","Type",0,0,0,0,Machine.ETAT.disponible);
-            atelier.getEquipement().add(m);
+            Machine m = new Machine(atelier.getEquipements().size() + 1,1,"Machine","Type",0,0,0,0,Machine.ETAT.disponible);
+            atelier.getEquipements().add(m);
             afficherMachines();
         });
 
@@ -135,7 +135,7 @@ public class AtelierInterface extends Application {
     private void afficherOperateurs() {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Liste des opérateurs :"));
-        for (Operateur op : atelier.getOperateur()) {
+        for (Operateur op : atelier.getOperateurs()) {
                 Label label = new Label(op.affiche());
                 box.getChildren().add(label);
             
@@ -143,8 +143,8 @@ public class AtelierInterface extends Application {
 
         Button ajouter = new Button("Ajouter un opérateur");
         ajouter.setOnAction(e -> {
-            Operateur o = new Operateur("ID" + (atelier.getOperateur().size() + 1),"Nom","Prenom","Competences",1,Machine.ETAT.disponible);
-            atelier.getOperateur().add(o);
+            Operateur o = new Operateur("ID" + (atelier.getOperateurs().size() + 1),"Nom","Prenom","Competences",1,Machine.ETAT.disponible);
+            atelier.getOperateurs().add(o);
             afficherOperateurs();
         });
 
@@ -181,7 +181,7 @@ public class AtelierInterface extends Application {
                 Personne personne;
                 if (role.equals("Opérateur")) {
                     personne = new Operateur(idPersonne, nom, prenom, competences, 1, Machine.ETAT.disponible);
-                    atelier.getOperateur().add((Operateur) personne);
+                    atelier.getOperateurs().add((Operateur) personne);
                 } else if (role.equals("Chef d'Atelier")) {
                     personne = new ChefAtelier(idPersonne, nom, prenom);
                     atelier.setChefAtelier((ChefAtelier) personne);
@@ -198,7 +198,7 @@ public class AtelierInterface extends Application {
             if (selectedPersonne != null) {
                 atelier.getPersonnes().remove(selectedPersonne);
                 if (selectedPersonne instanceof Operateur) {
-                    atelier.getOperateur().remove(selectedPersonne);
+                    atelier.getOperateurs().remove(selectedPersonne);
                 } else if (selectedPersonne instanceof ChefAtelier) {
                     atelier.setChefAtelier(null);
                 }

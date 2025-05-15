@@ -15,9 +15,9 @@ public class Atelier {
     ArrayList<Equipement> equipement;
     ArrayList<Operateur> operateur;
     private ChefAtelier ChefAtelier;
-   private ArrayList<Personne> personnes;
+    ArrayList<Personne> personne;
 
-    public ArrayList<Operateur> getOperateur() {
+    public ArrayList<Operateur> getOperateurs() {
         return operateur;
     }
 
@@ -42,20 +42,20 @@ public class Atelier {
         this.id = id;
     }
 
-    public ArrayList<Equipement> getEquipement() {
+    public ArrayList<Equipement> getEquipements() {
         return equipement;
     }
 
-    public void setEquipement(ArrayList<Equipement> equipement) {
+    public void setEquipements(ArrayList<Equipement> equipement) {
         this.equipement = equipement;
     }
 
-     public Atelier(int id, String nom, ArrayList<Equipement> equipement,ArrayList<Operateur> operateur) {
+     public Atelier(int id, String nom, ArrayList<Equipement> equipement,ArrayList<Operateur> operateur,ArrayList<Personne> personne) {
         this.id = id;
         this.nom = nom;
         this.equipement = equipement;
         this.operateur = operateur;
-        this.personnes = new ArrayList<>();
+        this.personne = personne;
     }
      public ChefAtelier getChefAtelier() {
         return ChefAtelier;
@@ -66,11 +66,11 @@ public class Atelier {
     }
 
     public ArrayList<Personne> getPersonnes() {
-        return personnes;
+        return personne;
     }
 
-    public void setPersonnes(ArrayList<Personne> personnes) {
-        this.personnes = personnes;
+    public void setPersonnes(ArrayList<Personne> personne) {
+        this.personne = personne;
     }
     
 }
