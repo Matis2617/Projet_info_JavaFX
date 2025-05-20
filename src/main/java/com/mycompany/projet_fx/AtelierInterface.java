@@ -25,6 +25,11 @@ public class AtelierInterface extends Application {
         ArrayList<Equipement> equipements = new ArrayList<>();
         ArrayList<Operateur> operateurs = new ArrayList<>();
         ArrayList<Personne> personnes = new ArrayList<>();
+        ArrayList<Gamme> gammes = new ArrayList<>();
+        ArrayList<Fiabilite> fiabilites = new ArrayList<>();
+        ArrayList<Poste> postes = new ArrayList<>();
+        ArrayList<Produit> produits = new ArrayList<>();
+        ArrayList<StockBrut> stockBrut = new ArrayList<>();
 
         // Initialisation de base
         atelier = new Atelier(1,"Atelier de ...",equipements,operateurs,personnes);
@@ -39,9 +44,14 @@ public class AtelierInterface extends Application {
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem operateurItem = new MenuItem("Opérateurs");
         MenuItem personnesItem = new MenuItem("Personnes");
+        MenuItem gammeItem = new MenuItem("Gamme");
+        MenuItem fiabiliteItem = new MenuItem("Fiabilite");
+        MenuItem posteItem = new MenuItem("Poste");
+        MenuItem produitItem = new MenuItem("Produit");
+        MenuItem stockBrutItem = new MenuItem("Stock Brut");
         
 
-        menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem);
+        menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem, personnesItem, gammeItem, posteItem, produitItem, stockBrutItem);
         menuBar.getMenus().add(menu);
 
         // Layout principal
@@ -55,6 +65,11 @@ public class AtelierInterface extends Application {
         machineItem.setOnAction(e -> afficherMachines());
         operateurItem.setOnAction(e -> afficherOperateurs());
         personnesItem.setOnAction(e -> afficherPersonnes());
+        personnesItem.setOnAction(e -> afficherGamme());
+        personnesItem.setOnAction(e -> afficherFaibilite());
+        personnesItem.setOnAction(e -> afficherPoste());
+        personnesItem.setOnAction(e -> afficherProduit());
+        personnesItem.setOnAction(e -> afficherStockBrut());
 
         afficherAccueil();
 
@@ -156,16 +171,16 @@ public class AtelierInterface extends Application {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Ajouter une personne :"));
 
-        nomPersonneField = new TextField();
+        TextField nomPersonneField = new TextField();
         nomPersonneField.setPromptText("Nom");
 
-        prenomPersonneField = new TextField();
+        TextField prenomPersonneField = new TextField();
         prenomPersonneField.setPromptText("Prénom");
 
-        competencesField = new TextField();
+        TextField competencesField = new TextField();
         competencesField.setPromptText("Compétences");
 
-        roleComboBox = new ComboBox<>();
+        ComboBox<String> roleComboBox = new ComboBox<>();
         roleComboBox.getItems().addAll("Opérateur", "Chef d'Atelier");
         roleComboBox.setPromptText("Rôle");
 
@@ -189,7 +204,7 @@ public class AtelierInterface extends Application {
                 afficherPersonnes();
             }
         });
-        personnesListView = new ListView<>();
+        ListView<Personne> personnesListView = new ListView<>();
         personnesListView.getItems().setAll(atelier.getPersonnes());
 
         Button supprimer = new Button("Supprimer la personne sélectionnée");
@@ -206,10 +221,40 @@ public class AtelierInterface extends Application {
             }
         });
         
-        box.getChildren().addAll(nomPersonneField, prenomPersonneField, competencesField, roleComboBox, ajouter);
+        box.getChildren().addAll(nomPersonneField, prenomPersonneField, competencesField, roleComboBox, ajouter, personnesListView, supprimer);
         root.setCenter(box);
     }
 
+    private void afficherGamme(){
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Gestion des Gammes :"));
+        
+        TextField refGammeField = new TextField();
+        refGammeField.setPromptText("Référence de la gamme");
+        
+        Button creerGammeButton = new Button ("Créer une gamme");
+        creerGammeButton.setOnAction(e ->{
+            Gamme gamme = new Gamme(new ArrayList<>());
+            gamme.creerGamme();
+            gammes.add(gamme);
+            afficherGamme();
+        });
+        
+        ListView<Gamme> gammesListView = new ListView <>();
+        gammesListView.getItems().setAll(gammes);
+        
+        Button supprimerGammeButton = new Button ("Supprimer la game selectionnée");
+        supprimerGamme.button.setOnAction(e->{
+            Gamme selectedGamme = gammesListView.getSelectionModel().getSelectedItem();
+            if (selectedGamme != null){
+                gammes.remove(selectedGamme);
+                afficherGamme();
+            }
+        });
+        
+        box.getChildren().addAll(refGammeField, creerGammeButton, gammesListView, supprimerGammeButton);
+        root.setCenter(box);
+    }
     public static void main(String[] args) {
         launch(args);
     }
