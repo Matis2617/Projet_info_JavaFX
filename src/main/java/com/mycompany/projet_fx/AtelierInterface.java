@@ -213,7 +213,7 @@ public class AtelierInterface extends Application {
             if (selectedPersonne != null) {
                 atelier.getPersonnes().remove(selectedPersonne);
                 if (selectedPersonne instanceof Operateur) {
-                    atelier.getOperateurs().remove(selectedPersonne);
+                    atelier.getPersonnes().remove(selectedPersonne);
                 } else if (selectedPersonne instanceof ChefAtelier) {
                     atelier.setChefAtelier(null);
                 }
