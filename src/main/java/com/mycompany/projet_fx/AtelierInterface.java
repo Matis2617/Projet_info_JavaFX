@@ -255,6 +255,67 @@ public class AtelierInterface extends Application {
         box.getChildren().addAll(refGammeField, creerGammeButton, gammesListView, supprimerGammeButton);
         root.setCenter(box);
     }
+    private void afficherFiabilite(){
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Gestion de la fiabilité :"));
+        
+        TextField nomMachineField = new TextField();
+        nomMachineField.setPromptText("Nom de la machine");
+        
+        Button ajouterFiabiliteButton = new Button ("Ajouter une fiabilité");
+        ajouterFiabiliteButton.setOnAction(e ->{
+            Fiabilite fiabilite = new Fiabilite(nomMachineField.getText());
+            fiabilites.add(fiabilite);
+            afficherFiabilite();
+        });
+        
+        ListView<Fiabilite> fiabilitesListView = new ListView <>();
+        fiabilitesListView.getItems().setAll(fiabilites);
+        
+        Button supprimerFiabiliteButton = new Button ("Supprimer la game selectionnée");
+        supprimerFiabiliteButton.setOnAction(e->{
+            Fiabilite selectedFiabilite = fiabilitesListView.getSelectionModel().getSelectedItem();
+            if (selectedFiabilite != null){
+                fiabilites.remove(selectedFiabilite);
+                afficherGamme();
+            }
+        });
+        
+        box.getChildren().addAll(nomMachineField, ajouterFiabiliteButton, fiabilitesListView, supprimerFiabiliteButton);
+        root.setCenter(box);
+    }
+    private void afficherPoste(){
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Gestion des postes :"));
+        
+        TextField refPosteField = new TextField();
+        refPosteField.setPromptText("Référence du poste");
+        
+        TextField dPosteField = new TextField();
+        dPosteField.setPromptText("Description du poste");
+        
+        Button ajouterPosteButton = new Button ("Ajouter un poste");
+        ajouterPosteButton.setOnAction(e ->{
+            Poste poste = new Poste(1,dPosteField.getText(),new ArrayList<>(),1);postes.creerGamme();
+            postes.add(poste);
+            afficherPoste();
+        });
+        
+        ListView<Poste> postesListView = new ListView <>();
+        postesListView.getItems().setAll(postes);
+        
+        Button supprimerPosteButton = new Button ("Supprimer le poste selectionné");
+        supprimerPosteButton.setOnAction(e->{
+            Poste selectedPoste = postesListView.getSelectionModel().getSelectedItem();
+            if (selectedPostes != null){
+                postes.remove(selectedPoste);
+                afficherPoste();
+            }
+        });
+        
+        box.getChildren().addAll(refPosteField, dPosteField, ajouterPosteButton, postesListView,supprimerPosteButton);
+        root.setCenter(box);
+    }
     public static void main(String[] args) {
         launch(args);
     }
