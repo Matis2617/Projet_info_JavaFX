@@ -51,7 +51,7 @@ public class AtelierInterface extends Application {
         MenuItem stockBrutItem = new MenuItem("Stock Brut");
         
 
-        menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem, personnesItem, gammeItem, posteItem, produitItem, stockBrutItem);
+        menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem, personnesItem, gammeItem, fiabiliteItem, posteItem, produitItem, stockBrutItem);
         menuBar.getMenus().add(menu);
 
         // Layout principal
