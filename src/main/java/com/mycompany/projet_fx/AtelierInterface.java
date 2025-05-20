@@ -17,7 +17,13 @@ public class AtelierInterface extends Application {
     private TextField competencesField;
     private ComboBox<String> roleComboBox;
     private ListView<Personne> personnesListView;
-
+    
+    ArrayList<Gamme> gammes = new ArrayList<>();
+    ArrayList<Fiabilite> fiabilites = new ArrayList<>();
+    ArrayList<Poste> postes = new ArrayList<>();
+    ArrayList<Produit> produits = new ArrayList<>();
+    ArrayList<StockBrut> stockBrut = new ArrayList<>();
+    
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Interface de Gestion d'Atelier");
@@ -25,13 +31,8 @@ public class AtelierInterface extends Application {
         ArrayList<Equipement> equipements = new ArrayList<>();
         ArrayList<Operateur> operateurs = new ArrayList<>();
         ArrayList<Personne> personnes = new ArrayList<>();
-        ArrayList<Gamme> gammes = new ArrayList<>();
-        ArrayList<Fiabilite> fiabilites = new ArrayList<>();
-        ArrayList<Poste> postes = new ArrayList<>();
-        ArrayList<Produit> produits = new ArrayList<>();
-        ArrayList<StockBrut> stockBrut = new ArrayList<>();
-
-        // Initialisation de base
+        
+// Initialisation de base
         atelier = new Atelier(1,"Atelier de ...",equipements,operateurs,personnes);
 
         // Menu
@@ -66,7 +67,7 @@ public class AtelierInterface extends Application {
         operateurItem.setOnAction(e -> afficherOperateurs());
         personnesItem.setOnAction(e -> afficherPersonnes());
         gammeItem.setOnAction(e -> afficherGamme());
-        fiabiliteItem.setOnAction(e -> afficherFaibilite());
+        fiabiliteItem.setOnAction(e -> afficherFiabilite());
         posteItem.setOnAction(e -> afficherPoste());
         produitItem.setOnAction(e -> afficherProduit());
         stockBrutItem.setOnAction(e -> afficherStockBrut());
@@ -171,16 +172,16 @@ public class AtelierInterface extends Application {
         VBox box = new VBox(10);
         box.getChildren().add(new Label("Ajouter une personne :"));
 
-        TextField nomPersonneField = new TextField();
+        nomPersonneField = new TextField();
         nomPersonneField.setPromptText("Nom");
 
-        TextField prenomPersonneField = new TextField();
+        prenomPersonneField = new TextField();
         prenomPersonneField.setPromptText("Prénom");
 
-        TextField competencesField = new TextField();
+        competencesField = new TextField();
         competencesField.setPromptText("Compétences");
 
-        ComboBox<String> roleComboBox = new ComboBox<>();
+        roleComboBox = new ComboBox<>();
         roleComboBox.getItems().addAll("Opérateur", "Chef d'Atelier");
         roleComboBox.setPromptText("Rôle");
 
@@ -191,9 +192,10 @@ public class AtelierInterface extends Application {
             String prenom = prenomPersonneField.getText();
             String competences = competencesField.getText();
             String role = roleComboBox.getValue();
+            
+            Personne personne = null;
 
             if (role != null) {
-                Personne personne;
                 if (role.equals("Opérateur")) {
                     personne = new Operateur(idPersonne, nom, prenom, competences, 1, Machine.ETAT.disponible);
                     atelier.getOperateurs().add((Operateur) personne);
@@ -201,10 +203,11 @@ public class AtelierInterface extends Application {
                     personne = new ChefAtelier(idPersonne, nom, prenom);
                     atelier.setChefAtelier((ChefAtelier) personne);
                 }
+                atelier.getPersonnes().add(personne);
                 afficherPersonnes();
             }
         });
-        ListView<Personne> personnesListView = new ListView<>();
+        personnesListView = new ListView<>();
         personnesListView.getItems().setAll(atelier.getPersonnes());
 
         Button supprimer = new Button("Supprimer la personne sélectionnée");
