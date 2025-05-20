@@ -51,7 +51,7 @@ public class AtelierInterface extends Application {
         MenuItem stockBrutItem = new MenuItem("Stock Brut");
         
 
-        menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem, personnesItem, gammeItem, posteItem, produitItem, stockBrutItem);
+        menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem, personnesItem, gammeItem, fiabiliteItem, posteItem, produitItem, stockBrutItem);
         menuBar.getMenus().add(menu);
 
         // Layout principal
@@ -65,11 +65,11 @@ public class AtelierInterface extends Application {
         machineItem.setOnAction(e -> afficherMachines());
         operateurItem.setOnAction(e -> afficherOperateurs());
         personnesItem.setOnAction(e -> afficherPersonnes());
-        personnesItem.setOnAction(e -> afficherGamme());
-        personnesItem.setOnAction(e -> afficherFaibilite());
-        personnesItem.setOnAction(e -> afficherPoste());
-        personnesItem.setOnAction(e -> afficherProduit());
-        personnesItem.setOnAction(e -> afficherStockBrut());
+        gammeItem.setOnAction(e -> afficherGamme());
+        fiabiliteItem.setOnAction(e -> afficherFaibilite());
+        posteItem.setOnAction(e -> afficherPoste());
+        produitItem.setOnAction(e -> afficherProduit());
+        stockBrutItem.setOnAction(e -> afficherStockBrut());
 
         afficherAccueil();
 
@@ -213,7 +213,7 @@ public class AtelierInterface extends Application {
             if (selectedPersonne != null) {
                 atelier.getPersonnes().remove(selectedPersonne);
                 if (selectedPersonne instanceof Operateur) {
-                    atelier.getOperateurs().remove(selectedPersonne);
+                    atelier.getPersonnes().remove(selectedPersonne);
                 } else if (selectedPersonne instanceof ChefAtelier) {
                     atelier.setChefAtelier(null);
                 }
@@ -244,7 +244,7 @@ public class AtelierInterface extends Application {
         gammesListView.getItems().setAll(gammes);
         
         Button supprimerGammeButton = new Button ("Supprimer la game selectionnée");
-        supprimerGamme.button.setOnAction(e->{
+        supprimerGammeButton.setOnAction(e -> {
             Gamme selectedGamme = gammesListView.getSelectionModel().getSelectedItem();
             if (selectedGamme != null){
                 gammes.remove(selectedGamme);
@@ -277,7 +277,7 @@ public class AtelierInterface extends Application {
             Fiabilite selectedFiabilite = fiabilitesListView.getSelectionModel().getSelectedItem();
             if (selectedFiabilite != null){
                 fiabilites.remove(selectedFiabilite);
-                afficherGamme();
+                afficherFiabilite();
             }
         });
         
@@ -296,7 +296,7 @@ public class AtelierInterface extends Application {
         
         Button ajouterPosteButton = new Button ("Ajouter un poste");
         ajouterPosteButton.setOnAction(e ->{
-            Poste poste = new Poste(1,dPosteField.getText(),new ArrayList<>(),1);postes.creerGamme();
+            Poste poste = new Poste(1,dPosteField.getText(),new ArrayList<>(),1);
             postes.add(poste);
             afficherPoste();
         });
@@ -307,13 +307,23 @@ public class AtelierInterface extends Application {
         Button supprimerPosteButton = new Button ("Supprimer le poste selectionné");
         supprimerPosteButton.setOnAction(e->{
             Poste selectedPoste = postesListView.getSelectionModel().getSelectedItem();
-            if (selectedPostes != null){
+            if (selectedPoste != null){
                 postes.remove(selectedPoste);
                 afficherPoste();
             }
         });
         
         box.getChildren().addAll(refPosteField, dPosteField, ajouterPosteButton, postesListView,supprimerPosteButton);
+        root.setCenter(box);
+    }
+    private void afficherProduit(){
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Module Produit à developper..."));
+        root.setCenter(box);
+    }
+    private void afficherStockBrut(){
+        VBox box = new VBox(10);
+        box.getChildren().add(new Label("Module StockBrut à developper..."));
         root.setCenter(box);
     }
     public static void main(String[] args) {
