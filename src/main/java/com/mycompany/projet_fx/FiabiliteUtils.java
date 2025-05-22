@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Random;
 
 public class FiabiliteUtils {
 
@@ -21,7 +20,14 @@ public class FiabiliteUtils {
     public static void ecrireEtatMachines(List<Fiabilite> machines) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("fiabilite.txt"))) {
             for (Fiabilite machine : machines) {
-                String ligne = genererEtatMachine(machine);
+                
+                LocalDate date = LocalDate.now();
+                LocalTime heure = LocalTime.now();
+                String evenement = genererEvenement();
+                String operateur = genererOperateur();
+                String cause = genererCause();
+
+                String ligne = genererEtatMachine(machine, date, heure, evenement, operateur, cause);
                 bw.write(ligne);
                 bw.newLine();
             }
@@ -29,15 +35,24 @@ public class FiabiliteUtils {
             System.err.println("Erreur d'écriture : " + e.getMessage());
         }
     }
+    
+    public static String genererEvenement(){
+        System.out.println("Quel est l'évenement (A/D)");
+        return Lire.s();
+    }
+    
+    public static String genererOperateur(){
+        System.out.println("Quel est l'operateur");
+        return Lire.s();
+    }
+    
+    public static String genererCause(){
+        System.out.println("Quel est la cause");
+        return Lire.s();
+    }
 
-    private static String genererEtatMachine(Fiabilite machine) {
-        Random random = new Random();
-        LocalDate date = LocalDate.now(); // Date actuelle pour l'exemple
-        LocalTime heure = LocalTime.of(random.nextInt(14) + 6, random.nextInt(60)); // Heure entre 06:00 et 20:00
-        String evenement = random.nextBoolean() ? "A" : "D"; // A pour Arrêt, D pour Démarrage
-        String operateur = "OP" + (random.nextInt(300) + 1); // Opérateur aléatoire
-        String cause = evenement.equals("A") ? getCauseAleatoire() : "ok"; // Cause aléatoire pour les arrêts
 
+    public static String genererEtatMachine(Fiabilite machine, LocalDate date, LocalTime heure, String evenement, String operateur, String cause) {
         return String.format("%s;%s;%s;%s;%s;%s",
                 date.format(DATE_FORMAT),
                 heure.format(HEURE_FORMAT),
@@ -45,11 +60,5 @@ public class FiabiliteUtils {
                 evenement,
                 operateur,
                 cause);
-    }
-
-    private static String getCauseAleatoire() {
-        String[] causes = {"panne", "accident", "maintenance"};
-        Random random = new Random();
-        return causes[random.nextInt(causes.length)];
     }
 }
