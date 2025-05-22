@@ -1,72 +1,41 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projet_fx;
 
-/**
- *
- * @author Matis
- */
-public class Machine extends Equipement{ 
-    public enum ETAT{occupe,disponible} ;
+public class Machine extends Equipement { 
+    public enum ETAT {occupe, disponible};
+    private int refmachine; // identifiant unique par machine
     private String dmachine;
-    private float abscisse;
-    private float ordonnee;
+    private int abscisse;
+    private int ordonnee;
     private float c;
     private float t;
     private ETAT etat;
 
-    public String getDmachine() {
-        return dmachine;
-    }
+    // GETTERS/SETTERS
+    public int getRefmachine() { return refmachine; }
+    public void setRefmachine(int refmachine) { this.refmachine = refmachine; }
 
-    public void setDmachine(String dmachine) {
-        this.dmachine = dmachine;
-    }
+    public String getDmachine() { return dmachine; }
+    public void setDmachine(String dmachine) { this.dmachine = dmachine; }
 
-    public float getAbscisse() {
-        return abscisse;
-    }
+    public int getAbscisse() { return abscisse; }
+    public void setAbscisse(int abscisse) { this.abscisse = abscisse; }
 
-    public void setAbscisse(float abscisse) {
-        this.abscisse = abscisse;
-    }
+    public int getOrdonnee() { return ordonnee; }
+    public void setOrdonnee(int ordonnee) { this.ordonnee = ordonnee; }
 
-    public float getOrdonnee() {
-        return ordonnee;
-    }
+    public float getC() { return c; }
+    public void setC(float c) { this.c = c; }
 
-    public void setOrdonnee(float ordonnee) {
-        this.ordonnee = ordonnee;
-    }
+    public float getT() { return t; }
+    public void setT(float t) { this.t = t; }
 
-    public float getC() {
-        return c;
-    }
+    public ETAT getEtat() { return etat; }
+    public void setEtat(ETAT etat) { this.etat = etat; }
 
-    public void setC(float c) {
-        this.c = c;
-    }
-
-    public float getT() {
-        return t;
-    }
-
-    public void setT(float t) {
-        this.t = t;
-    }
-
-    public ETAT getEtat() {
-        return etat;
-    }
-
-    public void setEtat(ETAT etat) {
-        this.etat = etat;
-    }
-
-    public Machine( int id_equipement, String dmachine, String Type, float abscisse, float ordonnee, float c, float t, ETAT etat) {
+    // Constructeur sans "type" ni "reference"
+    public Machine(int id_equipement, int refmachine, String dmachine, int abscisse, int ordonnee, float c, float t, ETAT etat) {
         super(id_equipement);
+        this.refmachine = refmachine;
         this.dmachine = dmachine;
         this.abscisse = abscisse;
         this.ordonnee = ordonnee;
@@ -75,7 +44,15 @@ public class Machine extends Equipement{
         this.etat = etat;
     }
     
-    @Override public String affiche(){
-    return super.affiche()+" etat ="+etat+", dmachine = "+dmachine+", abscisse = "+abscisse+", ordonnee = "+ordonnee+", cout = "+c+", temps = "+t;
-}
+    @Override
+    public String affiche() {
+        return super.affiche()
+            + ", identifiant machine = " + refmachine
+            + ", description = " + dmachine
+            + ", abscisse = " + abscisse
+            + ", ordonnée = " + ordonnee
+            + ", coût = " + c
+            + ", temps = " + t
+            + ", état = " + etat;
+    }
 }
