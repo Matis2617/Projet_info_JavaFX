@@ -26,9 +26,6 @@ public class StockBrut implements Serializable{
    public int getNombreProduits(){
        return produits.size();
    }
-   public void affiche() {
-    System.out.println("Produit : id = " + id + ", code = " + code);
-   }
 
    public void afficherStock(){
        for (Produit produit : produits){
