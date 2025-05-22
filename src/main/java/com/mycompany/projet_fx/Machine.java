@@ -12,7 +12,6 @@ public class Machine extends Equipement{
     public enum ETAT{occupe,disponible} ;
     private int refmachine;
     private String dmachine;
-    private String Type;
     private float abscisse;
     private float ordonnee;
     private float c;
@@ -83,9 +82,8 @@ public class Machine extends Equipement{
         this.etat = etat;
     }
 
-    public Machine( int id_equipement, int refmachine, String dmachine, String Type, float abscisse, float ordonnee, float c, float t, ETAT etat) {
+    public Machine( int id_equipement, String dmachine, String Type, float abscisse, float ordonnee, float c, float t, ETAT etat) {
         super(id_equipement);
-        this.refmachine = refmachine;
         this.dmachine = dmachine;
         this.Type = Type;
         this.abscisse = abscisse;
@@ -96,6 +94,6 @@ public class Machine extends Equipement{
     }
     
     @Override public String affiche(){
-    return super.affiche()+" etat ="+etat+", référence = "+refmachine+", dmachine = "+dmachine+", Type = "+Type+", abscisse = "+abscisse+", ordonnee = "+ordonnee+", cout = "+c+", temps = "+t;
+    return super.affiche()+" etat ="+etat+", dmachine = "+dmachine+", Type = "+Type+", abscisse = "+abscisse+", ordonnee = "+ordonnee+", cout = "+c+", temps = "+t;
 }
 }
