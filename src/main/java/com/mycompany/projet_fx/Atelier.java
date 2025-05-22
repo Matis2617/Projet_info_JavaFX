@@ -14,6 +14,9 @@ public class Atelier implements Serializable {
     private ArrayList<Personne> personne;
     private ArrayList<Poste> postes = new ArrayList<>(); // Ajouté pour la persistance des postes
 
+    // AJOUT : liste d'opérations dans l'atelier
+    private ArrayList<Operation> operations = new ArrayList<>();
+
     // Constructeur
     public Atelier(int id, String nom, ArrayList<Equipement> equipement, ArrayList<Operateur> operateur, ArrayList<Personne> personne) {
         this.id = id;
@@ -23,7 +26,7 @@ public class Atelier implements Serializable {
         this.personne = personne;
     }
 
-    // Getters/Setters (ajoute ceux pour postes)
+    // Getters/Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -44,4 +47,8 @@ public class Atelier implements Serializable {
 
     public ArrayList<Poste> getPostes() { return postes; }
     public void setPostes(ArrayList<Poste> postes) { this.postes = postes; }
+
+    // AJOUT : Getters/Setters pour opérations
+    public ArrayList<Operation> getOperations() { return operations; }
+    public void setOperations(ArrayList<Operation> operations) { this.operations = operations; }
 }
