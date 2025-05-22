@@ -13,70 +13,78 @@ import java.io.*;
 
 public class AtelierInterface extends Application {
 
-private BorderPane root;
-private Atelier atelier;
-private String nomFichier;
+    private BorderPane root;
+    private Atelier atelier;
+    private String nomFichier;
 
-private Color[] couleursPostes = {
-    Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
-    Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
-};
+    private final Color[] couleursPostes = {
+            Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
+            Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
+    };
 
-// Sauvegarde l’atelier dans un fichier
-private void sauvegarderAtelier(Atelier atelier, String nomFichier) {
-    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nomFichier))) {
-        oos.writeObject(atelier);
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}
-
-// Charge un atelier depuis un fichier
-private Atelier chargerAtelier(String nomFichier) {
-    try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(nomFichier))) {
-        return (Atelier) ois.readObject();
-    } catch (Exception e) {
-        e.printStackTrace();
-        return null;
-    }
-}
-    @Override
-    public void start(Stage primaryStage) {
-    // Saisie du nom de l'utilisateur
-    TextInputDialog dialog = new TextInputDialog();
-    dialog.setTitle("Bienvenue !");
-    dialog.setHeaderText("Bienvenue dans la gestion de l'atelier");
-    dialog.setContentText("Veuillez entrer votre nom :");
-    Optional<String> result = dialog.showAndWait();
-    String nomUtilisateur = result.orElse("Utilisateur");
-    nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
-
-    Atelier atelierCharge = null;
-
-    File f = new File(nomFichier);
-    if (f.exists()) {
-        // Proposer de charger ou de créer un nouveau
-        Alert choix = new Alert(Alert.AlertType.CONFIRMATION);
-        choix.setTitle("Projet existant trouvé");
-        choix.setHeaderText("Un projet existe déjà sous ce prénom.");
-        choix.setContentText("Voulez-vous poursuivre l'ancien projet ou en créer un nouveau ?");
-        ButtonType btnAncien = new ButtonType("Poursuivre");
-        ButtonType btnNouveau = new ButtonType("Nouveau projet");
-        choix.getButtonTypes().setAll(btnAncien, btnNouveau);
-        Optional<ButtonType> option = choix.showAndWait();
-        if (option.isPresent() && option.get() == btnAncien) {
-            atelierCharge = chargerAtelier(nomFichier);
+    // Sauvegarde l’atelier dans un fichier
+    private void sauvegarderAtelier(Atelier atelier, String nomFichier) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nomFichier))) {
+            oos.writeObject(atelier);
+            System.out.println("[SAUVEGARDE] Atelier sauvegardé dans " + nomFichier
+                + " (" + atelier.getEquipements().size() + " machines, " + atelier.getPostes().size() + " postes)");
+        } catch (Exception e) {
+            System.err.println("[ERREUR] Sauvegarde échouée !");
+            e.printStackTrace();
         }
     }
-    // CORRECTION : Ne jamais recréer un Atelier après le else !!!
-    if (atelierCharge == null) {
-        ArrayList<Equipement> equipements = new ArrayList<>();
-        ArrayList<Operateur> operateurs = new ArrayList<>();
-        ArrayList<Personne> personnes = new ArrayList<>();
-        atelier = new Atelier(1, nomUtilisateur, equipements, operateurs, personnes);
-    } else {
-        atelier = atelierCharge;
+
+    // Charge un atelier depuis un fichier
+    private Atelier chargerAtelier(String nomFichier) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(nomFichier))) {
+            Atelier a = (Atelier) ois.readObject();
+            System.out.println("[CHARGEMENT] Atelier chargé depuis " + nomFichier
+                + " (" + a.getEquipements().size() + " machines, " + a.getPostes().size() + " postes)");
+            return a;
+        } catch (Exception e) {
+            System.err.println("[ERREUR] Chargement échoué !");
+            e.printStackTrace();
+            return null;
+        }
     }
+
+    @Override
+    public void start(Stage primaryStage) {
+        // Saisie du nom de l'utilisateur
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Bienvenue !");
+        dialog.setHeaderText("Bienvenue dans la gestion de l'atelier");
+        dialog.setContentText("Veuillez entrer votre nom :");
+        Optional<String> result = dialog.showAndWait();
+        String nomUtilisateur = result.orElse("Utilisateur");
+        nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
+
+        Atelier atelierCharge = null;
+        File f = new File(nomFichier);
+        if (f.exists()) {
+            // Proposer de charger ou de créer un nouveau
+            Alert choix = new Alert(Alert.AlertType.CONFIRMATION);
+            choix.setTitle("Projet existant trouvé");
+            choix.setHeaderText("Un projet existe déjà sous ce prénom.");
+            choix.setContentText("Voulez-vous poursuivre l'ancien projet ou en créer un nouveau ?");
+            ButtonType btnAncien = new ButtonType("Poursuivre");
+            ButtonType btnNouveau = new ButtonType("Nouveau projet");
+            choix.getButtonTypes().setAll(btnAncien, btnNouveau);
+            Optional<ButtonType> option = choix.showAndWait();
+            if (option.isPresent() && option.get() == btnAncien) {
+                atelierCharge = chargerAtelier(nomFichier);
+            }
+        }
+        // Ne jamais recréer un Atelier si on en a chargé un
+        if (atelierCharge == null) {
+            ArrayList<Equipement> equipements = new ArrayList<>();
+            ArrayList<Operateur> operateurs = new ArrayList<>();
+            ArrayList<Personne> personnes = new ArrayList<>();
+            atelier = new Atelier(1, nomUtilisateur, equipements, operateurs, personnes);
+        } else {
+            atelier = atelierCharge;
+        }
+
         // MenuBar/Menu
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Menu");
@@ -106,8 +114,6 @@ private Atelier chargerAtelier(String nomFichier) {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    
-
 
     // ACCUEIL : juste le plan au centre (centré visuellement)
     private void afficherAccueil() {
@@ -117,24 +123,27 @@ private Atelier chargerAtelier(String nomFichier) {
         accueil.getChildren().add(new Label("Plan de l'atelier :"));
 
         HBox hbox = new HBox();
-        hbox.setStyle("-fx-alignment: center;"); // Centre le plan horizontalement
+        hbox.setStyle("-fx-alignment: center;");
         hbox.getChildren().add(creerPlanAtelier());
         accueil.getChildren().add(hbox);
 
         root.setCenter(accueil);
     }
+
+    // Donne la couleur du poste auquel appartient la machine
     private Color getColorForMachine(Machine m) {
-    for (int i = 0; i < atelier.getPostes().size(); i++) {
-        if (atelier.getPostes().get(i).getMachines().contains(m)) {
-            return couleursPostes[i % couleursPostes.length];
+        for (int i = 0; i < atelier.getPostes().size(); i++) {
+            if (atelier.getPostes().get(i).getMachines().contains(m)) {
+                return couleursPostes[i % couleursPostes.length];
+            }
         }
+        return Color.BLACK; // machine sans poste
     }
-    return Color.BLACK; // machine sans poste
-    }
-    // Génération du plan de l’atelier (centré et sans bouton d'ajout)
+
+    // Génération du plan de l’atelier
     private Pane creerPlanAtelier() {
         Pane planPane = new Pane();
-        int tailleAtelier = 500; // Taille en pixels pour 50x50 "mètres"
+        int tailleAtelier = 500;
         int grille = 50;
         double unite = (double) tailleAtelier / grille;
 
@@ -149,41 +158,41 @@ private Atelier chargerAtelier(String nomFichier) {
         // Dessine les machines
         for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) {
-        Machine m = (Machine) eq;
-        double x = m.getAbscisse() * unite;
-        double y = m.getOrdonnee() * unite;
+                Machine m = (Machine) eq;
+                double x = m.getAbscisse() * unite;
+                double y = m.getOrdonnee() * unite;
 
-        Rectangle carre = new Rectangle(x, y, unite, unite);
-        carre.setFill(getColorForMachine(m));
-        carre.setStroke(Color.DARKBLUE);
-        carre.setArcWidth(8); carre.setArcHeight(8);
+                Rectangle carre = new Rectangle(x, y, unite, unite);
+                carre.setFill(getColorForMachine(m));
+                carre.setStroke(Color.DARKBLUE);
+                carre.setArcWidth(8); carre.setArcHeight(8);
 
-        // Détails au clic
-        carre.setOnMouseClicked(ev -> afficherFicheMachine(m));
+                // Détails au clic
+                carre.setOnMouseClicked(ev -> afficherFicheMachine(m));
 
-        planPane.getChildren().add(carre);
+                planPane.getChildren().add(carre);
             }
         }
         return planPane;
     }
 
-    // Pop-up d’information sur une machine (sans référence et type)
+    // Pop-up d’information sur une machine
     private void afficherFicheMachine(Machine m) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Détails de la machine");
         alert.setHeaderText(m.getDmachine());
         alert.setContentText(
-            "Description: " + m.getDmachine() + "\n"
-            + "Abscisse: " + m.getAbscisse() + "\n"
-            + "Ordonnée: " + m.getOrdonnee() + "\n"
-            + "Coût: " + m.getC() + "\n"
-            + "Temps de préparation: " + m.getT() + "\n"
-            + "État: " + m.getEtat()
+                "Description: " + m.getDmachine() + "\n"
+                + "Abscisse: " + m.getAbscisse() + "\n"
+                + "Ordonnée: " + m.getOrdonnee() + "\n"
+                + "Coût: " + m.getC() + "\n"
+                + "Temps de préparation: " + m.getT() + "\n"
+                + "État: " + m.getEtat()
         );
         alert.showAndWait();
     }
 
-    // Formulaire d’ajout de machine (sans référence, sans type)
+    // Formulaire d’ajout de machine
     private void afficherFormulaireAjoutMachine() {
         VBox box = new VBox(10);
         box.setStyle("-fx-padding: 20; -fx-alignment: center;");
@@ -248,12 +257,13 @@ private Atelier chargerAtelier(String nomFichier) {
                 }
                 if (!existe) {
                     Machine m = new Machine(
-                        atelier.getEquipements().size() + 1,
-                        id, desc, absc, ord, cout, temps, etat
+                            atelier.getEquipements().size() + 1,
+                            id, desc, absc, ord, cout, temps, etat
                     );
                     atelier.getEquipements().add(m);
                     sauvegarderAtelier(atelier, nomFichier);
-                    afficherAccueil(); // Retour au plan
+                    System.out.println("[AJOUT] Machine ajoutée. Total: " + atelier.getEquipements().size());
+                    afficherAccueil();
                 }
             } catch (Exception ex) {
                 erreurLabel.setText("Erreur : Données invalides.");
@@ -278,71 +288,74 @@ private Atelier chargerAtelier(String nomFichier) {
         box.getChildren().add(new Label(texte));
         root.setCenter(box);
     }
-private void afficherPoste() {
-    VBox vbox = new VBox(20);
-    vbox.setStyle("-fx-padding: 30; -fx-alignment: center;");
 
-    // Si aucune machine, avertir
-    if (atelier.getEquipements().stream().noneMatch(eq -> eq instanceof Machine)) {
-        vbox.getChildren().add(new Label("Aucune machine créée. Créez des machines avant de créer un poste."));
-        root.setCenter(vbox);
-        return;
-    }
+    // Ajout d'un poste
+    private void afficherPoste() {
+        VBox vbox = new VBox(20);
+        vbox.setStyle("-fx-padding: 30; -fx-alignment: center;");
 
-    // Sélection multiple des machines
-    Label label = new Label("Sélectionnez les machines pour créer un poste :");
-    ListView<Machine> machineListView = new ListView<>();
-    for (Equipement eq : atelier.getEquipements()) {
-        if (eq instanceof Machine) {
-            machineListView.getItems().add((Machine) eq);
-        }
-    }
-    machineListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-    machineListView.setCellFactory(lv -> new ListCell<>() {
-        @Override
-        protected void updateItem(Machine m, boolean empty) {
-            super.updateItem(m, empty);
-            setText(empty || m == null ? "" : m.getDmachine());
-        }
-    });
-
-    TextField posteDescField = new TextField();
-    posteDescField.setPromptText("Description du poste");
-
-    Button creerBtn = new Button("Créer le poste");
-    Label message = new Label();
-    message.setStyle("-fx-text-fill: red;");
-
-    creerBtn.setOnAction(e -> {
-        var selectedMachines = machineListView.getSelectionModel().getSelectedItems();
-        String desc = posteDescField.getText().isBlank() ? "Poste sans nom" : posteDescField.getText();
-        if (selectedMachines == null || selectedMachines.isEmpty()) {
-            message.setText("Sélectionnez au moins une machine.");
+        // Si aucune machine, avertir
+        if (atelier.getEquipements().stream().noneMatch(eq -> eq instanceof Machine)) {
+            vbox.getChildren().add(new Label("Aucune machine créée. Créez des machines avant de créer un poste."));
+            root.setCenter(vbox);
             return;
         }
-        // Crée le poste avec refposte auto-incrémenté
-        ArrayList<Machine> machinesForPoste = new ArrayList<>(selectedMachines);
-        Poste nouveauPoste = new Poste(
-        atelier.getPostes().size() + 1, desc, machinesForPoste, atelier.getPostes().size() + 1000);
-        atelier.getPostes().add(nouveauPoste);
-        sauvegarderAtelier(atelier, nomFichier);
-        message.setText("Poste créé !");
-        afficherPoste(); // refresh la page pour voir le nouveau poste
-    });
 
-    // Affiche les postes déjà créés
-    VBox postesBox = new VBox(10);
-    postesBox.getChildren().add(new Label("Postes déjà créés :"));
-    for (Poste p : atelier.getPostes()) {
-        String machinesStr = String.join(", ",
-            p.getMachines().stream().map(Machine::getDmachine).toArray(String[]::new));
-        postesBox.getChildren().add(new Label("• " + p.getDposte() + " : " + machinesStr));
+        // Sélection multiple des machines
+        Label label = new Label("Sélectionnez les machines pour créer un poste :");
+        ListView<Machine> machineListView = new ListView<>();
+        for (Equipement eq : atelier.getEquipements()) {
+            if (eq instanceof Machine) {
+                machineListView.getItems().add((Machine) eq);
+            }
+        }
+        machineListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        machineListView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Machine m, boolean empty) {
+                super.updateItem(m, empty);
+                setText(empty || m == null ? "" : m.getDmachine());
+            }
+        });
+
+        TextField posteDescField = new TextField();
+        posteDescField.setPromptText("Description du poste");
+
+        Button creerBtn = new Button("Créer le poste");
+        Label message = new Label();
+        message.setStyle("-fx-text-fill: red;");
+
+        creerBtn.setOnAction(e -> {
+            var selectedMachines = machineListView.getSelectionModel().getSelectedItems();
+            String desc = posteDescField.getText().isBlank() ? "Poste sans nom" : posteDescField.getText();
+            if (selectedMachines == null || selectedMachines.isEmpty()) {
+                message.setText("Sélectionnez au moins une machine.");
+                return;
+            }
+            // Crée le poste avec refposte auto-incrémenté
+            ArrayList<Machine> machinesForPoste = new ArrayList<>(selectedMachines);
+            Poste nouveauPoste = new Poste(
+                    atelier.getPostes().size() + 1, desc, machinesForPoste, atelier.getPostes().size() + 1000);
+            atelier.getPostes().add(nouveauPoste);
+            sauvegarderAtelier(atelier, nomFichier);
+            System.out.println("[AJOUT] Poste ajouté. Total: " + atelier.getPostes().size());
+            message.setText("Poste créé !");
+            afficherPoste();
+        });
+
+        // Affiche les postes déjà créés
+        VBox postesBox = new VBox(10);
+        postesBox.getChildren().add(new Label("Postes déjà créés :"));
+        for (Poste p : atelier.getPostes()) {
+            String machinesStr = String.join(", ",
+                    p.getMachines().stream().map(Machine::getDmachine).toArray(String[]::new));
+            postesBox.getChildren().add(new Label("• " + p.getDposte() + " : " + machinesStr));
+        }
+
+        vbox.getChildren().addAll(label, machineListView, posteDescField, creerBtn, message, new Separator(), postesBox);
+        root.setCenter(vbox);
     }
-
-    vbox.getChildren().addAll(label, machineListView, posteDescField, creerBtn, message, new Separator(), postesBox);
-    root.setCenter(vbox);
-}
 
     public static void main(String[] args) {
         launch(args);
