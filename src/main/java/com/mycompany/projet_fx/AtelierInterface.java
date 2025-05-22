@@ -26,14 +26,22 @@ public class AtelierInterface extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Interface de Gestion d'Atelier");
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Bienvenue !");
+        dialog.setHeaderText("Bienvenue dans la gestion de l'atelier");
+        dialog.setContentText("Veuillez entrer votre nom :");
+        
+        Optional<String> result = dialog.showAndWait();
+        String nomUtilisateur = result.orElse("Utilisateur");
+        
+        primaryStage.setTitle("Atelier de :"+nomUtilisateur);
         
         ArrayList<Equipement> equipements = new ArrayList<>();
         ArrayList<Operateur> operateurs = new ArrayList<>();
         ArrayList<Personne> personnes = new ArrayList<>();
         
 // Initialisation de base
-        atelier = new Atelier(1,"Atelier de ...",equipements,operateurs,personnes);
+        atelier = new Atelier(1,nomUtilisateur,equipements,operateurs,personnes);
 
         // Menu
         MenuBar menuBar = new MenuBar();
@@ -80,9 +88,9 @@ public class AtelierInterface extends Application {
     }
 
     private void afficherAccueil() {
-        VBox box = new VBox(10);
-        box.getChildren().add(new Label("Bienvenue dans le système de gestion d'atelier."));
-        box.getChildren().add(new Label("Utilisez le menu pour accéder aux différentes classes."));
+        VBox box = new VBox(20);
+        box.getChildren().add(new Label("Bienvenue dans l'atelier de "+atelier.getNom()+"."));
+        box.getChildren().add(new Label("Utilisez le menu pour accéder aux différentes fonctionnalités."));
         root.setCenter(box);
     }
 
@@ -331,6 +339,39 @@ public class AtelierInterface extends Application {
     }
     public static void main(String[] args) {
         launch(args);
+    }
+    private void afficherPlanAtelier(){
+        Pane planPane = new Pane();
+        planPane.setPrefSize(600,400);
+        
+        for (Equipement eq:atelier.getEquipements()){
+            if(eq instanceof Machine){
+                Machine m = (Machine) eq;
+                double x = m.getAbscisse();
+                double y = m.getOrdonnee();
+                
+                Button machineBtn = new Button (m.getRefmachine()+";");
+                machineBtn.setLayoutX(x);
+                machineBtn.setLayoutY(y);
+                machineBtn.setStyle("-fx-background-radius: 50%; -fx-padding: 10;");
+                machineBtn.setOnAction(e -> afficherFicheMachine(m));
+                planPane.getChildren().add(machineBtn);
+            }
+        }
+        root.setCenter(planPane);
+    }
+    private void afficherFicheMachine(Machine m){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Détails de la machine");
+        alert.setHeaderText("Machine "+m.getRefmachine());
+        alert.setContentText(
+                "Type: "+m.getType()+"\n"
+                +"Description: "+m.getDmachine()+"\n"
+                +"Référence: "+m.getRefEquipement()+"\n"
+                +"Coût: "+m.getC()+"\n"
+                +"Temps de préparation: "+m.getT()+"\n"
+                +"Etat: "+m.getEtat());
+        alert.showAndWait();
     }
 }
     
