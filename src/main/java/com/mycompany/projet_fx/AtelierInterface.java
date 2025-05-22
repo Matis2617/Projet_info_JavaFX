@@ -13,12 +13,13 @@ import java.io.*;
 
 public class AtelierInterface extends Application {
 
-    private BorderPane root;
-    private Atelier atelier;
-    private String nomFichier;
-    private ArrayList<Poste> postes = new ArrayList<>();private Color[] couleursPostes = {
+private BorderPane root;
+private Atelier atelier;
+private String nomFichier;
+
+private Color[] couleursPostes = {
     Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
-    Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRA
+    Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
 };
 
 // Sauvegarde l’atelier dans un fichier
@@ -71,7 +72,7 @@ private Atelier chargerAtelier(String nomFichier) {
         ArrayList<Equipement> equipements = new ArrayList<>();
         ArrayList<Operateur> operateurs = new ArrayList<>();
         ArrayList<Personne> personnes = new ArrayList<>();
-        atelier = new Atelier(1, prenom, equipements, operateurs, personnes);
+        atelier = new Atelier(1, nomUtilisateur, equipements, operateurs, personnes);
         } else {
         atelier = atelierCharge;
         }
@@ -124,8 +125,8 @@ private Atelier chargerAtelier(String nomFichier) {
         root.setCenter(accueil);
     }
     private Color getColorForMachine(Machine m) {
-    for (int i = 0; i < postes.size(); i++) {
-        if (postes.get(i).getMachines().contains(m)) {
+    for (int i = 0; i < atelier.getPostes().size(); i++) {
+        if (atelier.getPostes().get(i).getMachines().contains(m)) {
             return couleursPostes[i % couleursPostes.length];
         }
     }
@@ -323,8 +324,10 @@ private void afficherPoste() {
         }
         // Crée le poste avec refposte auto-incrémenté
         ArrayList<Machine> machinesForPoste = new ArrayList<>(selectedMachines);
-        Poste nouveauPoste = new Poste(postes.size() + 1, desc, machinesForPoste, postes.size() + 1000); // id_equipement arbitraire
-        postes.add(nouveauPoste);
+        Poste nouveauPoste = new Poste(
+    atelier.getPostes().size() + 1, desc, machinesForPoste, atelier.getPostes().size() + 1000);
+atelier.getPostes().add(nouveauPoste);
+sauvegarderAtelier(atelier, nomFichier);
         message.setText("Poste créé !");
         afficherPoste(); // refresh la page pour voir le nouveau poste
     });
@@ -332,7 +335,7 @@ private void afficherPoste() {
     // Affiche les postes déjà créés
     VBox postesBox = new VBox(10);
     postesBox.getChildren().add(new Label("Postes déjà créés :"));
-    for (Poste p : postes) {
+    for (Poste p : atelier.getPostes()) {
         String machinesStr = String.join(", ",
             p.getMachines().stream().map(Machine::getDmachine).toArray(String[]::new));
         postesBox.getChildren().add(new Label("• " + p.getDposte() + " : " + machinesStr));
