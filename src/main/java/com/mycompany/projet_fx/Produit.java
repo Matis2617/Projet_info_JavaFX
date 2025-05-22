@@ -37,6 +37,9 @@ public class Produit implements Serializable{
     public void affiche(){
     System.out.print("codeproduit ="+codeproduit);
     System.out.print("idproduit ="+idproduit);
-}
+    }
+    @Override
+    public String toString(){
+        return id;
     
 }
