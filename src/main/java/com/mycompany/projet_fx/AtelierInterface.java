@@ -14,6 +14,8 @@ public class AtelierInterface extends Application {
 
     private BorderPane root;
     private Atelier atelier;
+    private ArrayList<Poste> postes = new ArrayList<>();
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -54,7 +56,7 @@ public class AtelierInterface extends Application {
         accueilItem.setOnAction(e -> afficherAccueil());
         machineItem.setOnAction(e -> afficherFormulaireAjoutMachine()); // Ouvre directement le formulaire
         personnesItem.setOnAction(e -> afficherPlaceholder("Module Personnes à venir..."));
-        posteItem.setOnAction(e -> afficherPlaceholder("Module Poste à venir..."));
+        posteItem.setOnAction(e -> afficherPoste());
         produitItem.setOnAction(e -> afficherPlaceholder("Module Produit à venir..."));
         stockBrutItem.setOnAction(e -> afficherPlaceholder("Module Stock Brut à venir..."));
 
@@ -224,6 +226,69 @@ public class AtelierInterface extends Application {
         box.getChildren().add(new Label(texte));
         root.setCenter(box);
     }
+private void afficherPoste() {
+    VBox vbox = new VBox(20);
+    vbox.setStyle("-fx-padding: 30; -fx-alignment: center;");
+
+    // Si aucune machine, avertir
+    if (atelier.getEquipements().stream().noneMatch(eq -> eq instanceof Machine)) {
+        vbox.getChildren().add(new Label("Aucune machine créée. Créez des machines avant de créer un poste."));
+        root.setCenter(vbox);
+        return;
+    }
+
+    // Sélection multiple des machines
+    Label label = new Label("Sélectionnez les machines pour créer un poste :");
+    ListView<Machine> machineListView = new ListView<>();
+    for (Equipement eq : atelier.getEquipements()) {
+        if (eq instanceof Machine) {
+            machineListView.getItems().add((Machine) eq);
+        }
+    }
+    machineListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+    machineListView.setCellFactory(lv -> new ListCell<>() {
+        @Override
+        protected void updateItem(Machine m, boolean empty) {
+            super.updateItem(m, empty);
+            setText(empty || m == null ? "" : m.getDmachine());
+        }
+    });
+
+    TextField posteDescField = new TextField();
+    posteDescField.setPromptText("Description du poste");
+
+    Button creerBtn = new Button("Créer le poste");
+    Label message = new Label();
+    message.setStyle("-fx-text-fill: red;");
+
+    creerBtn.setOnAction(e -> {
+        var selectedMachines = machineListView.getSelectionModel().getSelectedItems();
+        String desc = posteDescField.getText().isBlank() ? "Poste sans nom" : posteDescField.getText();
+        if (selectedMachines == null || selectedMachines.isEmpty()) {
+            message.setText("Sélectionnez au moins une machine.");
+            return;
+        }
+        // Crée le poste avec refposte auto-incrémenté
+        ArrayList<Machine> machinesForPoste = new ArrayList<>(selectedMachines);
+        Poste nouveauPoste = new Poste(postes.size() + 1, desc, machinesForPoste, postes.size() + 1000); // id_equipement arbitraire
+        postes.add(nouveauPoste);
+        message.setText("Poste créé !");
+        afficherPoste(); // refresh la page pour voir le nouveau poste
+    });
+
+    // Affiche les postes déjà créés
+    VBox postesBox = new VBox(10);
+    postesBox.getChildren().add(new Label("Postes déjà créés :"));
+    for (Poste p : postes) {
+        String machinesStr = String.join(", ",
+            p.getMachines().stream().map(Machine::getDmachine).toArray(String[]::new));
+        postesBox.getChildren().add(new Label("• " + p.getDposte() + " : " + machinesStr));
+    }
+
+    vbox.getChildren().addAll(label, machineListView, posteDescField, creerBtn, message, new Separator(), postesBox);
+    root.setCenter(vbox);
+}
 
     public static void main(String[] args) {
         launch(args);
