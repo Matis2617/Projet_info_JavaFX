@@ -4,12 +4,7 @@
  */
 package com.mycompany.projet_fx;
 
-import java.io.Serializable;
-import java.io.Serializable;
-
-
-
-public class Fiabilite implements Serializable{
+public class Fiabilite {
     private String nomMachine;
     private int totalTempsDeMarche; // en minutes
     private int totalTempsDePanne;  // en minutes
@@ -64,6 +59,6 @@ public class Fiabilite implements Serializable{
 
     @Override
     public String toString() {
-        return String.format("Machine : %s | Fiabilité : %.2f%%", nomMachine, calculerFiabilite() * 100);
+        return "Fiabilite{" + "nomMachine=" + nomMachine + ", totalTempsDeMarche=" + totalTempsDeMarche + ", totalTempsDePanne=" + totalTempsDePanne + '}';
     }
 }
