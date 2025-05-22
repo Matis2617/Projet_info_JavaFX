@@ -4,93 +4,52 @@
  */
 package com.mycompany.projet_fx;
 
-import java.io.*;
-import java.time.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Random;
 
 public class FiabiliteUtils {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
-    private static final DateTimeFormatter HEURE_FORMAT = DateTimeFormatter.ofPattern("HHmm");
+    private static final DateTimeFormatter HEURE_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
-    // Structure d’un événement dans le fichier
-    private static class Evenement {
-        LocalDateTime dateTime;
-        String type;
-
-        public Evenement(LocalDate date, LocalTime heure, String type) {
-            this.dateTime = LocalDateTime.of(date, heure);
-            this.type = type;
+    public static void ecrireEtatMachines(String cheminFichier, List<Fiabilite> machines) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(cheminFichier))) {
+            for (Fiabilite machine : machines) {
+                String ligne = genererEtatMachine(machine);
+                bw.write(ligne);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur d'écriture : " + e.getMessage());
         }
     }
 
-    public static List<Fiabilite> analyserFichier(String cheminFichier) {
-        Map<String, List<Evenement>> mapEvenements = new HashMap<>();
-        List<Fiabilite> listeFiabilites = new ArrayList<>();
+    private static String genererEtatMachine(Fiabilite machine) {
+        Random random = new Random();
+        LocalDate date = LocalDate.now(); // Date actuelle pour l'exemple
+        LocalTime heure = LocalTime.of(random.nextInt(14) + 6, random.nextInt(60)); // Heure entre 06:00 et 20:00
+        String evenement = random.nextBoolean() ? "A" : "D"; // A pour Arrêt, D pour Démarrage
+        String operateur = "OP" + (random.nextInt(300) + 1); // Opérateur aléatoire
+        String cause = evenement.equals("A") ? getCauseAleatoire() : "ok"; // Cause aléatoire pour les arrêts
 
-        try (BufferedReader br = new BufferedReader(new FileReader(cheminFichier))) {
-            String ligne;
+        return String.format("%s;%s;%s;%s;%s;%s",
+                date.format(DATE_FORMAT),
+                heure.format(HEURE_FORMAT),
+                machine.getNomMachine(),
+                evenement,
+                operateur,
+                cause);
+    }
 
-            while ((ligne = br.readLine()) != null) {
-                if (ligne.trim().isEmpty() || ligne.contains("End Of File")) continue;
-
-                String[] parts = ligne.trim().split("\\s+");
-                if (parts.length < 4) continue;
-
-                LocalDate date = LocalDate.parse(parts[0], DATE_FORMAT);
-                LocalTime heure = LocalTime.parse(parts[1].replace(":", ""), HEURE_FORMAT);
-                String machine = parts[2];
-                String type = parts[3]; // A ou D
-
-                mapEvenements
-                        .computeIfAbsent(machine, k -> new ArrayList<>())
-                        .add(new Evenement(date, heure, type));
-            }
-        } catch (IOException e) {
-            System.err.println("Erreur de lecture : " + e.getMessage());
-            return listeFiabilites;
-        }
-
-        // Traitement par machine
-        for (String nomMachine : mapEvenements.keySet()) {
-            List<Evenement> evenements = mapEvenements.get(nomMachine);
-            evenements.sort(Comparator.comparing(evt -> evt.dateTime));
-
-            Fiabilite fiabilite = new Fiabilite(nomMachine);
-
-            LocalDateTime aDebut = null;
-            LocalDateTime aFin = null;
-
-            for (Evenement evt : evenements) {
-                if (evt.type.equals("A")) {
-                    aDebut = evt.dateTime;
-                } else if (evt.type.equals("D") && aDebut != null) {
-                    aFin = evt.dateTime;
-
-                    long minutesPanne = Duration.between(aDebut, aFin).toMinutes();
-                    fiabilite.ajouterTempsDePanne((int) minutesPanne);
-                    aDebut = null;
-                }
-            }
-
-            // Calcul du temps total (observation) = de 06:00 à 20:00 par jour d'activité
-            Set<LocalDate> jours = new HashSet<>();
-            for (Evenement evt : evenements) {
-                jours.add(evt.dateTime.toLocalDate());
-            }
-
-            int minutesParJour = 14 * 60;
-            int totalTempsObservation = jours.size() * minutesParJour;
-
-            int tempsDeMarche = totalTempsObservation - fiabilite.getTotalTempsDePanne();
-            fiabilite.setTotalTempsDeMarche(tempsDeMarche);
-
-            listeFiabilites.add(fiabilite);
-        }
-
-        // Tri décroissant de fiabilité
-        listeFiabilites.sort(Comparator.comparingDouble(Fiabilite::calculerFiabilite).reversed());
-        return listeFiabilites;
+    private static String getCauseAleatoire() {
+        String[] causes = {"panne", "accident", "maintenance"};
+        Random random = new Random();
+        return causes[random.nextInt(causes.length)];
     }
 }

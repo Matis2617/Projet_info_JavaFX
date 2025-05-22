@@ -4,6 +4,8 @@
  */
 package com.mycompany.projet_fx;
 
+
+
 public class Fiabilite {
     private String nomMachine;
     private int totalTempsDeMarche; // en minutes
