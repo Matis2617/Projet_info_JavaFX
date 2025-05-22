@@ -1,45 +1,27 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projet_fx;
 
 import java.io.Serializable;
 
-/**
- *
- * @author Matis
- */
-public class Produit implements Serializable{
-    private int codeproduit;
-    private String idproduit;
+public class Produit implements Serializable {
+    private int code;
+    private String id;
 
-    public int getCodeproduit() {
-        return codeproduit;
+    public Produit(int code, String id) {
+        this.code = code;
+        this.id = id;
     }
 
-    public void setCodeproduit(int codeproduit) {
-        this.codeproduit = codeproduit;
+    public int getCode() {
+        return code;
     }
 
-    public String getIdproduit() {
-        return idproduit;
-    }
-
-    public void setIdproduit(String idproduit) {
-        this.idproduit = idproduit;
-    }
-
-    public Produit(int codeproduit, String idproduit) {
-        this.codeproduit = codeproduit;
-        this.idproduit = idproduit;
-    }
-    public void affiche(){
-    System.out.print("codeproduit ="+codeproduit);
-    System.out.print("idproduit ="+idproduit);
-    }
-    @Override
-    public String toString(){
+    public String getId() {
         return id;
-    
+    }
+
+    // (optionnel) pour une belle liste :
+    @Override
+    public String toString() {
+        return id + " (Code: " + code + ")";
+    }
 }
