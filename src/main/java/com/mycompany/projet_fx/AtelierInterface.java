@@ -79,7 +79,7 @@ private Atelier chargerAtelier(String nomFichier) {
         
         // Menu minimaliste
         MenuBar menuBar = new MenuBar();
-        Menu menu = new Menu("Navigation");
+        Menu menu = new Menu("Menu");
         MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem personnesItem = new MenuItem("Personnes");
@@ -96,7 +96,7 @@ private Atelier chargerAtelier(String nomFichier) {
         // Affichage de l'accueil avec le plan au centre
         afficherAccueil();
 
-        // Menu navigation
+        // Menu 
         accueilItem.setOnAction(e -> afficherAccueil());
         machineItem.setOnAction(e -> afficherFormulaireAjoutMachine()); // Ouvre directement le formulaire
         personnesItem.setOnAction(e -> afficherPlaceholder("Module Personnes à venir..."));
