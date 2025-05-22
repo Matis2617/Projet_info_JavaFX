@@ -567,22 +567,53 @@ public class AtelierInterface extends Application {
         root.setCenter(box);
     }
 
-    private void afficherListeProduits() {
-        VBox box = new VBox(10);
-        box.setStyle("-fx-padding: 20; -fx-alignment: center;");
+   private void afficherListeProduits() {
+    VBox box = new VBox(15);
+    box.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
-        ListView<Produit> produitsListView = new ListView<>(listeProduits);
+    Label titre = new Label("Liste des produits finis :");
+    ListView<Produit> produitsListView = new ListView<>(listeProduits);
+    produitsListView.setPrefHeight(150);
 
-        Button retourBtn = new Button("Retour");
-        retourBtn.setOnAction(e -> afficherAccueil());
+    Label detailsProduit = new Label();
+    detailsProduit.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
 
-        box.getChildren().addAll(
-                new Label("Liste des produits :"),
-                produitsListView,
-                retourBtn
-        );
-        root.setCenter(box);
-    }
+    // Interaction : Affiche infos produit sélectionné
+    produitsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+        if (newVal != null) {
+            detailsProduit.setText(
+                "Identifiant : " + newVal.getId() + "\n" +
+                "Code produit : " + newVal.getCode()
+            );
+        } else {
+            detailsProduit.setText("");
+        }
+    });
+
+    // Optionnel : bouton pour supprimer le produit sélectionné
+    Button supprimerBtn = new Button("Supprimer");
+    supprimerBtn.setOnAction(e -> {
+        Produit prod = produitsListView.getSelectionModel().getSelectedItem();
+        if (prod != null) {
+            listeProduits.remove(prod);
+            detailsProduit.setText("");
+        }
+    });
+
+    Button retourBtn = new Button("Retour");
+    retourBtn.setOnAction(e -> afficherAccueil());
+
+    HBox actions = new HBox(10, supprimerBtn, retourBtn);
+    actions.setStyle("-fx-alignment: center;");
+
+    box.getChildren().addAll(
+        titre,
+        produitsListView,
+        detailsProduit,
+        actions
+    );
+    root.setCenter(box);
+}
     // ------- FIN MODULE PRODUIT -------
 
     public static void main(String[] args) {
