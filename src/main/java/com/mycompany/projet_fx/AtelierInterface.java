@@ -15,10 +15,10 @@ public class AtelierInterface extends Application {
 
     private BorderPane root;
     private Atelier atelier;
+    private String nomFichier;
     private ArrayList<Poste> postes = new ArrayList<>();private Color[] couleursPostes = {
     Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
-    Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
-    // Ajoute d'autres couleurs si tu as >10 postes
+    Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRA
 };
 
 // Sauvegarde l’atelier dans un fichier
@@ -48,7 +48,7 @@ private Atelier chargerAtelier(String nomFichier) {
         dialog.setContentText("Veuillez entrer votre nom :");
         Optional<String> result = dialog.showAndWait();
         String nomUtilisateur = result.orElse("Utilisateur");
-         String nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
+        nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
 
         Atelier atelierCharge = null;
         
@@ -75,11 +75,7 @@ private Atelier chargerAtelier(String nomFichier) {
         } else {
         atelier = atelierCharge;
         }
-
-        ArrayList<Equipement> equipements = new ArrayList<>();
-        ArrayList<Operateur> operateurs = new ArrayList<>();
-        ArrayList<Personne> personnes = new ArrayList<>();
-
+        
         // Menu minimaliste
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Navigation");
@@ -108,7 +104,7 @@ private Atelier chargerAtelier(String nomFichier) {
         stockBrutItem.setOnAction(e -> afficherPlaceholder("Module Stock Brut à venir..."));
 
         Scene scene = new Scene(root, 900, 700);
-        primaryStage.setTitle("Atelier de " + nomUtilisateur);
+        primaryStage.setTitle("Atelier de " + atelier.getNom());
         primaryStage.setScene(scene);
         primaryStage.show();
     }
