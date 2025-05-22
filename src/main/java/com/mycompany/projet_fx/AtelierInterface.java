@@ -7,6 +7,8 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Optional;
+import javafx.scene.shape.Circle;
+import javafx.scene.paint.Color;
 
 public class AtelierInterface extends Application {
 
