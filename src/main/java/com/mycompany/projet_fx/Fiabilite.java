@@ -10,13 +10,12 @@ public class Fiabilite {
     private int totalTempsDePanne;  // en minutes
 
     // Constructeur
-    public Fiabilite(String nomMachine) {
+    public Fiabilite(String nomMachine, int totalTempsDeMarche, int totalTempsDePanne) {
         this.nomMachine = nomMachine;
-        this.totalTempsDeMarche = 0;
-        this.totalTempsDePanne = 0;
+        this.totalTempsDeMarche = totalTempsDeMarche;
+        this.totalTempsDePanne = totalTempsDePanne;
     }
 
-    // Getters et Setters
     public String getNomMachine() {
         return nomMachine;
     }
