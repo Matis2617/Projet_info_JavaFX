@@ -9,7 +9,7 @@ package com.mycompany.projet_fx;
  * @author Matis
  */
 import java.util.ArrayList;
-public class Poste extends Equipement{
+public class Poste extends Equipement implements Serializable{
     private int refposte;
     private String dposte;
     ArrayList<Machine> machines;
