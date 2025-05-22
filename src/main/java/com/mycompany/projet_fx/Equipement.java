@@ -8,7 +8,7 @@ package com.mycompany.projet_fx;
  *
  * @author Matis
  */
-public class Equipement {
+public class Equipement implements Serializable {
     private int id_equipement;
 
     public int getId_equipement() {
