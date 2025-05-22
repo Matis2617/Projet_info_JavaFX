@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.io.*;
+import javafx.geometry.Insets;
 
 public class AtelierInterface extends Application {
 
