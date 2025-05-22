@@ -14,7 +14,11 @@ public class AtelierInterface extends Application {
 
     private BorderPane root;
     private Atelier atelier;
-    private ArrayList<Poste> postes = new ArrayList<>();
+    private ArrayList<Poste> postes = new ArrayList<>();private Color[] couleursPostes = {
+    Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
+    Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
+    // Ajoute d'autres couleurs si tu as >10 postes
+};
 
 
     @Override
@@ -80,7 +84,14 @@ public class AtelierInterface extends Application {
 
         root.setCenter(accueil);
     }
-
+    private Color getColorForMachine(Machine m) {
+    for (int i = 0; i < postes.size(); i++) {
+        if (postes.get(i).getMachines().contains(m)) {
+            return couleursPostes[i % couleursPostes.length];
+        }
+    }
+    return Color.BLACK; // machine sans poste
+    }
     // Génération du plan de l’atelier (centré et sans bouton d'ajout)
     private Pane creerPlanAtelier() {
         Pane planPane = new Pane();
@@ -99,18 +110,19 @@ public class AtelierInterface extends Application {
         // Dessine les machines
         for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) {
-                Machine m = (Machine) eq;
-                double x = m.getAbscisse() * unite;
-                double y = m.getOrdonnee() * unite;
-                Rectangle carre = new Rectangle(x, y, unite, unite);
-                carre.setFill(Color.BLACK);
-                carre.setStroke(Color.DARKBLUE);
-                carre.setArcWidth(8); carre.setArcHeight(8);
+        Machine m = (Machine) eq;
+        double x = m.getAbscisse() * unite;
+        double y = m.getOrdonnee() * unite;
 
-                // Détails au clic
-                carre.setOnMouseClicked(ev -> afficherFicheMachine(m));
+        Rectangle carre = new Rectangle(x, y, unite, unite);
+        carre.setFill(getColorForMachine(m));
+        carre.setStroke(Color.DARKBLUE);
+        carre.setArcWidth(8); carre.setArcHeight(8);
 
-                planPane.getChildren().add(carre);
+        // Détails au clic
+        carre.setOnMouseClicked(ev -> afficherFicheMachine(m));
+
+        planPane.getChildren().add(carre);
             }
         }
         return planPane;
