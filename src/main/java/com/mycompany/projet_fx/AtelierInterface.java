@@ -42,19 +42,19 @@ private Atelier chargerAtelier(String nomFichier) {
 }
     @Override
     public void start(Stage primaryStage) {
-        // Saisie du nom de l'utilisateur
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Bienvenue !");
-        dialog.setHeaderText("Bienvenue dans la gestion de l'atelier");
-        dialog.setContentText("Veuillez entrer votre nom :");
-        Optional<String> result = dialog.showAndWait();
-        String nomUtilisateur = result.orElse("Utilisateur");
-        nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
+    // Saisie du nom de l'utilisateur
+    TextInputDialog dialog = new TextInputDialog();
+    dialog.setTitle("Bienvenue !");
+    dialog.setHeaderText("Bienvenue dans la gestion de l'atelier");
+    dialog.setContentText("Veuillez entrer votre nom :");
+    Optional<String> result = dialog.showAndWait();
+    String nomUtilisateur = result.orElse("Utilisateur");
+    nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
 
-        Atelier atelierCharge = null;
-        
-        File f = new File(nomFichier);
-            if (f.exists()) {
+    Atelier atelierCharge = null;
+
+    File f = new File(nomFichier);
+    if (f.exists()) {
         // Proposer de charger ou de créer un nouveau
         Alert choix = new Alert(Alert.AlertType.CONFIRMATION);
         choix.setTitle("Projet existant trouvé");
@@ -64,51 +64,20 @@ private Atelier chargerAtelier(String nomFichier) {
         ButtonType btnNouveau = new ButtonType("Nouveau projet");
         choix.getButtonTypes().setAll(btnAncien, btnNouveau);
         Optional<ButtonType> option = choix.showAndWait();
-            if (option.isPresent() && option.get() == btnAncien) {
+        if (option.isPresent() && option.get() == btnAncien) {
             atelierCharge = chargerAtelier(nomFichier);
-            }
         }
-            if (atelierCharge == null) {
+    }
+    // CORRECTION : Ne jamais recréer un Atelier après le else !!!
+    if (atelierCharge == null) {
         ArrayList<Equipement> equipements = new ArrayList<>();
         ArrayList<Operateur> operateurs = new ArrayList<>();
         ArrayList<Personne> personnes = new ArrayList<>();
         atelier = new Atelier(1, nomUtilisateur, equipements, operateurs, personnes);
-        } else {
+    } else {
         atelier = atelierCharge;
-        }
-        
-        // Menu minimaliste
-        MenuBar menuBar = new MenuBar();
-        Menu menu = new Menu("Menu");
-        MenuItem accueilItem = new MenuItem("Accueil");
-        MenuItem machineItem = new MenuItem("Machines");
-        MenuItem personnesItem = new MenuItem("Personnes");
-        MenuItem posteItem = new MenuItem("Poste");
-        MenuItem produitItem = new MenuItem("Produit");
-        MenuItem stockBrutItem = new MenuItem("Stock Brut");
-        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, produitItem, stockBrutItem);
-        menuBar.getMenus().add(menu);
-
-        // Layout principal
-        root = new BorderPane();
-        root.setTop(menuBar);
-
-        // Affichage de l'accueil avec le plan au centre
-        afficherAccueil();
-
-        // Menu 
-        accueilItem.setOnAction(e -> afficherAccueil());
-        machineItem.setOnAction(e -> afficherFormulaireAjoutMachine()); // Ouvre directement le formulaire
-        personnesItem.setOnAction(e -> afficherPlaceholder("Module Personnes à venir..."));
-        posteItem.setOnAction(e -> afficherPoste());
-        produitItem.setOnAction(e -> afficherPlaceholder("Module Produit à venir..."));
-        stockBrutItem.setOnAction(e -> afficherPlaceholder("Module Stock Brut à venir..."));
-
-        Scene scene = new Scene(root, 900, 700);
-        primaryStage.setTitle("Atelier de " + atelier.getNom());
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
+
 
     // ACCUEIL : juste le plan au centre (centré visuellement)
     private void afficherAccueil() {
@@ -325,9 +294,9 @@ private void afficherPoste() {
         // Crée le poste avec refposte auto-incrémenté
         ArrayList<Machine> machinesForPoste = new ArrayList<>(selectedMachines);
         Poste nouveauPoste = new Poste(
-    atelier.getPostes().size() + 1, desc, machinesForPoste, atelier.getPostes().size() + 1000);
-atelier.getPostes().add(nouveauPoste);
-sauvegarderAtelier(atelier, nomFichier);
+        atelier.getPostes().size() + 1, desc, machinesForPoste, atelier.getPostes().size() + 1000);
+        atelier.getPostes().add(nouveauPoste);
+        sauvegarderAtelier(atelier, nomFichier);
         message.setText("Poste créé !");
         afficherPoste(); // refresh la page pour voir le nouveau poste
     });
