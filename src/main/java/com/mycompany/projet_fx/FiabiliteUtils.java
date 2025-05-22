@@ -18,8 +18,8 @@ public class FiabiliteUtils {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
     private static final DateTimeFormatter HEURE_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
-    public static void ecrireEtatMachines(String cheminFichier, List<Fiabilite> machines) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(cheminFichier))) {
+    public static void ecrireEtatMachines(List<Fiabilite> machines) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("fiabilite.txt"))) {
             for (Fiabilite machine : machines) {
                 String ligne = genererEtatMachine(machine);
                 bw.write(ligne);
