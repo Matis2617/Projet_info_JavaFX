@@ -10,16 +10,7 @@ package com.mycompany.projet_fx;
  */
 public class Equipement {
     private int id_equipement;
-    private String refEquipement;
 
-    public String getRefEquipement() {
-        return refEquipement;
-    }
-
-    public void setRefEquipement(String refEquipement) {
-        this.refEquipement = refEquipement;
-    }
-    
     public int getId_equipement() {
         return id_equipement;
     }
@@ -33,6 +24,6 @@ public class Equipement {
     }
    
    public String affiche(){
-    return "identifiant = "+id_equipement+", référence = "+refEquipement;
+    return "identifiant = "+id_equipement+";
 }
 }
