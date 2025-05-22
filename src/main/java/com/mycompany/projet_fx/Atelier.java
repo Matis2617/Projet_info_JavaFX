@@ -9,7 +9,7 @@ package com.mycompany.projet_fx;
  * @author Matis
  */
 import java.util.ArrayList;
-public class Atelier {
+public class Atelier implements Serializable {
     private int id;
     private String nom;
     ArrayList<Equipement> equipement;
