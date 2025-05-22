@@ -80,8 +80,6 @@ private Atelier chargerAtelier(String nomFichier) {
         ArrayList<Operateur> operateurs = new ArrayList<>();
         ArrayList<Personne> personnes = new ArrayList<>();
 
-        atelier = new Atelier(1, nomUtilisateur, equipements, operateurs, personnes);
-
         // Menu minimaliste
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Navigation");
