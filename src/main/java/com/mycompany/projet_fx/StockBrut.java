@@ -34,4 +34,3 @@ public class StockBrut implements Serializable{
    }
 
    }
-}
