@@ -9,6 +9,8 @@ package com.mycompany.projet_fx;
  * @author Matis
  */
 import java.util.ArrayList;
+import java.io.Serializable;
+
 public class Atelier implements Serializable {
     private int id;
     private String nom;
