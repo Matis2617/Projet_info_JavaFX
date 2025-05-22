@@ -24,6 +24,6 @@ public class Equipement {
     }
    
    public String affiche(){
-    return "identifiant = "+id_equipement+";
-}
+    return "identifiant = "+id_equipement;
+    }
 }

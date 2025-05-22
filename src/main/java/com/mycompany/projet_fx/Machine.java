@@ -10,29 +10,12 @@ package com.mycompany.projet_fx;
  */
 public class Machine extends Equipement{ 
     public enum ETAT{occupe,disponible} ;
-    private int refmachine;
     private String dmachine;
     private float abscisse;
     private float ordonnee;
     private float c;
     private float t;
     private ETAT etat;
-
-    public String getType() {
-        return Type;
-    }
-
-    public void setType(String Type) {
-        this.Type = Type;
-    }
-
-    public int getRefmachine() {
-        return refmachine;
-    }
-
-    public void setRefmachine(int refmachine) {
-        this.refmachine = refmachine;
-    }
 
     public String getDmachine() {
         return dmachine;
@@ -85,7 +68,6 @@ public class Machine extends Equipement{
     public Machine( int id_equipement, String dmachine, String Type, float abscisse, float ordonnee, float c, float t, ETAT etat) {
         super(id_equipement);
         this.dmachine = dmachine;
-        this.Type = Type;
         this.abscisse = abscisse;
         this.ordonnee = ordonnee;
         this.c = c;
@@ -94,6 +76,6 @@ public class Machine extends Equipement{
     }
     
     @Override public String affiche(){
-    return super.affiche()+" etat ="+etat+", dmachine = "+dmachine+", Type = "+Type+", abscisse = "+abscisse+", ordonnee = "+ordonnee+", cout = "+c+", temps = "+t;
+    return super.affiche()+" etat ="+etat+", dmachine = "+dmachine+", abscisse = "+abscisse+", ordonnee = "+ordonnee+", cout = "+c+", temps = "+t;
 }
 }
