@@ -28,8 +28,10 @@ public class StockBrut implements Serializable{
    }
 
    public void afficherStock(){
-       for (Produit produit : produits){
-           produit.affiche();
+      for (Produit produit : produits){
+        System.out.println(produit);
        }
+   }
+
    }
 }
