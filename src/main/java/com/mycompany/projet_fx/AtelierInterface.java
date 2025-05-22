@@ -1,6 +1,8 @@
 package com.mycompany.projet_fx;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -16,6 +18,7 @@ public class AtelierInterface extends Application {
     private BorderPane root;
     private Atelier atelier;
     private String nomFichier;
+    private ObservableList<Gamme> gammesList = FXCollections.observableArrayList();
 
     private final Color[] couleursPostes = {
             Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
@@ -75,7 +78,6 @@ public class AtelierInterface extends Application {
                 atelierCharge = chargerAtelier(nomFichier);
             }
         }
-        // Ne jamais recréer un Atelier si on en a chargé un
         if (atelierCharge == null) {
             ArrayList<Equipement> equipements = new ArrayList<>();
             ArrayList<Operateur> operateurs = new ArrayList<>();
@@ -94,7 +96,8 @@ public class AtelierInterface extends Application {
         MenuItem posteItem = new MenuItem("Poste");
         MenuItem produitItem = new MenuItem("Produit");
         MenuItem stockBrutItem = new MenuItem("Stock Brut");
-        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, produitItem, stockBrutItem);
+        MenuItem gammeItem = new MenuItem("Gamme"); // Ajout du module gamme
+        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, produitItem, stockBrutItem, gammeItem);
         menuBar.getMenus().add(menu);
 
         root = new BorderPane();
@@ -106,6 +109,7 @@ public class AtelierInterface extends Application {
         posteItem.setOnAction(e -> afficherPoste());
         produitItem.setOnAction(e -> afficherPlaceholder("Module Produit à venir..."));
         stockBrutItem.setOnAction(e -> afficherPlaceholder("Module Stock Brut à venir..."));
+        gammeItem.setOnAction(e -> afficherGamme());
 
         afficherAccueil();
 
@@ -356,6 +360,102 @@ public class AtelierInterface extends Application {
         vbox.getChildren().addAll(label, machineListView, posteDescField, creerBtn, message, new Separator(), postesBox);
         root.setCenter(vbox);
     }
+
+    // ------- MODULE GAMME (Ajout du code de ton camarade) -------
+    private void afficherGamme() {
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+
+        // Référence Gamme
+        Label refGammeLabel = new Label("Référence Gamme:");
+        TextField refGammeInput = new TextField();
+        refGammeInput.setPromptText("Référence Gamme");
+
+        // Operations
+        Label operationsLabel = new Label("Opérations:");
+        ListView<Operation> operationsListView = new ListView<>();
+
+        // Equipements
+        Label equipementsLabel = new Label("Équipements:");
+        ListView<Equipement> equipementsListView = new ListView<>();
+
+        // ListView des gammes
+        ListView<Gamme> gammesListView = new ListView<>(gammesList);
+
+        // Boutons
+        Button creerButton = new Button("Créer");
+        Button modifierButton = new Button("Modifier");
+        Button supprimerButton = new Button("Supprimer");
+        Button afficherButton = new Button("Afficher");
+        Button coutButton = new Button("Calculer Coût");
+        Button dureeButton = new Button("Calculer Durée");
+
+        // Ajoutez les composants au GridPane
+        grid.add(refGammeLabel, 0, 0);
+        grid.add(refGammeInput, 1, 0);
+        grid.add(operationsLabel, 0, 1);
+        grid.add(operationsListView, 1, 1);
+        grid.add(equipementsLabel, 0, 2);
+        grid.add(equipementsListView, 1, 2);
+        grid.add(creerButton, 0, 3);
+        grid.add(modifierButton, 1, 3);
+        grid.add(supprimerButton, 2, 3);
+        grid.add(afficherButton, 3, 3);
+        grid.add(coutButton, 0, 4);
+        grid.add(dureeButton, 1, 4);
+        grid.add(gammesListView, 1, 5);
+
+        // Actions des boutons
+        creerButton.setOnAction(e -> {
+            Gamme gamme = new Gamme(new ArrayList<>());
+            gamme.creerGamme();
+            gammesList.add(gamme);
+            refGammeInput.setText(gamme.getRefGamme());
+        });
+
+        supprimerButton.setOnAction(e -> {
+            Gamme selectedGamme = gammesListView.getSelectionModel().getSelectedItem();
+            if (selectedGamme != null) {
+                gammesList.remove(selectedGamme);
+            }
+        });
+
+        afficherButton.setOnAction(e -> {
+            Gamme selectedGamme = gammesListView.getSelectionModel().getSelectedItem();
+            if (selectedGamme != null) {
+                selectedGamme.afficheGamme();
+            }
+        });
+
+        coutButton.setOnAction(e -> {
+            Gamme selectedGamme = gammesListView.getSelectionModel().getSelectedItem();
+            if (selectedGamme != null) {
+                float cout = selectedGamme.coutGamme();
+                showAlert("Coût de la Gamme", "Le coût de la gamme est: " + cout);
+            }
+        });
+
+        dureeButton.setOnAction(e -> {
+            Gamme selectedGamme = gammesListView.getSelectionModel().getSelectedItem();
+            if (selectedGamme != null) {
+                float duree = selectedGamme.dureeGamme();
+                showAlert("Durée de la Gamme", "La durée de la gamme est: " + duree);
+            }
+        });
+
+        root.setCenter(grid);
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    // ------- FIN MODULE GAMME -------
 
     public static void main(String[] args) {
         launch(args);
