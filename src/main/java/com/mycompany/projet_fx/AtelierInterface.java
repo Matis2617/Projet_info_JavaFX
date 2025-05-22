@@ -77,6 +77,36 @@ private Atelier chargerAtelier(String nomFichier) {
     } else {
         atelier = atelierCharge;
     }
+        // MenuBar/navigation
+        MenuBar menuBar = new MenuBar();
+        Menu menu = new Menu("Navigation");
+        MenuItem accueilItem = new MenuItem("Accueil");
+        MenuItem machineItem = new MenuItem("Machines");
+        MenuItem personnesItem = new MenuItem("Personnes");
+        MenuItem posteItem = new MenuItem("Poste");
+        MenuItem produitItem = new MenuItem("Produit");
+        MenuItem stockBrutItem = new MenuItem("Stock Brut");
+        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, produitItem, stockBrutItem);
+        menuBar.getMenus().add(menu);
+
+        root = new BorderPane();
+        root.setTop(menuBar);
+
+        accueilItem.setOnAction(e -> afficherAccueil());
+        machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
+        personnesItem.setOnAction(e -> afficherPlaceholder("Module Personnes à venir..."));
+        posteItem.setOnAction(e -> afficherPoste());
+        produitItem.setOnAction(e -> afficherPlaceholder("Module Produit à venir..."));
+        stockBrutItem.setOnAction(e -> afficherPlaceholder("Module Stock Brut à venir..."));
+
+        afficherAccueil();
+
+        Scene scene = new Scene(root, 900, 700);
+        primaryStage.setTitle("Atelier de " + atelier.getNom());
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+    
 
 
     // ACCUEIL : juste le plan au centre (centré visuellement)
