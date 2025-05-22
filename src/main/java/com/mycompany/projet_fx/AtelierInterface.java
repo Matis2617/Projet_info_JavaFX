@@ -37,7 +37,7 @@ public class AtelierInterface extends Application {
         Optional<String> result = dialog.showAndWait();
         String nomUtilisateur = result.orElse("Utilisateur");
         
-        primaryStage.setTitle("Atelier de :"+nomUtilisateur);
+        primaryStage.setTitle("Atelier de "+nomUtilisateur);
         
         ArrayList<Equipement> equipements = new ArrayList<>();
         ArrayList<Operateur> operateurs = new ArrayList<>();
