@@ -373,5 +373,90 @@ public class AtelierInterface extends Application {
                 +"Etat: "+m.getEtat());
         alert.showAndWait();
     }
+    private void afficherFormulaireAjoutMachine() {
+    VBox box = new VBox(10);
+    TextField idField = new TextField();
+    idField.setPromptText("Identifiant");
+
+    TextField refField = new TextField();
+    refField.setPromptText("Référence");
+
+    TextField typeField = new TextField();
+    typeField.setPromptText("Type");
+
+    TextField descField = new TextField();
+    descField.setPromptText("Description");
+
+    TextField abscField = new TextField();
+    abscField.setPromptText("Abscisse (x)");
+
+    TextField ordField = new TextField();
+    ordField.setPromptText("Ordonnée (y)");
+
+    TextField coutField = new TextField();
+    coutField.setPromptText("Coût");
+
+    TextField tempsField = new TextField();
+    tempsField.setPromptText("Temps préparation");
+
+    ComboBox<Machine.ETAT> etatBox = new ComboBox<>();
+    etatBox.getItems().addAll(Machine.ETAT.values());
+    etatBox.setPromptText("État");
+
+    Label erreurLabel = new Label();
+    erreurLabel.setStyle("-fx-text-fill: red;");
+
+    Button ajouterBtn = new Button("Ajouter la machine");
+    ajouterBtn.setOnAction(e -> {
+        try {
+            int id = Integer.parseInt(idField.getText());
+            String ref = refField.getText();
+            String type = typeField.getText();
+            String desc = descField.getText();
+            float absc = Float.parseFloat(abscField.getText());
+            float ord = Float.parseFloat(ordField.getText());
+            float cout = Float.parseFloat(coutField.getText());
+            float temps = Float.parseFloat(tempsField.getText());
+            Machine.ETAT etat = etatBox.getValue();
+
+            // Vérification unicité
+            boolean existe = false;
+            for (Equipement eq : atelier.getEquipements()) {
+                if (eq instanceof Machine) {
+                    Machine m = (Machine) eq;
+                    if (m.getRefmachine() == id) {
+                        existe = true;
+                        erreurLabel.setText("Erreur : Identifiant déjà utilisé !");
+                        break;
+                    }
+                    if (m.getAbscisse() == absc && m.getOrdonnee() == ord) {
+                        existe = true;
+                        erreurLabel.setText("Erreur : Coordonnées déjà utilisées !");
+                        break;
+                    }
+                }
+            }
+            if (!existe) {
+                Machine m = new Machine(atelier.getEquipements().size() + 1, id, desc, type, absc, ord, cout, temps, etat);
+                m.setRefEquipement(ref);
+                atelier.getEquipements().add(m);
+                erreurLabel.setText("Machine ajoutée !");
+                afficherPlanAtelier(); // Pour rafraîchir la vue
+            }
+
+        } catch (Exception ex) {
+            erreurLabel.setText("Erreur : Données invalides.");
+        }
+    });
+
+    box.getChildren().addAll(
+            new Label("Ajouter une machine :"),
+            idField, refField, typeField, descField,
+            abscField, ordField, coutField, tempsField,
+            etatBox, ajouterBtn, erreurLabel
+    );
+    root.setCenter(box);
+}
+
 }
     
