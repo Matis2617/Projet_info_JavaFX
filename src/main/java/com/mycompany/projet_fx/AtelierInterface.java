@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class AtelierInterface extends Application {
 
@@ -58,9 +59,10 @@ public class AtelierInterface extends Application {
         MenuItem posteItem = new MenuItem("Poste");
         MenuItem produitItem = new MenuItem("Produit");
         MenuItem stockBrutItem = new MenuItem("Stock Brut");
+        MenuItem planAtelierItem =new MenuItem("Plan");
         
 
-        menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem, personnesItem, gammeItem, fiabiliteItem, posteItem, produitItem, stockBrutItem);
+        menu.getItems().addAll(accueilItem, atelierItem, equipementItem, machineItem, operateurItem, personnesItem, gammeItem, fiabiliteItem, posteItem, produitItem, stockBrutItem,planAtelierItem);
         menuBar.getMenus().add(menu);
 
         // Layout principal
@@ -79,6 +81,7 @@ public class AtelierInterface extends Application {
         posteItem.setOnAction(e -> afficherPoste());
         produitItem.setOnAction(e -> afficherProduit());
         stockBrutItem.setOnAction(e -> afficherStockBrut());
+        planAtelierItem.setOnAction(e -> afficherPlanAtelier());
 
         afficherAccueil();
 
