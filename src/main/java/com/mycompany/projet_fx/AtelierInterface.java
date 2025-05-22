@@ -9,18 +9,36 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.io.*;
 
 public class AtelierInterface extends Application {
 
     private BorderPane root;
     private Atelier atelier;
+    private String nomFichier;
     private ArrayList<Poste> postes = new ArrayList<>();private Color[] couleursPostes = {
     Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
-    Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
-    // Ajoute d'autres couleurs si tu as >10 postes
+    Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRA
 };
 
+// Sauvegarde l’atelier dans un fichier
+private void sauvegarderAtelier(Atelier atelier, String nomFichier) {
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nomFichier))) {
+        oos.writeObject(atelier);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 
+// Charge un atelier depuis un fichier
+private Atelier chargerAtelier(String nomFichier) {
+    try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(nomFichier))) {
+        return (Atelier) ois.readObject();
+    } catch (Exception e) {
+        e.printStackTrace();
+        return null;
+    }
+}
     @Override
     public void start(Stage primaryStage) {
         // Saisie du nom de l'utilisateur
@@ -30,13 +48,34 @@ public class AtelierInterface extends Application {
         dialog.setContentText("Veuillez entrer votre nom :");
         Optional<String> result = dialog.showAndWait();
         String nomUtilisateur = result.orElse("Utilisateur");
+        nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
 
+        Atelier atelierCharge = null;
+        
+        File f = new File(nomFichier);
+            if (f.exists()) {
+        // Proposer de charger ou de créer un nouveau
+        Alert choix = new Alert(Alert.AlertType.CONFIRMATION);
+        choix.setTitle("Projet existant trouvé");
+        choix.setHeaderText("Un projet existe déjà sous ce prénom.");
+        choix.setContentText("Voulez-vous poursuivre l'ancien projet ou en créer un nouveau ?");
+        ButtonType btnAncien = new ButtonType("Poursuivre");
+        ButtonType btnNouveau = new ButtonType("Nouveau projet");
+        choix.getButtonTypes().setAll(btnAncien, btnNouveau);
+        Optional<ButtonType> option = choix.showAndWait();
+            if (option.isPresent() && option.get() == btnAncien) {
+            atelierCharge = chargerAtelier(nomFichier);
+            }
+        }
+            if (atelierCharge == null) {
         ArrayList<Equipement> equipements = new ArrayList<>();
         ArrayList<Operateur> operateurs = new ArrayList<>();
         ArrayList<Personne> personnes = new ArrayList<>();
-
-        atelier = new Atelier(1, nomUtilisateur, equipements, operateurs, personnes);
-
+        atelier = new Atelier(1, prenom, equipements, operateurs, personnes);
+        } else {
+        atelier = atelierCharge;
+        }
+        
         // Menu minimaliste
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Navigation");
@@ -65,7 +104,7 @@ public class AtelierInterface extends Application {
         stockBrutItem.setOnAction(e -> afficherPlaceholder("Module Stock Brut à venir..."));
 
         Scene scene = new Scene(root, 900, 700);
-        primaryStage.setTitle("Atelier de " + nomUtilisateur);
+        primaryStage.setTitle("Atelier de " + atelier.getNom());
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -213,6 +252,7 @@ public class AtelierInterface extends Application {
                         id, desc, absc, ord, cout, temps, etat
                     );
                     atelier.getEquipements().add(m);
+                    sauvegarderAtelier(atelier, nomFichier);
                     afficherAccueil(); // Retour au plan
                 }
             } catch (Exception ex) {
