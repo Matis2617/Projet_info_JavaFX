@@ -52,7 +52,7 @@ public class AtelierInterface extends Application {
 
         // Menu navigation
         accueilItem.setOnAction(e -> afficherAccueil());
-        machineItem.setOnAction(e -> afficherMachines());
+        machineItem.setOnAction(e -> afficherFormulaireAjoutMachine()); // Ouvre directement le formulaire
         personnesItem.setOnAction(e -> afficherPlaceholder("Module Personnes à venir..."));
         posteItem.setOnAction(e -> afficherPlaceholder("Module Poste à venir..."));
         produitItem.setOnAction(e -> afficherPlaceholder("Module Produit à venir..."));
@@ -64,27 +64,23 @@ public class AtelierInterface extends Application {
         primaryStage.show();
     }
 
-    // ACCUEIL : juste le plan au centre
+    // ACCUEIL : juste le plan au centre (centré visuellement)
     private void afficherAccueil() {
         VBox accueil = new VBox(15);
         accueil.setStyle("-fx-alignment: center; -fx-padding: 20;");
         accueil.getChildren().add(new Label("Bienvenue dans l'atelier de " + atelier.getNom() + "."));
-        accueil.getChildren().add(new Label("Plan de l'atelier"));
-        accueil.getChildren().add(creerPlanAtelier(false)); // false = pas de bouton d'ajout
+        accueil.getChildren().add(new Label("Plan de l'atelier (50 x 50) :"));
+
+        HBox hbox = new HBox();
+        hbox.setStyle("-fx-alignment: center;"); // Centre le plan horizontalement
+        hbox.getChildren().add(creerPlanAtelier());
+        accueil.getChildren().add(hbox);
+
         root.setCenter(accueil);
     }
 
-    // Onglet MACHINES : plan + bouton d'ajout + formulaire
-    private void afficherMachines() {
-        VBox machinesBox = new VBox(15);
-        machinesBox.setStyle("-fx-alignment: center; -fx-padding: 20;");
-        machinesBox.getChildren().add(new Label("Gestion des machines dans l'atelier :"));
-        machinesBox.getChildren().add(creerPlanAtelier(true)); // true = bouton d'ajout visible
-        root.setCenter(machinesBox);
-    }
-
-    // Génération du plan de l’atelier (option bouton d’ajout)
-    private Pane creerPlanAtelier(boolean boutonAjout) {
+    // Génération du plan de l’atelier (centré et sans bouton d'ajout)
+    private Pane creerPlanAtelier() {
         Pane planPane = new Pane();
         int tailleAtelier = 500; // Taille en pixels pour 50x50 "mètres"
         int grille = 50;
@@ -115,28 +111,18 @@ public class AtelierInterface extends Application {
                 planPane.getChildren().add(carre);
             }
         }
-
-        // Bouton d'ajout uniquement dans "Machines"
-        if (boutonAjout) {
-            Button ajouterBtn = new Button("Ajouter une machine");
-            ajouterBtn.setLayoutX(10);
-            ajouterBtn.setLayoutY(10);
-            ajouterBtn.setOnAction(e -> afficherFormulaireAjoutMachine());
-            planPane.getChildren().add(ajouterBtn);
-        }
-
         return planPane;
     }
 
-    // Pop-up d’information sur une machine
+    // Pop-up d’information sur une machine (sans référence et type)
     private void afficherFicheMachine(Machine m) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Détails de la machine");
         alert.setHeaderText("Machine " + m.getRefmachine());
         alert.setContentText(
-            "Type: " + m.getType() + "\n"
-            + "Description: " + m.getDmachine() + "\n"
-            + "Référence: " + m.getRefEquipement() + "\n"
+            "Description: " + m.getDmachine() + "\n"
+            + "Abscisse: " + m.getAbscisse() + "\n"
+            + "Ordonnée: " + m.getOrdonnee() + "\n"
             + "Coût: " + m.getC() + "\n"
             + "Temps de préparation: " + m.getT() + "\n"
             + "État: " + m.getEtat()
@@ -144,18 +130,13 @@ public class AtelierInterface extends Application {
         alert.showAndWait();
     }
 
-    // Formulaire d’ajout de machine
+    // Formulaire d’ajout de machine (sans référence, sans type)
     private void afficherFormulaireAjoutMachine() {
         VBox box = new VBox(10);
-        box.setStyle("-fx-padding: 20;");
+        box.setStyle("-fx-padding: 20; -fx-alignment: center;");
+
         TextField idField = new TextField();
         idField.setPromptText("Identifiant");
-
-        TextField refField = new TextField();
-        refField.setPromptText("Référence");
-
-        TextField typeField = new TextField();
-        typeField.setPromptText("Type");
 
         TextField descField = new TextField();
         descField.setPromptText("Description");
@@ -183,8 +164,6 @@ public class AtelierInterface extends Application {
         ajouterBtn.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(idField.getText());
-                String ref = refField.getText();
-                String type = typeField.getText();
                 String desc = descField.getText();
                 int absc = Integer.parseInt(abscField.getText());
                 int ord = Integer.parseInt(ordField.getText());
@@ -217,11 +196,10 @@ public class AtelierInterface extends Application {
                 if (!existe) {
                     Machine m = new Machine(
                         atelier.getEquipements().size() + 1,
-                        id, desc, type, absc, ord, cout, temps, etat
+                        id, desc, absc, ord, cout, temps, etat
                     );
-                    m.setRefEquipement(ref);
                     atelier.getEquipements().add(m);
-                    afficherMachines(); // Retour au plan de machines
+                    afficherAccueil(); // Retour au plan
                 }
             } catch (Exception ex) {
                 erreurLabel.setText("Erreur : Données invalides.");
@@ -229,12 +207,11 @@ public class AtelierInterface extends Application {
         });
 
         Button retourBtn = new Button("Annuler");
-        retourBtn.setOnAction(e -> afficherMachines());
+        retourBtn.setOnAction(e -> afficherAccueil());
 
         box.getChildren().addAll(
                 new Label("Ajouter une machine :"),
-                idField, refField, typeField, descField,
-                abscField, ordField, coutField, tempsField,
+                idField, descField, abscField, ordField, coutField, tempsField,
                 etatBox, ajouterBtn, retourBtn, erreurLabel
         );
         root.setCenter(box);
