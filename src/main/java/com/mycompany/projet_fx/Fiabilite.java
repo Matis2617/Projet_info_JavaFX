@@ -4,9 +4,12 @@
  */
 package com.mycompany.projet_fx;
 
+import java.io.Serializable;
+import java.io.Serializable;
 
 
-public class Fiabilite {
+
+public class Fiabilite implements Serializable{
     private String nomMachine;
     private int totalTempsDeMarche; // en minutes
     private int totalTempsDePanne;  // en minutes

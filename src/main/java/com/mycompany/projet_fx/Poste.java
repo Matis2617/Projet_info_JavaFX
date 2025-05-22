@@ -3,13 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.projet_fx;
+import java.io.Serializable;
 
 /**
  *
  * @author Matis
  */
 import java.util.ArrayList;
-public class Poste extends Equipement{
+public class Poste extends Equipement implements Serializable{
     private int refposte;
     private String dposte;
     ArrayList<Machine> machines;

@@ -4,11 +4,13 @@
  */
 package com.mycompany.projet_fx;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Matis
  */
-public class Operation {
+public class Operation implements Serializable{
     private int id_operation;
     private float dureeOperation;
     private String refEquipement;

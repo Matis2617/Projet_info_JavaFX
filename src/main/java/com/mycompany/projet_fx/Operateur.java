@@ -5,13 +5,14 @@
 package com.mycompany.projet_fx;
 
 import com.mycompany.projet_fx.Machine.ETAT;
+import java.io.Serializable;
 //permet d'utilis/*er ETAT dans cette classe
 
 /**
  *
  * @author Matis
  */
-public class Operateur extends Personne {
+public class Operateur extends Personne implements Serializable {
     private String competences;
     private int id_op;
     private ETAT etat;

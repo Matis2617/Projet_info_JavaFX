@@ -4,11 +4,13 @@
  */
 package com.mycompany.projet_fx;
 
+import java.io.Serializable;
+
 /**
  *
  * @author sxbsp
  */
-public class ProduitsFinis {
+public class ProduitsFinis implements Serializable{
 
     public ProduitsFinis() {
     }
