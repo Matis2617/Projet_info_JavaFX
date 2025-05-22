@@ -77,9 +77,9 @@ private Atelier chargerAtelier(String nomFichier) {
     } else {
         atelier = atelierCharge;
     }
-        // MenuBar/navigation
+        // MenuBar/Menu
         MenuBar menuBar = new MenuBar();
-        Menu menu = new Menu("Navigation");
+        Menu menu = new Menu("Menu");
         MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem personnesItem = new MenuItem("Personnes");
@@ -114,7 +114,7 @@ private Atelier chargerAtelier(String nomFichier) {
         VBox accueil = new VBox(15);
         accueil.setStyle("-fx-alignment: center; -fx-padding: 20;");
         accueil.getChildren().add(new Label("Bienvenue dans l'atelier de " + atelier.getNom() + "."));
-        accueil.getChildren().add(new Label("Plan de l'atelier (50 x 50) :"));
+        accueil.getChildren().add(new Label("Plan de l'atelier :"));
 
         HBox hbox = new HBox();
         hbox.setStyle("-fx-alignment: center;"); // Centre le plan horizontalement
