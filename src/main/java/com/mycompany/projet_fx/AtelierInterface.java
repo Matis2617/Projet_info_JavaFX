@@ -34,12 +34,13 @@ public class AtelierInterface extends Application {
         // Menu minimaliste
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Navigation");
+        MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem personnesItem = new MenuItem("Personnes");
         MenuItem posteItem = new MenuItem("Poste");
         MenuItem produitItem = new MenuItem("Produit");
         MenuItem stockBrutItem = new MenuItem("Stock Brut");
-        menu.getItems().addAll(machineItem, personnesItem, posteItem, produitItem, stockBrutItem);
+        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, produitItem, stockBrutItem);
         menuBar.getMenus().add(menu);
 
         // Layout principal
@@ -47,10 +48,11 @@ public class AtelierInterface extends Application {
         root.setTop(menuBar);
 
         // Affichage de l'accueil avec le plan au centre
-        afficherAccueilAvecPlan();
+        afficherAccueil();
 
-        // Menu (pour l’instant placeholders)
-        machineItem.setOnAction(e -> afficherAccueilAvecPlan());
+        // Menu navigation
+        accueilItem.setOnAction(e -> afficherAccueil());
+        machineItem.setOnAction(e -> afficherMachines());
         personnesItem.setOnAction(e -> afficherPlaceholder("Module Personnes à venir..."));
         posteItem.setOnAction(e -> afficherPlaceholder("Module Poste à venir..."));
         produitItem.setOnAction(e -> afficherPlaceholder("Module Produit à venir..."));
@@ -62,30 +64,33 @@ public class AtelierInterface extends Application {
         primaryStage.show();
     }
 
-    private void afficherAccueilAvecPlan() {
+    // ACCUEIL : juste le plan au centre
+    private void afficherAccueil() {
         VBox accueil = new VBox(15);
         accueil.setStyle("-fx-alignment: center; -fx-padding: 20;");
         accueil.getChildren().add(new Label("Bienvenue dans l'atelier de " + atelier.getNom() + "."));
-        accueil.getChildren().add(new Label("Plan de l'atelier (50 x 50) :"));
-        accueil.getChildren().add(creerPlanAtelier());
+        accueil.getChildren().add(new Label("Plan de l'atelier"));
+        accueil.getChildren().add(creerPlanAtelier(false)); // false = pas de bouton d'ajout
         root.setCenter(accueil);
     }
 
-    // Plan centré, chaque machine = carré noir interactif
-    private Pane creerPlanAtelier() {
+    // Onglet MACHINES : plan + bouton d'ajout + formulaire
+    private void afficherMachines() {
+        VBox machinesBox = new VBox(15);
+        machinesBox.setStyle("-fx-alignment: center; -fx-padding: 20;");
+        machinesBox.getChildren().add(new Label("Gestion des machines dans l'atelier :"));
+        machinesBox.getChildren().add(creerPlanAtelier(true)); // true = bouton d'ajout visible
+        root.setCenter(machinesBox);
+    }
+
+    // Génération du plan de l’atelier (option bouton d’ajout)
+    private Pane creerPlanAtelier(boolean boutonAjout) {
         Pane planPane = new Pane();
         int tailleAtelier = 500; // Taille en pixels pour 50x50 "mètres"
         int grille = 50;
         double unite = (double) tailleAtelier / grille;
 
         planPane.setPrefSize(tailleAtelier, tailleAtelier);
-
-        // Bouton d'ajout
-        Button ajouterBtn = new Button("Ajouter une machine");
-        ajouterBtn.setLayoutX(10);
-        ajouterBtn.setLayoutY(10);
-        ajouterBtn.setOnAction(e -> afficherFormulaireAjoutMachine());
-        planPane.getChildren().add(ajouterBtn);
 
         // Fond atelier
         Rectangle fond = new Rectangle(0, 0, tailleAtelier, tailleAtelier);
@@ -110,9 +115,20 @@ public class AtelierInterface extends Application {
                 planPane.getChildren().add(carre);
             }
         }
+
+        // Bouton d'ajout uniquement dans "Machines"
+        if (boutonAjout) {
+            Button ajouterBtn = new Button("Ajouter une machine");
+            ajouterBtn.setLayoutX(10);
+            ajouterBtn.setLayoutY(10);
+            ajouterBtn.setOnAction(e -> afficherFormulaireAjoutMachine());
+            planPane.getChildren().add(ajouterBtn);
+        }
+
         return planPane;
     }
 
+    // Pop-up d’information sur une machine
     private void afficherFicheMachine(Machine m) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Détails de la machine");
@@ -128,6 +144,7 @@ public class AtelierInterface extends Application {
         alert.showAndWait();
     }
 
+    // Formulaire d’ajout de machine
     private void afficherFormulaireAjoutMachine() {
         VBox box = new VBox(10);
         box.setStyle("-fx-padding: 20;");
@@ -204,7 +221,7 @@ public class AtelierInterface extends Application {
                     );
                     m.setRefEquipement(ref);
                     atelier.getEquipements().add(m);
-                    afficherAccueilAvecPlan();
+                    afficherMachines(); // Retour au plan de machines
                 }
             } catch (Exception ex) {
                 erreurLabel.setText("Erreur : Données invalides.");
@@ -212,7 +229,7 @@ public class AtelierInterface extends Application {
         });
 
         Button retourBtn = new Button("Annuler");
-        retourBtn.setOnAction(e -> afficherAccueilAvecPlan());
+        retourBtn.setOnAction(e -> afficherMachines());
 
         box.getChildren().addAll(
                 new Label("Ajouter une machine :"),
@@ -223,7 +240,7 @@ public class AtelierInterface extends Application {
         root.setCenter(box);
     }
 
-    // Pour les menus non encore implémentés
+    // Placeholder pour les autres modules
     private void afficherPlaceholder(String texte) {
         VBox box = new VBox(15);
         box.setStyle("-fx-alignment: center; -fx-padding: 60;");
