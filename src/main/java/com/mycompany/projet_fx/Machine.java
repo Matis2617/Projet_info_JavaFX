@@ -1,4 +1,5 @@
 package com.mycompany.projet_fx;
+import java.io.Serializable;
 
 public class Machine extends Equipement implements Serializable{ 
     public enum ETAT {occupe, disponible};

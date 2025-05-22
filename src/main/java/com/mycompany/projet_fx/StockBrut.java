@@ -8,9 +8,10 @@ package com.mycompany.projet_fx;
  *
  * @author Matis
  */
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class StockBrut {
+public class StockBrut implements Serializable{
    private ArrayList <Produit> produits;
    
    public StockBrut(){

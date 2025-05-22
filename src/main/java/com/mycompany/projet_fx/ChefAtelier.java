@@ -4,11 +4,13 @@
  */
 package com.mycompany.projet_fx;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Matis
  */
-public class ChefAtelier extends Personne {
+public class ChefAtelier extends Personne implements Serializable{
 
     public ChefAtelier(String idpersonne, String nom, String prenom) {
         super(idpersonne, nom, prenom);

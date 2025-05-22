@@ -4,11 +4,13 @@
  */
 package com.mycompany.projet_fx;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Matis
  */
-public class Produit {
+public class Produit implements Serializable{
     private int codeproduit;
     private String idproduit;
 
