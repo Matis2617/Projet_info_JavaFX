@@ -1,6 +1,6 @@
 package com.mycompany.projet_fx;
 
-public class Machine extends Equipement { 
+public class Machine extends Equipement implements Serializable{ 
     public enum ETAT {occupe, disponible};
     private int refmachine; // identifiant unique par machine
     private String dmachine;
