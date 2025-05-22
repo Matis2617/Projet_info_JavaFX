@@ -343,26 +343,36 @@ public class AtelierInterface extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    private void afficherPlanAtelier(){
-        Pane planPane = new Pane();
-        planPane.setPrefSize(600,400);
-        
-        for (Equipement eq:atelier.getEquipements()){
-            if(eq instanceof Machine){
-                Machine m = (Machine) eq;
-                double x = m.getAbscisse();
-                double y = m.getOrdonnee();
-                
-                Button machineBtn = new Button (m.getRefmachine()+";");
-                machineBtn.setLayoutX(x);
-                machineBtn.setLayoutY(y);
-                machineBtn.setStyle("-fx-background-radius: 50%; -fx-padding: 10;");
-                machineBtn.setOnAction(e -> afficherFicheMachine(m));
-                planPane.getChildren().add(machineBtn);
-            }
+   private void afficherPlanAtelier() {
+    Pane planPane = new Pane();
+    planPane.setPrefSize(700, 500);
+
+    // Affichage des machines sur le plan
+    for (Equipement eq : atelier.getEquipements()) {
+        if (eq instanceof Machine) {
+            Machine m = (Machine) eq;
+            double x = m.getAbscisse();  // Attention : à adapter à l'échelle de ton plan
+            double y = m.getOrdonnee();
+            // Affichage simple : cercle cliquable
+            Circle circle = new Circle(x, y, 25, Color.LIGHTBLUE);
+            circle.setStroke(Color.DARKBLUE);
+            planPane.getChildren().add(circle);
+
+            // Détails au clic
+            circle.setOnMouseClicked(event -> afficherFicheMachine(m));
         }
-        root.setCenter(planPane);
     }
+
+    // Bouton pour ajouter une machine
+    Button ajouterBtn = new Button("Ajouter une machine");
+    ajouterBtn.setLayoutX(10);
+    ajouterBtn.setLayoutY(10);
+    ajouterBtn.setOnAction(e -> afficherFormulaireAjoutMachine());
+
+    planPane.getChildren().add(ajouterBtn);
+
+    root.setCenter(planPane);
+}
     private void afficherFicheMachine(Machine m){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Détails de la machine");
