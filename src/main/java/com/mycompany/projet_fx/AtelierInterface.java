@@ -118,7 +118,7 @@ public class AtelierInterface extends Application {
     private void afficherFicheMachine(Machine m) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Détails de la machine");
-        alert.setHeaderText("Machine " + m.getRefmachine());
+        alert.setHeaderText(m.getDmachine());
         alert.setContentText(
             "Description: " + m.getDmachine() + "\n"
             + "Abscisse: " + m.getAbscisse() + "\n"
