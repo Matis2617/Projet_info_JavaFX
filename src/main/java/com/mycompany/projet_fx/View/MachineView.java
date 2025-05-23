@@ -1,7 +1,7 @@
 package com.mycompany.projet_fx.view;
 
 import com.mycompany.projet_fx.controller.MachineController;
-import com.mycompany.projet_fx.model.Machine;
+import com.mycompany.projet_fx.Model.Machine;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 

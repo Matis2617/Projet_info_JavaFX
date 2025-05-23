@@ -1,7 +1,7 @@
 package com.mycompany.projet_fx.view;
 
 import com.mycompany.projet_fx.controller.OperationController;
-import com.mycompany.projet_fx.model.Operation;
+import com.mycompany.projet_fx.Model.Operation;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 

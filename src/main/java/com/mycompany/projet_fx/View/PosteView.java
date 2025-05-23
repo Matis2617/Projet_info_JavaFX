@@ -1,8 +1,8 @@
 package com.mycompany.projet_fx.view;
 
 import com.mycompany.projet_fx.controller.PosteController;
-import com.mycompany.projet_fx.model.Poste;
-import com.mycompany.projet_fx.model.Machine;
+import com.mycompany.projet_fx.Model.Poste;
+import com.mycompany.projet_fx.Model.Machine;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 

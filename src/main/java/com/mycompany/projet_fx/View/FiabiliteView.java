@@ -1,7 +1,7 @@
 package com.mycompany.projet_fx.view;
 
 import com.mycompany.projet_fx.controller.FiabiliteController;
-import com.mycompany.projet_fx.model.Fiabilite;
+import com.mycompany.projet_fx.Model.Fiabilite;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 

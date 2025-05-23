@@ -1,7 +1,7 @@
 package com.mycompany.projet_fx.view;
 
 import com.mycompany.projet_fx.controller.GammeController;
-import com.mycompany.projet_fx.model.Gamme;
+import com.mycompany.projet_fx.Model.Gamme;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 
