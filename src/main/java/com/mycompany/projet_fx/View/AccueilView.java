@@ -27,7 +27,8 @@ public class AccueilView {
 
         HBox hbox = new HBox();
         hbox.setStyle("-fx-alignment: center;");
-        hbox.getChildren().add(creerPlanAtelier());
+        PlanAtelierView planView = new PlanAtelierView(atelier, couleursPostes);
+        hbox.getChildren().add(planView.creerPlanAtelier());
         accueil.getChildren().add(hbox);
 
         return accueil;
