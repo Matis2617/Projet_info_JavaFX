@@ -8,7 +8,7 @@ package com.mycompany.projet_fx.Main;
  *
  * @author Matis
  */
-public class Projet {
+public class Main {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
