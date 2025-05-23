@@ -1,13 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.projet_fx.Controller;
+package com.mycompany.projet_fx.controller;
 
-/**
- *
- * @author Matis
- */
+import com.mycompany.projet_fx.model.Fiabilite;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public class FiabiliteController {
-    
+    private ObservableList<Fiabilite> fiabilites = FXCollections.observableArrayList();
+
+    public ObservableList<Fiabilite> getFiabilites() {
+        return fiabilites;
+    }
+
+    public void ajouterFiabilite(Fiabilite fiabilite) {
+        fiabilites.add(fiabilite);
+    }
+
+    public void supprimerFiabilite(Fiabilite fiabilite) {
+        fiabilites.remove(fiabilite);
+    }
 }
