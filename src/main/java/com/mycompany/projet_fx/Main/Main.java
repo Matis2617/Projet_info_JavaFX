@@ -1,16 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package com.mycompany.projet_fx.Main;
 
-/**
- *
- * @author Matis
- */
-public class Main {
+import com.mycompany.projet_fx.View.AtelierView; // Ou AtelierInterface si tu gardes le nom
 
+public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        AtelierView.main(args); // Lance l’application JavaFX
     }
 }
