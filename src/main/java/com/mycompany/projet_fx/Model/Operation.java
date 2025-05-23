@@ -1,4 +1,4 @@
-package com.mycompany.projet_fx;
+package com.mycompany.projet_fx.Model;
 
 import java.io.Serializable;
 
