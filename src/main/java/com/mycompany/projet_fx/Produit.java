@@ -1,4 +1,4 @@
-package com.mycompany.projet_fx;
+package com.mycompany.projet_fx.model;
 
 import java.io.Serializable;
 
@@ -19,7 +19,6 @@ public class Produit implements Serializable {
         return id;
     }
 
-    // (optionnel) pour une belle liste :
     @Override
     public String toString() {
         return id + " (Code: " + code + ")";
