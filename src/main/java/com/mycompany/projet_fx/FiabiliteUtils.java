@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projet_fx;
 
 import java.io.BufferedWriter;
@@ -13,21 +9,36 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-
-public class FiabiliteUtils implements Serializable{
+/**
+ * Classe utilitaire pour la gestion de la fiabilité des machines (sauvegarde dans fichier).
+ * Toutes les informations doivent être fournies par la vue/contrôleur.
+ */
+public class FiabiliteUtils implements Serializable {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
     private static final DateTimeFormatter HEURE_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
-    public static void ecrireEtatMachines(List<Fiabilite> machines) {
+    /**
+     * Écrit les états des machines dans un fichier.
+     * 
+     * @param machines La liste des objets Fiabilite (modèle)
+     * @param evenements Liste des événements (ex: "A" ou "D") correspondant aux machines
+     * @param operateurs Liste des opérateurs correspondant aux machines
+     * @param causes Liste des causes correspondant aux machines
+     * (=> tous ces paramètres doivent être de même taille)
+     */
+    public static void ecrireEtatMachines(List<Fiabilite> machines, List<String> evenements, List<String> operateurs, List<String> causes) {
+        if (machines.size() != evenements.size() || machines.size() != operateurs.size() || machines.size() != causes.size()) {
+            throw new IllegalArgumentException("Toutes les listes doivent avoir la même taille !");
+        }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("fiabilite.txt"))) {
-            for (Fiabilite machine : machines) {
-                
+            for (int i = 0; i < machines.size(); i++) {
+                Fiabilite machine = machines.get(i);
                 LocalDate date = LocalDate.now();
                 LocalTime heure = LocalTime.now();
-                String evenement = genererEvenement();
-                String operateur = genererOperateur();
-                String cause = genererCause();
+                String evenement = evenements.get(i);
+                String operateur = operateurs.get(i);
+                String cause = causes.get(i);
 
                 String ligne = genererEtatMachine(machine, date, heure, evenement, operateur, cause);
                 bw.write(ligne);
@@ -37,23 +48,10 @@ public class FiabiliteUtils implements Serializable{
             System.err.println("Erreur d'écriture : " + e.getMessage());
         }
     }
-    
-    public static String genererEvenement(){
-        System.out.println("Quel est l'évenement (A/D)");
-        return Lire.s();
-    }
-    
-    public static String genererOperateur(){
-        System.out.println("Quel est l'operateur");
-        return Lire.s();
-    }
-    
-    public static String genererCause(){
-        System.out.println("Quel est la cause");
-        return Lire.s();
-    }
 
-
+    /**
+     * Génère la ligne à écrire pour une machine.
+     */
     public static String genererEtatMachine(Fiabilite machine, LocalDate date, LocalTime heure, String evenement, String operateur, String cause) {
         return String.format("%s;%s;%s;%s;%s;%s",
                 date.format(DATE_FORMAT),
