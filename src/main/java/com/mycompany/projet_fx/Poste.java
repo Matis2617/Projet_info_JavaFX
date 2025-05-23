@@ -1,54 +1,49 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projet_fx;
 import java.io.Serializable;
-
-/**
- *
- * @author Matis
- */
 import java.util.ArrayList;
-public class Poste extends Equipement implements Serializable{
+
+public class Poste extends Equipement implements Serializable {
     private int refposte;
     private String dposte;
-    ArrayList<Machine> machines;
+    private ArrayList<Machine> machines;
 
-    public int getRefposte() {
-        return refposte;
-    }
-
-    public void setRefposte(int refposte) {
-        this.refposte = refposte;
-    }
-
-    public String getDposte() {
-        return dposte;
-    }
-
-    public void setDposte(String dposte) {
-        this.dposte = dposte;
-    }
-
-    public ArrayList<Machine> getMachines() {
-        return machines;
-    }
-
-    public void setMachines(ArrayList<Machine> machines) {
-        this.machines = machines;
-    }
-
-    public Poste(int refposte, String dposte, ArrayList<Machine> machines,int id_equipement) {
+    // ---- CONSTRUCTEUR ----
+    public Poste(int refposte, String dposte, ArrayList<Machine> machines, int id_equipement) {
         super(id_equipement);
         this.refposte = refposte;
         this.dposte = dposte;
         this.machines = machines;
     }
-    
-    @Override public String affiche(){
-    System.out.print("refposte ="+refposte);
-    System.out.print("dposte ="+dposte);
-    return "référence ="+refposte+",dposte ="+dposte;
-}
+
+    // ---- GETTERS / SETTERS ----
+    public int getRefposte() { return refposte; }
+    public void setRefposte(int refposte) { this.refposte = refposte; }
+
+    public String getDposte() { return dposte; }
+    public void setDposte(String dposte) { this.dposte = dposte; }
+
+    public ArrayList<Machine> getMachines() { return machines; }
+    public void setMachines(ArrayList<Machine> machines) { this.machines = machines; }
+
+    // ---- AFFICHAGE POUR MVC / DEBUG ----
+    @Override
+    public String toString() {
+        return "Poste: " + dposte + " (Réf: " + refposte + ")";
+    }
+
+    // Méthode pour afficher les machines liées à ce poste
+    public String machinesToString() {
+        if (machines == null || machines.isEmpty()) return "Aucune machine";
+        StringBuilder sb = new StringBuilder();
+        for (Machine m : machines) {
+            sb.append(m.getDmachine()).append(" | ");
+        }
+        return sb.toString();
+    }
+
+    // (Optionnel, garder la méthode "affiche" si tu veux, mais toString est la norme MVC)
+    @Override
+    public String affiche() {
+        return "Référence = " + refposte + ", dposte = " + dposte;
+    }
 }
