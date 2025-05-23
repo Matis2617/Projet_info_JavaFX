@@ -1,8 +1,10 @@
-package com.mycompany.projet_fx;
+package com.mycompany.projet_fx.model;
+
 import java.io.Serializable;
 
-public class Machine extends Equipement implements Serializable{ 
-    public enum ETAT {occupe, disponible};
+public class Machine extends Equipement implements Serializable { 
+    public enum ETAT {occupe, disponible}
+
     private int refmachine; // identifiant unique par machine
     private String dmachine;
     private int abscisse;
@@ -10,6 +12,18 @@ public class Machine extends Equipement implements Serializable{
     private float c;
     private float t;
     private ETAT etat;
+
+    // Constructeur
+    public Machine(int id_equipement, int refmachine, String dmachine, int abscisse, int ordonnee, float c, float t, ETAT etat) {
+        super(id_equipement);
+        this.refmachine = refmachine;
+        this.dmachine = dmachine;
+        this.abscisse = abscisse;
+        this.ordonnee = ordonnee;
+        this.c = c;
+        this.t = t;
+        this.etat = etat;
+    }
 
     // GETTERS/SETTERS
     public int getRefmachine() { return refmachine; }
@@ -33,18 +47,6 @@ public class Machine extends Equipement implements Serializable{
     public ETAT getEtat() { return etat; }
     public void setEtat(ETAT etat) { this.etat = etat; }
 
-    // Constructeur sans "type" ni "reference"
-    public Machine(int id_equipement, int refmachine, String dmachine, int abscisse, int ordonnee, float c, float t, ETAT etat) {
-        super(id_equipement);
-        this.refmachine = refmachine;
-        this.dmachine = dmachine;
-        this.abscisse = abscisse;
-        this.ordonnee = ordonnee;
-        this.c = c;
-        this.t = t;
-        this.etat = etat;
-    }
-    
     @Override
     public String affiche() {
         return super.affiche()
