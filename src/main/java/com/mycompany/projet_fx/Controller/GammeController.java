@@ -1,13 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.projet_fx.Controller;
+package com.mycompany.projet_fx.controller;
 
-/**
- *
- * @author Matis
- */
+import com.mycompany.projet_fx.model.Gamme;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public class GammeController {
-    
+    private ObservableList<Gamme> gammes = FXCollections.observableArrayList();
+
+    public ObservableList<Gamme> getGammes() {
+        return gammes;
+    }
+
+    public void ajouterGamme(Gamme gamme) {
+        gammes.add(gamme);
+    }
+
+    public void supprimerGamme(Gamme gamme) {
+        gammes.remove(gamme);
+    }
 }
