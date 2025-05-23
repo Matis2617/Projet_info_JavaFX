@@ -1,4 +1,4 @@
-package com.mycompany.projet_fx;
+package com.mycompany.projet_fx.View;
 
 import com.mycompany.projet_fx.Model.Poste;
 import com.mycompany.projet_fx.Model.Personne;
