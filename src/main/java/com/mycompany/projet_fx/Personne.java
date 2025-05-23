@@ -1,50 +1,37 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projet_fx;
 
 import java.io.Serializable;
 
-/**
- *
- * @author Matis
- */
-public class Personne implements Serializable{
+public class Personne implements Serializable {
     private String idpersonne;
-    private String Nom;
-    private String Prenom;
+    private String nom;
+    private String prenom;
 
-    public String getIdpersonne() {
-        return idpersonne;
-    }
-
-    public void setIdpersonne(String idpersonne) {
-        this.idpersonne = idpersonne;
-    }
-
-    public String getNom() {
-        return Nom;
-    }
-
-    public void setNom(String nom) {
-        this.Nom = nom;
-    }
-
-    public String getPrenom() {
-        return Prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.Prenom = prenom;
-    }
-
+    // ---- CONSTRUCTEUR ----
     public Personne(String idpersonne, String nom, String prenom) {
         this.idpersonne = idpersonne;
-        this.Nom = nom;
-        this.Prenom = prenom;
+        this.nom = nom;
+        this.prenom = prenom;
     }
-    public String affiche(){
-    return "identifiant = "+idpersonne+", Nom = "+Nom+", Prenom ="+Prenom;
-}
+
+    // ---- GETTERS / SETTERS ----
+    public String getIdpersonne() { return idpersonne; }
+    public void setIdpersonne(String idpersonne) { this.idpersonne = idpersonne; }
+
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
+
+    public String getPrenom() { return prenom; }
+    public void setPrenom(String prenom) { this.prenom = prenom; }
+
+    // ---- AFFICHAGE POUR MVC ----
+    @Override
+    public String toString() {
+        return "ID: " + idpersonne + " | Nom: " + nom + " | Prénom: " + prenom;
+    }
+
+    // (Optionnel, si tu veux garder la méthode ancienne)
+    public String affiche() {
+        return "identifiant = " + idpersonne + ", Nom = " + nom + ", Prenom = " + prenom;
+    }
 }
