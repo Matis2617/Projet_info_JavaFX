@@ -45,31 +45,6 @@ public class AtelierView extends Application {
             Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
     };
 
-    // Sauvegarde l’atelier dans un fichier
-    private void sauvegarderAtelier(Atelier atelier, String nomFichier) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nomFichier))) {
-            oos.writeObject(atelier);
-            System.out.println("[SAUVEGARDE] Atelier sauvegardé dans " + nomFichier
-                + " (" + atelier.getEquipements().size() + " machines, " + atelier.getPostes().size() + " postes)");
-        } catch (Exception e) {
-            System.err.println("[ERREUR] Sauvegarde échouée !");
-            e.printStackTrace();
-        }
-    }
-
-    // Charge un atelier depuis un fichier
-    private Atelier chargerAtelier(String nomFichier) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(nomFichier))) {
-            Atelier a = (Atelier) ois.readObject();
-            System.out.println("[CHARGEMENT] Atelier chargé depuis " + nomFichier
-                + " (" + a.getEquipements().size() + " machines, " + a.getPostes().size() + " postes)");
-            return a;
-        } catch (Exception e) {
-            System.err.println("[ERREUR] Chargement échoué !");
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     @Override
     public void start(Stage primaryStage) {
