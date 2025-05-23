@@ -1,5 +1,11 @@
 package com.mycompany.projet_fx;
 
+import com.mycompany.projet_fx.ChefAtelier;
+import com.mycompany.projet_fx.Equipement;
+import com.mycompany.projet_fx.Operateur;
+import com.mycompany.projet_fx.Operation;
+import com.mycompany.projet_fx.Personne;
+import com.mycompany.projet_fx.Poste;
 import java.io.Serializable;
 import java.util.ArrayList;
 
