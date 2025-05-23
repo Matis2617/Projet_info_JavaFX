@@ -1,6 +1,6 @@
 package com.mycompany.projet_fx.controller;
 
-import com.mycompany.projet_fx.model.Personne;
+import com.mycompany.projet_fx.Model.Personne;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
