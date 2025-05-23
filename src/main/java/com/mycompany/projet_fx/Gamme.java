@@ -1,90 +1,83 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.projet_fx;
-import java.io.Serializable;
+package com.mycompany.projet_fx.model;
 
-/**
- *
- * @author Matis
- */
 import java.io.Serializable;
 import java.util.ArrayList;
-public class Gamme implements Serializable{
+import java.util.List;
+
+/**
+ * Représente une gamme de fabrication (liste d'opérations & équipements associés)
+ */
+public class Gamme implements Serializable {
     private String refGamme;
-    ArrayList<Operation> operations;
-    ArrayList<Equipement> listeEquipements;
+    private List<Operation> operations;
+    private List<Equipement> listeEquipements;
 
-    public ArrayList<Operation> getOperations() {
-        return operations;
-    }
-
-    public void setOperations(ArrayList<Operation> operations) {
-        this.operations = operations;
+    // --- Constructeurs ---
+    public Gamme() {
+        this.operations = new ArrayList<>();
+        this.listeEquipements = new ArrayList<>();
     }
 
-    public String getRefGamme() {
-        return refGamme;
+    public Gamme(List<Operation> operations) {
+        this.operations = new ArrayList<>(operations);
+        this.listeEquipements = new ArrayList<>();
     }
 
-    public void setRefGamme(String refGamme) {
-        this.refGamme = refGamme;
-    }
+    // --- Getters/Setters ---
+    public String getRefGamme() { return refGamme; }
+    public void setRefGamme(String refGamme) { this.refGamme = refGamme; }
 
-    public ArrayList<Equipement> getListeEquipements() {
-        return listeEquipements;
-    }
+    public List<Operation> getOperations() { return operations; }
+    public void setOperations(List<Operation> operations) { this.operations = new ArrayList<>(operations); }
 
-    public void setListeEquipements(ArrayList<Equipement> listeEquipements) {
-        this.listeEquipements = listeEquipements;
-    }
+    public List<Equipement> getListeEquipements() { return listeEquipements; }
+    public void setListeEquipements(List<Equipement> listeEquipements) { this.listeEquipements = new ArrayList<>(listeEquipements); }
 
-    public Gamme(ArrayList<Operation> operations) {
-        this.operations = operations;
-    }
-    public void affiche(){
-    System.out.print("operations ="+operations);
-    }
-    
+    // --- Méthodes métier ---
+    /**
+     * Génère une référence unique (optionnel, selon la logique souhaitée)
+     */
     public void creerGamme() {
-    this.refGamme = "GAMME_" + System.currentTimeMillis();
-    this.operations = new ArrayList<>();
-    this.listeEquipements = new ArrayList<>();
+        this.refGamme = "GAMME_" + System.currentTimeMillis();
+        this.operations = new ArrayList<>();
+        this.listeEquipements = new ArrayList<>();
     }
-    
-    public void modifierGamme(Operation operation, Equipement equipement) {
+
+    /**
+     * Ajoute une opération et un équipement à la gamme.
+     */
+    public void ajouter(Operation operation, Equipement equipement) {
         this.operations.add(operation);
         this.listeEquipements.add(equipement);
     }
-    
+
+    /**
+     * Vide la gamme (toutes opérations/équipements)
+     */
     public void supprimerGamme() {
         this.operations.clear();
         this.listeEquipements.clear();
     }
-    
-    public void afficheGamme() {
-        System.out.println("Gamme: " + this.refGamme);
-        System.out.println("Liste des équipements:");
-        for (Equipement equipement : this.listeEquipements) {
-            System.out.println(equipement);
-        }
-        System.out.println("Liste des opérations:");
-        for (Operation operation : this.operations) {
-            System.out.println(operation);
-        }
-    }
-    
+
+    /**
+     * Calcule le coût total de la gamme.
+     * Attention : Cast Equipement → Machine : OK uniquement si tous les équipements sont bien des machines !
+     */
     public float coutGamme() {
         float coutTotal = 0;
         for (Operation operation : this.operations) {
             for (Equipement equipement : this.listeEquipements) {
-                coutTotal = coutTotal + ((Machine) equipement).getC() * operation.getDureeOperation();  
+                if (equipement instanceof Machine) {
+                    coutTotal += ((Machine) equipement).getC() * operation.getDureeOperation();
+                }
             }
         }
         return coutTotal;
     }
-    
+
+    /**
+     * Calcule la durée totale de la gamme (somme des durées des opérations).
+     */
     public float dureeGamme() {
         float dureeTotale = 0;
         for (Operation operation : operations) {
@@ -92,5 +85,13 @@ public class Gamme implements Serializable{
         }
         return dureeTotale;
     }
-    
+
+    @Override
+    public String toString() {
+        return "Gamme{" +
+                "refGamme='" + refGamme + '\'' +
+                ", operations=" + operations +
+                ", listeEquipements=" + listeEquipements +
+                '}';
+    }
 }
