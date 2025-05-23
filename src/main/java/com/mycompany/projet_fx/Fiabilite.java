@@ -1,10 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.projet_fx;
+package com.mycompany.projet_fx.model;
 
-public class Fiabilite {
+import java.io.Serializable;
+
+/**
+ * Représente la fiabilité d'une machine (temps de marche/panne).
+ */
+public class Fiabilite implements Serializable {
     private String nomMachine;
     private int totalTempsDeMarche; // en minutes
     private int totalTempsDePanne;  // en minutes
@@ -16,29 +17,14 @@ public class Fiabilite {
         this.totalTempsDePanne = totalTempsDePanne;
     }
 
-    public String getNomMachine() {
-        return nomMachine;
-    }
+    public String getNomMachine() { return nomMachine; }
+    public void setNomMachine(String nomMachine) { this.nomMachine = nomMachine; }
 
-    public void setNomMachine(String nomMachine) {
-        this.nomMachine = nomMachine;
-    }
+    public int getTotalTempsDeMarche() { return totalTempsDeMarche; }
+    public void setTotalTempsDeMarche(int totalTempsDeMarche) { this.totalTempsDeMarche = totalTempsDeMarche; }
 
-    public int getTotalTempsDeMarche() {
-        return totalTempsDeMarche;
-    }
-
-    public void setTotalTempsDeMarche(int totalTempsDeMarche) {
-        this.totalTempsDeMarche = totalTempsDeMarche;
-    }
-
-    public int getTotalTempsDePanne() {
-        return totalTempsDePanne;
-    }
-
-    public void setTotalTempsDePanne(int totalTempsDePanne) {
-        this.totalTempsDePanne = totalTempsDePanne;
-    }
+    public int getTotalTempsDePanne() { return totalTempsDePanne; }
+    public void setTotalTempsDePanne(int totalTempsDePanne) { this.totalTempsDePanne = totalTempsDePanne; }
 
     // Méthodes pour ajouter du temps
     public void ajouterTempsDeMarche(int minutes) {
@@ -49,7 +35,10 @@ public class Fiabilite {
         this.totalTempsDePanne += minutes;
     }
 
-    // Calcul de la fiabilité
+    /**
+     * Calcul du taux de fiabilité (proportion de temps de marche).
+     * @return fiabilité entre 0 et 1
+     */
     public double calculerFiabilite() {
         int totalTemps = totalTempsDeMarche + totalTempsDePanne;
         if (totalTemps == 0) return 0.0;
@@ -58,6 +47,8 @@ public class Fiabilite {
 
     @Override
     public String toString() {
-        return "Fiabilite{" + "nomMachine=" + nomMachine + ", totalTempsDeMarche=" + totalTempsDeMarche + ", totalTempsDePanne=" + totalTempsDePanne + '}';
+        return "Fiabilite{" + "nomMachine=" + nomMachine 
+            + ", totalTempsDeMarche=" + totalTempsDeMarche 
+            + ", totalTempsDePanne=" + totalTempsDePanne + '}';
     }
 }
