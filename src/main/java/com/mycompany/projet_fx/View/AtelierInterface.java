@@ -17,6 +17,20 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.io.*;
 import javafx.geometry.Insets;
+import com.mycompany.projet_fx.Model.Machine;
+import com.mycompany.projet_fx.Model.Atelier;
+import com.mycompany.projet_fx.Model.ChefAtelier;
+import com.mycompany.projet_fx.Model.Equipement;
+import com.mycompany.projet_fx.Model.Fiabilite;
+import com.mycompany.projet_fx.Model.FiabiliteUtils;
+import com.mycompany.projet_fx.Model.Gamme;
+import com.mycompany.projet_fx.Model.Operateur;
+import com.mycompany.projet_fx.Model.Operation;
+import com.mycompany.projet_fx.Model.Personne;
+import com.mycompany.projet_fx.Model.Poste;
+import com.mycompany.projet_fx.Model.Produit;
+import com.mycompany.projet_fx.Model.ProduitsFinis;
+import com.mycompany.projet_fx.Model.StockBrut;
 
 public class AtelierInterface extends Application {
 
