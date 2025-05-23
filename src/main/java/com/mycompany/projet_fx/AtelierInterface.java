@@ -1,5 +1,6 @@
 package com.mycompany.projet_fx;
 
+import com.mycompany.projet_fx.Model.Poste;
 import com.mycompany.projet_fx.Model.Personne;
 import com.mycompany.projet_fx.Model.Operateur;
 import com.mycompany.projet_fx.Model.Operation;
