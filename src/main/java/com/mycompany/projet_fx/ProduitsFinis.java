@@ -1,19 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.projet_fx;
+package com.mycompany.projet_fx.model;
 
 import java.io.Serializable;
 
-/**
- *
- * @author sxbsp
- */
-public class ProduitsFinis implements Serializable{
+public class ProduitsFinis implements Serializable {
 
     public ProduitsFinis() {
     }
-    public void affiche(){
+
+    public void affiche() {
+        // TODO: ajouter l'affichage ou la gestion des produits finis ici
     }
 }
