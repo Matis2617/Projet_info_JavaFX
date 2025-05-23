@@ -115,31 +115,11 @@ public class AtelierView extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+private void afficherAccueil() {
+    AccueilView accueilView = new AccueilView(atelier, couleursPostes);
+    root.setCenter(accueilView.getAccueilPane());
+}
 
-    // ACCUEIL : juste le plan au centre (centré visuellement)
-    private void afficherAccueil() {
-        VBox accueil = new VBox(15);
-        accueil.setStyle("-fx-alignment: center; -fx-padding: 20;");
-        accueil.getChildren().add(new Label("Bienvenue dans l'atelier de " + atelier.getNom() + "."));
-        accueil.getChildren().add(new Label("Plan de l'atelier :"));
-
-        HBox hbox = new HBox();
-        hbox.setStyle("-fx-alignment: center;");
-        hbox.getChildren().add(creerPlanAtelier());
-        accueil.getChildren().add(hbox);
-
-        root.setCenter(accueil);
-    }
-
-    // Donne la couleur du poste auquel appartient la machine
-    private Color getColorForMachine(Machine m) {
-        for (int i = 0; i < atelier.getPostes().size(); i++) {
-            if (atelier.getPostes().get(i).getMachines().contains(m)) {
-                return couleursPostes[i % couleursPostes.length];
-            }
-        }
-        return Color.BLACK; // machine sans poste
-    }
 
     // Génération du plan de l’atelier
     private Pane creerPlanAtelier() {
