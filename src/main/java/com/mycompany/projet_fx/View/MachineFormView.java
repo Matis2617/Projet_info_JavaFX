@@ -1,13 +1,104 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projet_fx.View;
 
-/**
- *
- * @author Matis
- */
+import com.mycompany.projet_fx.Model.Machine;
+import com.mycompany.projet_fx.Model.Equipement;
+import com.mycompany.projet_fx.Model.Atelier;
+import com.mycompany.projet_fx.Utils.AtelierSauvegarde; // Si tu as centralisé la sauvegarde ici
+
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.collections.ObservableList;
+
 public class MachineFormView {
-    
+
+    // Peut renvoyer un VBox prêt à être inséré dans le root.setCenter(box)
+    public static VBox getMachineForm(Atelier atelier, String nomFichier, Runnable onSuccess) {
+        VBox box = new VBox(10);
+        box.setStyle("-fx-padding: 20; -fx-alignment: center;");
+
+        TextField idField = new TextField();
+        idField.setPromptText("Identifiant");
+
+        TextField descField = new TextField();
+        descField.setPromptText("Description");
+
+        TextField abscField = new TextField();
+        abscField.setPromptText("Abscisse (0-49)");
+
+        TextField ordField = new TextField();
+        ordField.setPromptText("Ordonnée (0-49)");
+
+        TextField coutField = new TextField();
+        coutField.setPromptText("Coût");
+
+        TextField tempsField = new TextField();
+        tempsField.setPromptText("Temps préparation");
+
+        ComboBox<Machine.ETAT> etatBox = new ComboBox<>();
+        etatBox.getItems().addAll(Machine.ETAT.values());
+        etatBox.setPromptText("État");
+
+        Label erreurLabel = new Label();
+        erreurLabel.setStyle("-fx-text-fill: red;");
+
+        Button ajouterBtn = new Button("Ajouter la machine");
+        ajouterBtn.setOnAction(e -> {
+            try {
+                int id = Integer.parseInt(idField.getText());
+                String desc = descField.getText();
+                int absc = Integer.parseInt(abscField.getText());
+                int ord = Integer.parseInt(ordField.getText());
+                float cout = Float.parseFloat(coutField.getText());
+                float temps = Float.parseFloat(tempsField.getText());
+                Machine.ETAT etat = etatBox.getValue();
+
+                if (absc < 0 || absc >= 50 || ord < 0 || ord >= 50) {
+                    erreurLabel.setText("Erreur : Coordonnées hors de l'atelier !");
+                    return;
+                }
+
+                // Vérification unicité
+                boolean existe = false;
+                for (Equipement eq : atelier.getEquipements()) {
+                    if (eq instanceof Machine) {
+                        Machine m = (Machine) eq;
+                        if (m.getRefmachine() == id) {
+                            existe = true;
+                            erreurLabel.setText("Erreur : Identifiant déjà utilisé !");
+                            break;
+                        }
+                        if (m.getAbscisse() == absc && m.getOrdonnee() == ord) {
+                            existe = true;
+                            erreurLabel.setText("Erreur : Coordonnées déjà utilisées !");
+                            break;
+                        }
+                    }
+                }
+                if (!existe) {
+                    Machine m = new Machine(
+                            atelier.getEquipements().size() + 1,
+                            id, desc, absc, ord, cout, temps, etat
+                    );
+                    atelier.getEquipements().add(m);
+                    AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+                    System.out.println("[AJOUT] Machine ajoutée. Total: " + atelier.getEquipements().size());
+                    if (onSuccess != null) onSuccess.run(); // callback pour afficherAccueil, etc.
+                }
+            } catch (Exception ex) {
+                erreurLabel.setText("Erreur : Données invalides.");
+            }
+        });
+
+        Button retourBtn = new Button("Annuler");
+        retourBtn.setOnAction(e -> {
+            if (onSuccess != null) onSuccess.run();
+        });
+
+        box.getChildren().addAll(
+                new Label("Ajouter une machine :"),
+                idField, descField, abscField, ordField, coutField, tempsField,
+                etatBox, ajouterBtn, retourBtn, erreurLabel
+        );
+        return box;
+    }
 }
