@@ -1,5 +1,6 @@
 package com.mycompany.projet_fx;
 
+import com.mycompany.projet_fx.Model.Operateur;
 import com.mycompany.projet_fx.Model.Operation;
 import javafx.application.Application;
 import javafx.collections.FXCollections;

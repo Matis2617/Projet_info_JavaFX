@@ -1,6 +1,7 @@
-package com.mycompany.projet_fx;
+package com.mycompany.projet_fx.Model;
 
 import com.mycompany.projet_fx.Machine.ETAT;
+import com.mycompany.projet_fx.Personne;
 import java.io.Serializable;
 
 /**
