@@ -1,13 +1,22 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projet_fx.View;
 
-/**
- *
- * @author Matis
- */
+import com.mycompany.projet_fx.Model.Machine;
+import javafx.scene.control.Alert;
+
 public class FicheMachineView {
-    
+
+    public static void afficherFicheMachine(Machine m) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Détails de la machine");
+        alert.setHeaderText(m.getDmachine());
+        alert.setContentText(
+                "Description: " + m.getDmachine() + "\n"
+                        + "Abscisse: " + m.getAbscisse() + "\n"
+                        + "Ordonnée: " + m.getOrdonnee() + "\n"
+                        + "Coût: " + m.getC() + "\n"
+                        + "Temps de préparation: " + m.getT() + "\n"
+                        + "État: " + m.getEtat()
+        );
+        alert.showAndWait();
+    }
 }
