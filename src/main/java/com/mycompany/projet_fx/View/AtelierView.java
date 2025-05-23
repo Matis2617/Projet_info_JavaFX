@@ -32,7 +32,7 @@ import com.mycompany.projet_fx.Model.Produit;
 import com.mycompany.projet_fx.Model.ProduitsFinis;
 import com.mycompany.projet_fx.Model.StockBrut;
 
-public class AtelierInterface extends Application {
+public class AtelierView extends Application {
 
     private BorderPane root;
     private Atelier atelier;
