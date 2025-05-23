@@ -4,6 +4,7 @@ import com.mycompany.projet_fx.Model.Poste;
 import com.mycompany.projet_fx.Model.Personne;
 import com.mycompany.projet_fx.Model.Operateur;
 import com.mycompany.projet_fx.Model.Operation;
+import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
