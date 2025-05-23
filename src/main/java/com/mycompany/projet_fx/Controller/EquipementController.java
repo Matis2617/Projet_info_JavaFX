@@ -1,13 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.projet_fx.Controller;
+package com.mycompany.projet_fx.controller;
 
-/**
- *
- * @author Matis
- */
+import com.mycompany.projet_fx.model.Equipement;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public class EquipementController {
-    
+    private ObservableList<Equipement> equipements = FXCollections.observableArrayList();
+
+    public ObservableList<Equipement> getEquipements() {
+        return equipements;
+    }
+
+    public void ajouterEquipement(Equipement equipement) {
+        equipements.add(equipement);
+    }
+
+    public void supprimerEquipement(Equipement equipement) {
+        equipements.remove(equipement);
+    }
 }
