@@ -9,12 +9,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Optional;
-import com.mycompany.projet_fx.controller.FiabiliteController;
-import com.mycompany.projet_fx.view.FiabiliteView;
 
+import com.mycompany.projet_fx.controller.FiabiliteController;
 
 public class AtelierView extends Application {
 
@@ -23,13 +23,12 @@ public class AtelierView extends Application {
     private String nomFichier;
     private FiabiliteController fiabiliteController = new FiabiliteController();
 
-
     // Listes observables partagées avec les vues
     private ObservableList<Gamme> gammesList = FXCollections.observableArrayList();
     private ObservableList<Produit> listeProduits = FXCollections.observableArrayList();
     private ObservableList<Operation> operationsList = FXCollections.observableArrayList();
 
-    // Couleurs pour l’affichage
+    // Couleurs pour l’affichage des postes (plan atelier)
     private final javafx.scene.paint.Color[] couleursPostes = {
             javafx.scene.paint.Color.ROYALBLUE, javafx.scene.paint.Color.DARKORANGE, javafx.scene.paint.Color.FORESTGREEN, javafx.scene.paint.Color.DARKVIOLET, javafx.scene.paint.Color.DARKCYAN,
             javafx.scene.paint.Color.CRIMSON, javafx.scene.paint.Color.DARKMAGENTA, javafx.scene.paint.Color.GOLD, javafx.scene.paint.Color.MEDIUMPURPLE, javafx.scene.paint.Color.DARKSLATEGRAY
@@ -70,7 +69,7 @@ public class AtelierView extends Application {
             atelier = atelierCharge;
         }
 
-        // Si tu veux recharger les opérations/gammes depuis atelier à l’ouverture
+        // Synchronisation des listes observables depuis atelier à l’ouverture
         if (atelier.getGammes() != null) gammesList.addAll(atelier.getGammes());
         if (atelier.getOperations() != null) operationsList.addAll(atelier.getOperations());
 
@@ -86,7 +85,10 @@ public class AtelierView extends Application {
         MenuItem gammeItem = new MenuItem("Gamme");
         MenuItem listeProduitItem = new MenuItem("Produits finis");
         MenuItem fiabiliteItem = new MenuItem("Fiabilité");
-        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, operationItem, produitItem, gammeItem, listeProduitItem, fiabiliteItem);
+        menu.getItems().addAll(
+                accueilItem, machineItem, personnesItem, posteItem, operationItem,
+                produitItem, gammeItem, listeProduitItem, fiabiliteItem
+        );
         menuBar.getMenus().add(menu);
 
         root = new BorderPane();
@@ -101,10 +103,7 @@ public class AtelierView extends Application {
         produitItem.setOnAction(e -> afficherProduit());
         gammeItem.setOnAction(e -> afficherGamme());
         listeProduitItem.setOnAction(e -> afficherListeProduits());
-        fiabiliteItem.setOnAction(e -> {
-    FiabiliteView fiabView = new FiabiliteView(fiabiliteController);
-    root.setCenter(fiabView.getView());
-});
+        fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteController).getView()));
 
         afficherAccueil();
 
