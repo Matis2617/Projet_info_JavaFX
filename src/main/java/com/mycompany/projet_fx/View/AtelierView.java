@@ -35,10 +35,10 @@ public class AtelierView extends Application {
     private ObservableList<Produit> listeProduits = FXCollections.observableArrayList();
     private ObservableList<Operation> operationsList = FXCollections.observableArrayList();
 
-    // Couleurs pour l’affichage des postes (plan atelier)
+    // Palette de couleurs pour postes (doit être la même que dans PlanAtelierView ET PosteFormView)
     private final javafx.scene.paint.Color[] couleursPostes = {
-            javafx.scene.paint.Color.ROYALBLUE, javafx.scene.paint.Color.DARKORANGE, javafx.scene.paint.Color.FORESTGREEN, javafx.scene.paint.Color.DARKVIOLET, javafx.scene.paint.Color.DARKCYAN,
-            javafx.scene.paint.Color.CRIMSON, javafx.scene.paint.Color.DARKMAGENTA, javafx.scene.paint.Color.GOLD, javafx.scene.paint.Color.MEDIUMPURPLE, javafx.scene.paint.Color.DARKSLATEGRAY
+        javafx.scene.paint.Color.ROYALBLUE, javafx.scene.paint.Color.DARKORANGE, javafx.scene.paint.Color.FORESTGREEN, javafx.scene.paint.Color.DARKVIOLET, javafx.scene.paint.Color.DARKCYAN,
+        javafx.scene.paint.Color.CRIMSON, javafx.scene.paint.Color.DARKMAGENTA, javafx.scene.paint.Color.GOLD, javafx.scene.paint.Color.MEDIUMPURPLE, javafx.scene.paint.Color.DARKSLATEGRAY
     };
 
     @Override
@@ -86,7 +86,7 @@ public class AtelierView extends Application {
         MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem personnesItem = new MenuItem("Personnes");
-        MenuItem operateurItem = new MenuItem("Operateur");
+        MenuItem operateurItem = new MenuItem("Opérateur");
         MenuItem posteItem = new MenuItem("Poste");
         MenuItem operationItem = new MenuItem("Opérations");
         MenuItem produitItem = new MenuItem("Produit");
@@ -95,9 +95,8 @@ public class AtelierView extends Application {
         MenuItem fiabiliteItem = new MenuItem("Fiabilité");
         MenuItem stockBrutItem = new MenuItem("Stock Brut");
         menu.getItems().addAll(
-                accueilItem, machineItem, personnesItem, posteItem, operationItem,
-                produitItem, gammeItem, listeProduitItem, fiabiliteItem, stockBrutItem,
-                operateurItem
+            accueilItem, machineItem, personnesItem, operateurItem, posteItem, operationItem,
+            produitItem, gammeItem, listeProduitItem, fiabiliteItem, stockBrutItem
         );
         menuBar.getMenus().add(menu);
 
@@ -119,13 +118,14 @@ public class AtelierView extends Application {
 
         afficherAccueil();
 
-        Scene scene = new Scene(root, 900, 700);
+        Scene scene = new Scene(root, 1050, 740);
         primaryStage.setTitle("Atelier de " + atelier.getNom());
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
     private void afficherAccueil() {
+        // Utilisation de la palette pour l’affichage plan atelier (machines colorées par poste)
         AccueilView accueilView = new AccueilView(atelier, couleursPostes);
         root.setCenter(accueilView.getAccueilPane());
     }
@@ -135,11 +135,12 @@ public class AtelierView extends Application {
     }
 
     private void afficherPoste() {
+        // Passe bien la palette de couleurs pour la cohérence des couleurs de postes
         root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::afficherAccueil));
     }
 
     private void afficherOperation() {
-        // Nouvelle signature : passe atelier, operationsList, nomFichier, callback
+        // Passe atelier, operationsList, nomFichier, callback pour que la sauvegarde se fasse correctement
         OperationView opView = new OperationView(atelier, operationsList, nomFichier, this::afficherAccueil);
         root.setCenter(opView.getView());
     }
@@ -149,7 +150,7 @@ public class AtelierView extends Application {
     }
 
     private void afficherGamme() {
-        // Passe bien le nomFichier (important pour la sauvegarde !)
+        // Passe la liste observable des opérations pour la sélection dans la gamme
         root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, nomFichier, this::afficherAccueil));
     }
 
@@ -161,7 +162,7 @@ public class AtelierView extends Application {
         PersonneView personneView = new PersonneView(new PersonneController());
         root.setCenter(personneView.getView());
     }
-    
+
     private void afficherOperateur() {
         OperateurView operateurView = new OperateurView(new OperateurController());
         root.setCenter(operateurView.getView());
@@ -169,7 +170,7 @@ public class AtelierView extends Application {
 
     private void afficherStockBrut() {
         StockBrutController stockBrutController = new StockBrutController();
-        StockBrutView stockBrutView = new StockBrutView(stockBrutController,atelier,nomFichier);
+        StockBrutView stockBrutView = new StockBrutView(stockBrutController, atelier, nomFichier);
         root.setCenter(stockBrutView);
     }
 
