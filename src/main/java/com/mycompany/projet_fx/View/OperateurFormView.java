@@ -146,6 +146,53 @@ public class OperateurFormView {
                 }
             }
         });
+Button modifierBtn = new Button("Modifier");
+modifierBtn.setStyle("-fx-background-color: #a8e0b6; -fx-text-fill: #14562d; -fx-background-radius: 8; -fx-font-weight: bold;");
+modifierBtn.setOnAction(e -> {
+    Operateur selected = tableOp.getSelectionModel().getSelectedItem();
+    if (selected != null) {
+        // Remplir les champs avec les infos de l'opérateur sélectionné
+        nomField.setText(selected.getNom());
+        prenomField.setText(selected.getPrenom());
+        idField.setText(String.valueOf(selected.getId_op()));
+        compField.setText(selected.getCompetences());
+        etatBox.setValue(selected.getEtat());
+        // Demander le poste cible
+        ChoiceDialog<Poste> posteDialog = new ChoiceDialog<>(null, atelier.getPostes());
+        posteDialog.setTitle("Associer à un poste");
+        posteDialog.setHeaderText("Choisis un poste pour l'opérateur");
+        posteDialog.setContentText("Poste :");
+        Optional<Poste> res = posteDialog.showAndWait();
+        res.ifPresent(poste -> {
+            // Vérifier si le poste et ses machines sont libres
+            boolean posteLibre = (poste.getOperateur() == null);
+            boolean machinesLibres = poste.getMachines().stream().allMatch(m -> m.getEtat() == Machine.ETAT.disponible);
+            if (posteLibre && machinesLibres) {
+                // Mettre à jour l'opérateur sur le poste
+                if (selected.getNom() != null && !selected.getNom().isEmpty())
+                    selected.setNom(nomField.getText());
+                if (selected.getPrenom() != null && !selected.getPrenom().isEmpty())
+                    selected.setPrenom(prenomField.getText());
+                selected.setCompetences(compField.getText());
+                selected.setEtat(etatBox.getValue());
+                poste.setOperateur(selected);
+                // Toutes les machines de ce poste deviennent occupées + opérateur aussi
+                for (Machine m : poste.getMachines()) {
+                    m.setEtat(Machine.ETAT.occupe);
+                    m.setOperateur(selected);
+                }
+                selected.setEtat(Machine.ETAT.occupe);
+                msg.setText("Opérateur mis à jour et associé au poste " + poste.getNomPoste());
+                AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+                tableOp.refresh();
+            } else {
+                msg.setText("Le poste ou une machine est déjà occupé !");
+            }
+        });
+    } else {
+        msg.setText("Sélectionne un opérateur à modifier.");
+    }
+});
 
         rightBox.getChildren().addAll(listeTitre, tableOp,
             assocTitre, new HBox(10, comboPostes, associerBtn, infoLabel), supprimerBtn);
