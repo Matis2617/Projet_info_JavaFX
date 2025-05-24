@@ -82,14 +82,30 @@ String nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
         Atelier atelierCharge = null;
         File f = new File(nomFichier);
         if (f.exists()) {
-            Alert choix = new Alert(Alert.AlertType.CONFIRMATION);
-            choix.setTitle("Projet existant trouvé");
-            choix.setHeaderText("Un projet existe déjà sous ce prénom.");
-            choix.setContentText("Voulez-vous poursuivre l'ancien projet ou en créer un nouveau ?");
-            ButtonType btnAncien = new ButtonType("Poursuivre");
-            ButtonType btnNouveau = new ButtonType("Nouveau projet");
-            choix.getButtonTypes().setAll(btnAncien, btnNouveau);
-            Optional<ButtonType> option = choix.showAndWait();
+            Dialog<ButtonType> choix = new Dialog<>();
+choix.setTitle("Projet existant trouvé");
+choix.setHeaderText(null);
+
+choix.getDialogPane().setStyle("-fx-background-color: #f4faff; -fx-border-radius: 14; -fx-background-radius: 14;");
+
+Label titre2 = new Label("Ce nom existe déjà dans les projets sauvegardés.");
+titre2.setStyle("-fx-font-size: 17px; -fx-font-family: 'Segoe UI', 'Arial', sans-serif; -fx-font-weight: bold; -fx-text-fill: #23374d;");
+
+Label contenu = new Label("Voulez-vous poursuivre l'ancien projet ou en créer un nouveau ?");
+contenu.setStyle("-fx-font-size: 14px; -fx-text-fill: #274472; -fx-padding: 10 0 4 0;");
+
+VBox vbox2 = new VBox(8, titre2, contenu);
+vbox2.setStyle("-fx-padding: 22;");
+
+choix.getDialogPane().setContent(vbox2);
+
+ButtonType btnAncien = new ButtonType("Poursuivre", ButtonBar.ButtonData.YES);
+ButtonType btnNouveau = new ButtonType("Nouveau projet", ButtonBar.ButtonData.NO);
+
+choix.getDialogPane().getButtonTypes().setAll(btnAncien, btnNouveau);
+
+Optional<ButtonType> option = choix.showAndWait();
+
             if (option.isPresent() && option.get() == btnAncien) {
                 atelierCharge = AtelierSauvegarde.chargerAtelier(nomFichier);
             }
