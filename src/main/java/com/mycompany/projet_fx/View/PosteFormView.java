@@ -14,6 +14,12 @@ import java.util.ArrayList;
 
 public class PosteFormView {
 
+    // Palette de couleurs pour affichage postes (utile si tu colories dans la vue)
+    private static final Color[] couleursPostes = {
+            Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
+            Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
+    };
+
     // Ici, le callback est appelé après création (ex : retourner à l'accueil ou rafraîchir)
     public static VBox getPosteForm(
             Atelier atelier,
