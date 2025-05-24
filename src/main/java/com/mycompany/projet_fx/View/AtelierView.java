@@ -74,7 +74,6 @@ public class AtelierView extends Application {
             atelier = atelierCharge;
         }
 
-        // Chargement des listes pour les TableView/tableaux
         if (atelier.getGammes() != null) gammesList.addAll(atelier.getGammes());
         if (atelier.getOperations() != null) operationsList.addAll(atelier.getOperations());
         if (atelier.getEquipements() != null) {
@@ -101,16 +100,6 @@ public class AtelierView extends Application {
         Tab produitTab = new Tab("Produits");
         Tab fiabiliteTab = new Tab("Fiabilité");
 
-        // Pour chaque tab, setContent quand sélectionné
-        accueilTab.setOnSelectionChanged(e -> { if (accueilTab.isSelected()) afficherAccueil(); });
-        machineTab.setOnSelectionChanged(e -> { if (machineTab.isSelected()) afficherFormulaireAjoutMachine(); });
-        posteTab.setOnSelectionChanged(e -> { if (posteTab.isSelected()) afficherPoste(); });
-        operationTab.setOnSelectionChanged(e -> { if (operationTab.isSelected()) afficherOperation(); });
-        operateurTab.setOnSelectionChanged(e -> { if (operateurTab.isSelected()) afficherOperateur(); });
-        gammeTab.setOnSelectionChanged(e -> { if (gammeTab.isSelected()) afficherGamme(); });
-        produitTab.setOnSelectionChanged(e -> { if (produitTab.isSelected()) afficherProduit(); });
-        fiabiliteTab.setOnSelectionChanged(e -> { if (fiabiliteTab.isSelected()) afficherFiabilite(); });
-
         tabPane.getTabs().addAll(
                 accueilTab,
                 machineTab,
@@ -122,14 +111,33 @@ public class AtelierView extends Application {
                 fiabiliteTab
         );
 
-        // Style responsive : onglets qui prennent toute la largeur (CSS interne simple)
-        tabPane.setStyle("-fx-tab-min-width: 120px; -fx-tab-max-width: 400px; -fx-tab-min-height: 35px; -fx-font-size: 15px;");
-        tabPane.tabMinWidthProperty().bind(root.widthProperty().divide(tabPane.getTabs().size()).subtract(5));
-        tabPane.prefWidthProperty().bind(root.widthProperty());
+        // Style: chaque tab prend toute la largeur, adaptatif
+        // Utilise un listener pour changer dynamiquement la largeur de chaque tab
+        tabPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            double largeur = newVal.doubleValue();
+            double largeurTab = largeur / tabPane.getTabs().size();
+            for (Tab tab : tabPane.getTabs()) {
+                // Hack : JavaFX ne propose pas de setter direct, alors on change le style du label du tab
+                tab.setStyle("-fx-tab-min-width: " + largeurTab + "px; -fx-tab-max-width: " + largeurTab + "px;");
+            }
+        });
+
+        // Changement de contenu central selon l’onglet sélectionné
+        tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+            if (newTab == accueilTab) afficherAccueil();
+            else if (newTab == machineTab) afficherFormulaireAjoutMachine();
+            else if (newTab == posteTab) afficherPoste();
+            else if (newTab == operationTab) afficherOperation();
+            else if (newTab == operateurTab) afficherOperateur();
+            else if (newTab == gammeTab) afficherGamme();
+            else if (newTab == produitTab) afficherProduit();
+            else if (newTab == fiabiliteTab) afficherFiabilite();
+        });
 
         root.setTop(tabPane);
 
-        afficherAccueil(); // par défaut
+        // Affiche d'abord l'accueil
+        tabPane.getSelectionModel().select(0); // sélectionne le premier onglet
 
         Scene scene = new Scene(root, 1120, 800);
         primaryStage.setTitle(getTitreAtelier());
