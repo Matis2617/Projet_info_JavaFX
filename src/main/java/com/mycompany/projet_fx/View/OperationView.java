@@ -27,13 +27,10 @@ public class OperationView {
         opList.setPrefHeight(150);
 
         TextField idField = new TextField();
-        idField.setPromptText("ID opération (entier)");
+        idField.setPromptText("Identifiant opération (numérique)");
 
-        TextField dureeField = new TextField();
-        dureeField.setPromptText("Durée (minutes)");
-
-        TextField refEqField = new TextField();
-        refEqField.setPromptText("Référence Équipement");
+        TextField descField = new TextField();
+        descField.setPromptText("Description de l'opération");
 
         Label errorLabel = new Label();
         errorLabel.setStyle("-fx-text-fill: red;");
@@ -41,23 +38,27 @@ public class OperationView {
         Button ajouterBtn = new Button("Ajouter");
         ajouterBtn.setOnAction(e -> {
             try {
-                String idOpStr = idField.getText().trim();
-                String dureeStr = dureeField.getText().trim();
-                String refEq = refEqField.getText().trim();
-                if (idOpStr.isEmpty() || dureeStr.isEmpty() || refEq.isEmpty()) {
+                String idStr = idField.getText().trim();
+                String description = descField.getText().trim();
+
+                if (idStr.isEmpty() || description.isEmpty()) {
                     errorLabel.setText("Tous les champs sont obligatoires.");
                     return;
                 }
-                int idOp = Integer.parseInt(idOpStr);
-                float duree = Float.parseFloat(dureeStr);
-                Operation op = new Operation(idOp, duree, refEq);
+                int idOp = Integer.parseInt(idStr);
+                // Vérification unicité (optionnel)
+                boolean existe = operations.stream().anyMatch(op -> op.getId_operation() == idOp);
+                if (existe) {
+                    errorLabel.setText("Cet identifiant existe déjà !");
+                    return;
+                }
+                Operation op = new Operation(idOp, description);
                 operations.add(op);
                 idField.clear();
-                dureeField.clear();
-                refEqField.clear();
+                descField.clear();
                 errorLabel.setText("");
             } catch (NumberFormatException ex) {
-                errorLabel.setText("L'ID et la durée doivent être des nombres valides.");
+                errorLabel.setText("L'identifiant doit être un nombre entier.");
             } catch (Exception ex) {
                 errorLabel.setText("Erreur: " + ex.getMessage());
             }
@@ -69,7 +70,10 @@ public class OperationView {
         });
 
         root.getChildren().addAll(
-            titre, opList, idField, dureeField, refEqField, ajouterBtn, retourBtn, errorLabel
+            titre, opList,
+            new Label("Ajout d'une opération :"),
+            idField, descField,
+            ajouterBtn, retourBtn, errorLabel
         );
     }
 
