@@ -3,24 +3,22 @@ package com.mycompany.projet_fx.Model;
 import java.io.Serializable;
 
 public class Produit implements Serializable {
-    private int code;
     private String id;
+    private Gamme gamme; // Gamme utilisée pour fabriquer le produit
 
-    public Produit(int code, String id) {
-        this.code = code;
+    public Produit(String id, Gamme gamme) {
         this.id = id;
+        this.gamme = gamme;
     }
 
-    public int getCode() {
-        return code;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public String getId() {
-        return id;
-    }
+    public Gamme getGamme() { return gamme; }
+    public void setGamme(Gamme gamme) { this.gamme = gamme; }
 
     @Override
     public String toString() {
-        return id + " (Code: " + code + ")";
+        return "Produit{" + "id=" + id + ", gamme=" + (gamme != null ? gamme.getRefGamme() : "") + '}';
     }
 }
