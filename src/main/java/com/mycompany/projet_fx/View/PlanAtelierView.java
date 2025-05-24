@@ -7,6 +7,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Alert;
+import com.mycompany.projet_fx.Model.Poste;
 
 public class PlanAtelierView {
 
