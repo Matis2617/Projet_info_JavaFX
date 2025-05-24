@@ -69,13 +69,15 @@ public class PlanAtelierView {
     }
 
     private Color getColorForMachine(Machine m) {
-        for (int i = 0; i < atelier.getPostes().size(); i++) {
-            if (atelier.getPostes().get(i).getMachines().contains(m)) {
-                return couleursPostes[i % couleursPostes.length];
-            }
+    for (int i = 0; i < atelier.getPostes().size(); i++) {
+        Poste poste = atelier.getPostes().get(i);
+        if (poste.getMachines().contains(m)) {
+            return couleursPostes[i % couleursPostes.length];
         }
-        return Color.DARKSLATEBLUE;
     }
+    return Color.DARKSLATEBLUE; 
+}
+
 
     private void afficherFicheMachine(Machine m) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
