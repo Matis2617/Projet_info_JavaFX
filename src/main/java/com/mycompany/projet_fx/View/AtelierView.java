@@ -184,14 +184,13 @@ public class AtelierView extends Application {
     private void afficherOperateur() {
     root.setCenter(
         OperateurFormView.getOperateurForm(
-            FXCollections.observableArrayList(atelier.getOperateurs()),
-            FXCollections.observableArrayList(atelier.getPostes()),
+            operateursList, // la même liste que celle partagée à l'atelier !
+            postesList,     // observable list des postes
             atelier, nomFichier,
             this::afficherAccueil
         )
     );
 }
-
 
     // --- Rafraîchissements : chaque modification doit remettre à jour les listes pour la vue synthétique ---
     private void refreshAfterMachineChange() {
