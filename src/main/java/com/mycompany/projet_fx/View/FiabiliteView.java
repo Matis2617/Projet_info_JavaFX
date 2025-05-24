@@ -1,6 +1,8 @@
 package com.mycompany.projet_fx.view;
 
+import com.mycompany.projet_fx.Model.Atelier;
 import com.mycompany.projet_fx.Model.Fiabilite;
+import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import com.mycompany.projet_fx.controller.FiabiliteController;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
@@ -14,8 +16,14 @@ public class FiabiliteView {
     private FiabiliteController controller;
     private VBox root;
 
-    public FiabiliteView(FiabiliteController controller) {
+    private Atelier atelier;           // Ajout pour la sauvegarde
+    private String nomFichier;         // Ajout pour la sauvegarde
+
+    // Modifiez le constructeur pour accepter atelier et nomFichier
+    public FiabiliteView(FiabiliteController controller, Atelier atelier, String nomFichier) {
         this.controller = controller;
+        this.atelier = atelier;
+        this.nomFichier = nomFichier;
         createView();
     }
 
@@ -65,15 +73,22 @@ public class FiabiliteView {
             try {
                 String nom = nomField.getText();
                 LocalDateTime debutPanne = debutDatePicker.getValue().atTime(
-                    java.time.LocalTime.parse(debutHeureField.getText(), DateTimeFormatter.ofPattern("HH:mm"))
+                        java.time.LocalTime.parse(debutHeureField.getText(), DateTimeFormatter.ofPattern("HH:mm"))
                 );
                 LocalDateTime finPanne = finDatePicker.getValue().atTime(
-                    java.time.LocalTime.parse(finHeureField.getText(), DateTimeFormatter.ofPattern("HH:mm"))
+                        java.time.LocalTime.parse(finHeureField.getText(), DateTimeFormatter.ofPattern("HH:mm"))
                 );
                 String cause = causeField.getText();
 
                 Fiabilite f = new Fiabilite(nom, debutPanne, finPanne, cause);
                 controller.ajouterFiabilite(f);
+
+                // === SAUVEGARDE APRÈS AJOUT ===
+                if (atelier != null) {
+                    atelier.getFiabilites().clear();
+                    atelier.getFiabilites().addAll(controller.getFiabilites());
+                    AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+                }
 
                 nomField.clear();
                 debutDatePicker.setValue(null);
@@ -91,6 +106,13 @@ public class FiabiliteView {
             Fiabilite selected = table.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 controller.supprimerFiabilite(selected);
+
+                // === SAUVEGARDE APRÈS SUPPRESSION ===
+                if (atelier != null) {
+                    atelier.getFiabilites().clear();
+                    atelier.getFiabilites().addAll(controller.getFiabilites());
+                    AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+                }
             }
         });
 
