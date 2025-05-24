@@ -1,6 +1,7 @@
 package com.mycompany.projet_fx.View;
 
 import com.mycompany.projet_fx.Model.Produit;
+import com.mycompany.projet_fx.Model.Gamme;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -9,16 +10,23 @@ import javafx.geometry.Insets;
 
 public class ProduitFormView {
 
-    // Vue d'ajout d'un produit
-    public static Node getProduitForm(ObservableList<Produit> listeProduits, Runnable onRetourAccueil) {
-        VBox box = new VBox(10);
-        box.setStyle("-fx-padding: 20; -fx-alignment: center;");
+    public static Node getProduitForm(
+            ObservableList<Produit> listeProduits,
+            ObservableList<Gamme> listeGammes,
+            Runnable onRetourAccueil
+    ) {
+        VBox box = new VBox(18);
+        box.setPadding(new Insets(28));
+        box.setStyle("-fx-alignment: center;");
 
-        TextField codeField = new TextField();
-        codeField.setPromptText("Code Produit");
+        Label titre = new Label("Ajouter un produit fini");
+        titre.setStyle("-fx-font-size: 19px; -fx-font-weight: bold;");
 
         TextField idField = new TextField();
-        idField.setPromptText("ID Produit");
+        idField.setPromptText("Identifiant du produit");
+
+        ComboBox<Gamme> gammeCombo = new ComboBox<>(listeGammes);
+        gammeCombo.setPromptText("Choisir une gamme utilisée");
 
         Label erreurLabel = new Label();
         erreurLabel.setStyle("-fx-text-fill: red;");
@@ -26,13 +34,23 @@ public class ProduitFormView {
         Button ajouterBtn = new Button("Ajouter le produit");
         ajouterBtn.setOnAction(e -> {
             try {
-                int code = Integer.parseInt(codeField.getText());
-                String id = idField.getText();
-
-                Produit produit = new Produit(code, id);
-                listeProduits.add(produit); // Ajoute à la liste observable
-                System.out.println("Produit ajouté : " + produit);
-                if (onRetourAccueil != null) onRetourAccueil.run();
+                String id = idField.getText().trim();
+                Gamme gamme = gammeCombo.getValue();
+                if (id.isEmpty() || gamme == null) {
+                    erreurLabel.setText("Remplir tous les champs.");
+                    return;
+                }
+                // Vérifier unicité
+                boolean existe = listeProduits.stream().anyMatch(p -> p.getId().equals(id));
+                if (existe) {
+                    erreurLabel.setText("Identifiant déjà utilisé !");
+                    return;
+                }
+                Produit produit = new Produit(id, gamme);
+                listeProduits.add(produit);
+                idField.clear();
+                gammeCombo.setValue(null);
+                erreurLabel.setText("");
             } catch (Exception ex) {
                 erreurLabel.setText("Erreur : Données invalides.");
             }
@@ -43,63 +61,53 @@ public class ProduitFormView {
             if (onRetourAccueil != null) onRetourAccueil.run();
         });
 
-        box.getChildren().addAll(
-                new Label("Ajouter un produit :"),
-                codeField, idField,
-                ajouterBtn, retourBtn, erreurLabel
-        );
-        return box;
-    }
+        // Tableau des produits finis
+        TableView<Produit> tableProduits = new TableView<>(listeProduits);
+        tableProduits.setPrefHeight(220);
+        tableProduits.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-    // Vue d'affichage et gestion de la liste des produits
-    public static Node getListeProduitsView(ObservableList<Produit> listeProduits, Runnable onRetourAccueil) {
-        VBox box = new VBox(15);
-        box.setStyle("-fx-padding: 20; -fx-alignment: center;");
+        TableColumn<Produit, String> idCol = new TableColumn<>("Identifiant");
+        idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getId()));
 
-        Label titre = new Label("Liste des produits finis :");
-        ListView<Produit> produitsListView = new ListView<>(listeProduits);
-        produitsListView.setPrefHeight(150);
+        TableColumn<Produit, String> gammeCol = new TableColumn<>("Gamme utilisée");
+        gammeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                data.getValue().getGamme() == null ? "" : data.getValue().getGamme().getRefGamme()
+        ));
 
-        Label detailsProduit = new Label();
-        detailsProduit.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+        TableColumn<Produit, Number> coutCol = new TableColumn<>("Coût total");
+        coutCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(
+                data.getValue().getGamme() == null ? 0 : data.getValue().getGamme().coutGamme()
+        ));
 
-        // Interaction : Affiche infos produit sélectionné
-        produitsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                detailsProduit.setText(
-                    "Identifiant : " + newVal.getId() + "\n" +
-                    "Code produit : " + newVal.getCode()
-                );
-            } else {
-                detailsProduit.setText("");
-            }
-        });
+        TableColumn<Produit, Number> dureeCol = new TableColumn<>("Durée totale (h)");
+        dureeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(
+                data.getValue().getGamme() == null ? 0 : data.getValue().getGamme().dureeGamme()
+        ));
 
-        // Optionnel : bouton pour supprimer le produit sélectionné
-        Button supprimerBtn = new Button("Supprimer");
+        tableProduits.getColumns().addAll(idCol, gammeCol, coutCol, dureeCol);
+
+        // Suppression
+        Button supprimerBtn = new Button("Supprimer sélection");
         supprimerBtn.setOnAction(e -> {
-            Produit prod = produitsListView.getSelectionModel().getSelectedItem();
-            if (prod != null) {
-                listeProduits.remove(prod);
-                detailsProduit.setText("");
+            Produit sel = tableProduits.getSelectionModel().getSelectedItem();
+            if (sel != null) {
+                listeProduits.remove(sel);
+                tableProduits.getSelectionModel().clearSelection();
             }
         });
 
-        Button retourBtn = new Button("Retour");
-        retourBtn.setOnAction(e -> {
-            if (onRetourAccueil != null) onRetourAccueil.run();
-        });
-
-        HBox actions = new HBox(10, supprimerBtn, retourBtn);
+        HBox actions = new HBox(12, ajouterBtn, supprimerBtn, retourBtn);
         actions.setStyle("-fx-alignment: center;");
 
         box.getChildren().addAll(
-            titre,
-            produitsListView,
-            detailsProduit,
-            actions
+                titre,
+                idField,
+                gammeCombo,
+                erreurLabel,
+                tableProduits,
+                actions
         );
+
         return box;
     }
 }
-
