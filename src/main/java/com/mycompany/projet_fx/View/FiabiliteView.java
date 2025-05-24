@@ -6,6 +6,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FiabiliteView {
 
@@ -33,11 +35,18 @@ public class FiabiliteView {
         panneCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
                 String.valueOf(data.getValue().getTotalTempsDePanne())));
 
+        TableColumn<Fiabilite, String> causeCol = new TableColumn<>("Cause");
+        causeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getCause()));
+
+        TableColumn<Fiabilite, String> dateHeureCol = new TableColumn<>("Date/Heure Panne");
+        dateHeureCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                data.getValue().getDateHeurePanne().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
+
         TableColumn<Fiabilite, String> tauxCol = new TableColumn<>("Taux de fiabilité");
         tauxCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
                 String.format("%.2f %%", data.getValue().calculerFiabilite() * 100)));
 
-        table.getColumns().addAll(nomCol, marcheCol, panneCol, tauxCol);
+        table.getColumns().addAll(nomCol, marcheCol, panneCol, causeCol, dateHeureCol, tauxCol);
 
         // Champs de saisie
         TextField nomField = new TextField();
@@ -49,21 +58,35 @@ public class FiabiliteView {
         TextField panneField = new TextField();
         panneField.setPromptText("Temps panne");
 
+        TextField causeField = new TextField();
+        causeField.setPromptText("Cause");
+
+        DatePicker datePicker = new DatePicker();
+        TextField heureField = new TextField();
+        heureField.setPromptText("Heure (HH:mm)");
+
         Button ajouterBtn = new Button("Ajouter");
         ajouterBtn.setOnAction(e -> {
             try {
                 String nom = nomField.getText();
                 int marche = Integer.parseInt(marcheField.getText());
                 int panne = Integer.parseInt(panneField.getText());
+                String cause = causeField.getText();
+                LocalDateTime dateHeurePanne = datePicker.getValue().atTime(
+                    LocalTime.parse(heureField.getText(), DateTimeFormatter.ofPattern("HH:mm"))
+                );
 
-                Fiabilite f = new Fiabilite(nom, marche, panne);
+                Fiabilite f = new Fiabilite(nom, marche, panne, cause, dateHeurePanne);
                 controller.ajouterFiabilite(f);
 
                 nomField.clear();
                 marcheField.clear();
                 panneField.clear();
-            } catch (NumberFormatException ex) {
-                showAlert("Erreur de saisie", "Temps de marche et de panne doivent être des entiers.");
+                causeField.clear();
+                datePicker.setValue(null);
+                heureField.clear();
+            } catch (Exception ex) {
+                showAlert("Erreur de saisie", "Veuillez vérifier les entrées.");
             }
         });
 
@@ -75,7 +98,7 @@ public class FiabiliteView {
             }
         });
 
-        HBox inputBox = new HBox(10, nomField, marcheField, panneField, ajouterBtn, supprimerBtn);
+        HBox inputBox = new HBox(10, nomField, marcheField, panneField, causeField, datePicker, heureField, ajouterBtn, supprimerBtn);
         inputBox.setPadding(new Insets(10));
 
         root = new VBox(10, table, inputBox);
