@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
-public class PosteFormView {
+public class PosteFormeView {
 
     // Ici, le callback est appelé après création (ex : retourner à l'accueil ou rafraîchir)
     public static VBox getPosteForm(
