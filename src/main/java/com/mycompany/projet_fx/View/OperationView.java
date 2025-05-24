@@ -5,11 +5,10 @@ import com.mycompany.projet_fx.Model.Operation;
 import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.geometry.Insets;
 import javafx.collections.FXCollections;
-import com.mycompany.projet_fx.Model.Operation;
 
 import java.util.ArrayList;
 
@@ -48,7 +47,7 @@ public class OperationView {
         descCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDescription()));
 
         TableColumn<Operation, Number> dureeCol = new TableColumn<>("Durée (h)");
-        dureeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(data.getValue().getDureeOperation()));
+        dureeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(data.getValue().getDuree()));
 
         tableView.getColumns().addAll(idCol, descCol, dureeCol);
 
