@@ -89,7 +89,7 @@ public class AtelierView extends Application {
         posteItem.setOnAction(e -> root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::afficherAccueil)));
         produitItem.setOnAction(e -> root.setCenter(ProduitFormView.getProduitForm(listeProduits, this::afficherAccueil)));
         stockBrutItem.setOnAction(e -> root.setCenter(PlaceholderView.getPlaceholder("Module Stock Brut à venir...")));
-        gammeItem.setOnAction(e -> root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationslist, this::afficherAccueil)));
+        gammeItem.setOnAction(e -> root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, this::afficherAccueil)));
         listeProduitItem.setOnAction(e -> root.setCenter(ProduitFormView.getListeProduitsView(listeProduits, this::afficherAccueil)));
         operationItem.setOnAction(e -> root.setCenter(new OperationView(operationsList, this::afficherAccueil).getView()));
 
