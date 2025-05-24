@@ -33,8 +33,6 @@ public class PosteFormView {
         TableView<Machine> machineTable = new TableView<>(machinesList);
         machineTable.setPrefHeight(300);
         machineTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        // Permettre la sélection multiple
         machineTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         TableColumn<Machine, Number> idCol = new TableColumn<>("Identifiant");
@@ -54,7 +52,6 @@ public class PosteFormView {
 
         TableColumn<Poste, String> posteNomCol = new TableColumn<>("Nom Poste");
         posteNomCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNomPoste()));
-        // Couleur
         TableColumn<Poste, Poste> colorCol = new TableColumn<>("Couleur");
         colorCol.setCellFactory(tc -> new TableCell<>() {
             @Override
@@ -71,7 +68,7 @@ public class PosteFormView {
         colorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue()));
         posteTable.getColumns().addAll(posteNomCol, colorCol);
 
-        // Détail des machines du poste sélectionné
+        // ----------- CORRECTION ICI -------------
         VBox posteDetailsBox = new VBox(8);
         posteDetailsBox.setPadding(new Insets(8));
         posteDetailsBox.setStyle("-fx-background-color: #f7f7f7; -fx-border-color: #c0c0c0;");
@@ -84,7 +81,8 @@ public class PosteFormView {
                 titre.setStyle("-fx-font-weight: bold;");
                 posteDetailsBox.getChildren().add(titre);
                 for (Machine m : selected.getMachines()) {
-                    HBox h = new HBox(7, new Rectangle(12,12,color), new Label(m.toString()));
+                    // Affiche UNIQUEMENT la description de la machine :
+                    HBox h = new HBox(7, new Rectangle(12, 12, color), new Label(m.getDmachine()));
                     posteDetailsBox.getChildren().add(h);
                 }
                 if (selected.getMachines().isEmpty()) {
@@ -92,8 +90,8 @@ public class PosteFormView {
                 }
             }
         });
+        // ----------- FIN CORRECTION -------------
 
-        // Formulaire pour créer/éditer un poste
         TextField nomField = new TextField();
         nomField.setPromptText("Nom du poste");
         Button ajouterBtn = new Button("Créer Poste");
@@ -105,14 +103,12 @@ public class PosteFormView {
         Label msgLabel = new Label();
         msgLabel.setStyle("-fx-text-fill: green;");
 
-        // Ajouter un poste
         ajouterBtn.setOnAction(e -> {
             String nom = nomField.getText().trim();
             if (nom.isEmpty()) {
                 msgLabel.setText("Veuillez donner un nom au poste.");
                 return;
             }
-            // Vérifier unicité
             for (Poste p : postesList) {
                 if (p.getNomPoste().equalsIgnoreCase(nom)) {
                     msgLabel.setText("Nom déjà pris.");
@@ -127,7 +123,6 @@ public class PosteFormView {
             nomField.clear();
         });
 
-        // Renommer le poste sélectionné
         modifierBtn.setOnAction(e -> {
             Poste sel = posteTable.getSelectionModel().getSelectedItem();
             if (sel == null) {
@@ -145,7 +140,6 @@ public class PosteFormView {
             msgLabel.setText("Nom modifié.");
         });
 
-        // Supprimer un poste
         supprimerBtn.setOnAction(e -> {
             Poste sel = posteTable.getSelectionModel().getSelectedItem();
             if (sel == null) {
@@ -160,7 +154,6 @@ public class PosteFormView {
             posteDetailsBox.getChildren().clear();
         });
 
-        // --------- SÉLECTION MULTIPLE POUR AFFECTATION ---------
         ajouterMachineBtn.setOnAction(e -> {
             List<Machine> machinesSelectionnees = new ArrayList<>(machineTable.getSelectionModel().getSelectedItems());
             Poste p = posteTable.getSelectionModel().getSelectedItem();
@@ -180,21 +173,18 @@ public class PosteFormView {
                 AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
                 msgLabel.setText("Machine(s) affectée(s).");
                 posteTable.getSelectionModel().select(p);
-                // Rafraîchit le plan de l'accueil si besoin
                 if (onRetourAccueil != null) onRetourAccueil.run();
             } else {
                 msgLabel.setText("Machines déjà dans ce poste.");
             }
         });
 
-        // Retirer machine sélectionnée du poste
         retirerMachineBtn.setOnAction(e -> {
             Poste p = posteTable.getSelectionModel().getSelectedItem();
             if (p == null) {
                 msgLabel.setText("Sélectionnez un poste.");
                 return;
             }
-            // Choisir la machine à retirer parmi celles du poste
             if (p.getMachines().isEmpty()) {
                 msgLabel.setText("Aucune machine à retirer.");
                 return;
@@ -213,7 +203,6 @@ public class PosteFormView {
             });
         });
 
-        // Layout principal
         VBox leftBox = new VBox(10, new Label("Machines"), machineTable, ajouterMachineBtn);
         VBox rightBox = new VBox(10, new Label("Postes"), posteTable, new HBox(7, nomField, ajouterBtn, modifierBtn, supprimerBtn), retirerMachineBtn, msgLabel, posteDetailsBox);
 
@@ -223,7 +212,6 @@ public class PosteFormView {
         HBox root = new HBox(16, leftBox, rightBox);
         root.setPadding(new Insets(20));
 
-        // Retour accueil
         Button retourBtn = new Button("Retour");
         retourBtn.setOnAction(e -> { if (onRetourAccueil != null) onRetourAccueil.run(); });
         rightBox.getChildren().add(retourBtn);
