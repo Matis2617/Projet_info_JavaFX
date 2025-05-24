@@ -10,7 +10,6 @@ public class Atelier implements Serializable {
     private String nom;
     private ArrayList<Equipement> equipements;     // nom pluriel plus clair
     private ArrayList<Operateur> operateurs;
-    private ChefAtelier chefAtelier;
     private ArrayList<Personne> personnes;
     private ArrayList<Poste> postes = new ArrayList<>();
     private ArrayList<Operation> operations = new ArrayList<>();
@@ -37,9 +36,6 @@ public class Atelier implements Serializable {
 
     public ArrayList<Operateur> getOperateurs() { return operateurs; }
     public void setOperateurs(ArrayList<Operateur> operateurs) { this.operateurs = operateurs; }
-
-    public ChefAtelier getChefAtelier() { return chefAtelier; }
-    public void setChefAtelier(ChefAtelier chefAtelier) { this.chefAtelier = chefAtelier; }
 
     public ArrayList<Personne> getPersonnes() { return personnes; }
     public void setPersonnes(ArrayList<Personne> personnes) { this.personnes = personnes; }

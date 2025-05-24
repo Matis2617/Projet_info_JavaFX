@@ -2,17 +2,16 @@ package com.mycompany.projet_fx.Model;
 
 import java.io.Serializable;
 
-public class Machine extends Equipement implements Serializable {
+public class Machine extends Equipement implements Serializable { 
     public enum ETAT {occupe, disponible}
 
-    private int refmachine;
+    private int refmachine; // identifiant unique par machine
     private String dmachine;
     private int abscisse;
     private int ordonnee;
-    private float c;        // coût
+    private float c;
     private ETAT etat;
 
-    // Constructeur SANS temps de préparation
     public Machine(int id_equipement, int refmachine, String dmachine, int abscisse, int ordonnee, float c, ETAT etat) {
         super(id_equipement);
         this.refmachine = refmachine;
