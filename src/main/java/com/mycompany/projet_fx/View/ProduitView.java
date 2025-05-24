@@ -30,9 +30,8 @@ public class ProduitView {
         Button ajouterBtn = new Button("Ajouter");
         ajouterBtn.setOnAction(e -> {
             try {
-                int code = Integer.parseInt(codeField.getText());
-                String id = idField.getText();
-                controller.ajouterProduit(new Produit(code, id));
+                String id = idField.getText().trim();
+                controller.ajouterProduit(new Produit(id)); 
                 codeField.clear(); idField.clear();
             } catch (Exception ex) { ex.printStackTrace(); }
         });
