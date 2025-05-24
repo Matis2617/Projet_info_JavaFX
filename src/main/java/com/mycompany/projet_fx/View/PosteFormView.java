@@ -228,12 +228,12 @@ public class PosteFormView {
         return root;
     }
 
-    // Renvoie une couleur parmi la palette pour chaque poste (index)
     private static Color getColorForPoste(int i) {
-        Color[] couleurs = {
-                Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
-                Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
-        };
-        return couleurs[i % couleurs.length];
-    }
+    Color[] couleurs = {
+        Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
+        Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
+    };
+    return couleurs[i % couleurs.length];
+}
+
 }
