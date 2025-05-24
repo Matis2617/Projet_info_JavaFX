@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class Operation implements Serializable {
     private int id_operation;
     private String description;
+    private float dureeOperation;
 
     // ----- CONSTRUCTEURS -----
     public Operation(int id_operation, String description) {
@@ -21,6 +22,9 @@ public class Operation implements Serializable {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public float getDureeOperation() { return dureeOperation; }
+    public void setDureeOperation(float dureeOperation) { this.dureeOperation = dureeOperation; }
 
     @Override
     public String toString() {
