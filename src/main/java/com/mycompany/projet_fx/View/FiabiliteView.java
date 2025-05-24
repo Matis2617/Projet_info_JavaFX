@@ -3,22 +3,21 @@ package com.mycompany.projet_fx.view;
 import com.mycompany.projet_fx.Model.Fiabilite;
 import com.mycompany.projet_fx.controller.FiabiliteController;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
 
 public class FiabiliteView {
 
     private FiabiliteController controller;
+    private VBox root;
 
     public FiabiliteView(FiabiliteController controller) {
         this.controller = controller;
+        createView();
     }
 
-    public void afficher(Stage primaryStage) {
-        primaryStage.setTitle("Gestion de la Fiabilité des Machines");
-
+    private void createView() {
         // TableView pour afficher les fiabilités
         TableView<Fiabilite> table = new TableView<>();
         table.setItems(controller.getFiabilites());
@@ -79,11 +78,12 @@ public class FiabiliteView {
         HBox inputBox = new HBox(10, nomField, marcheField, panneField, ajouterBtn, supprimerBtn);
         inputBox.setPadding(new Insets(10));
 
-        VBox root = new VBox(10, table, inputBox);
+        root = new VBox(10, table, inputBox);
         root.setPadding(new Insets(10));
+    }
 
-        primaryStage.setScene(new Scene(root, 700, 400));
-        primaryStage.show();
+    public Parent getView() {
+        return root;
     }
 
     private void showAlert(String title, String message) {
