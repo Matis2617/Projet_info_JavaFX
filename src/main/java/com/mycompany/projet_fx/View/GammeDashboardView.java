@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.geometry.Insets;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public class GammeDashboardView {
         machDescCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDmachine()));
         TableColumn<Machine, String> machPosteCol = new TableColumn<>("Poste");
         machPosteCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-            getPosteNameForMachine(data.getValue(), postesList)
+                getPosteNameForMachine(data.getValue(), postesList)
         ));
         TableColumn<Machine, Color> machColorCol = new TableColumn<>("Couleur Poste");
         machColorCol.setCellFactory(col -> new TableCell<>() {
@@ -76,7 +77,7 @@ public class GammeDashboardView {
             }
         });
         machColorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(
-            getColorForMachine(data.getValue(), postesList)
+                getColorForMachine(data.getValue(), postesList)
         ));
 
         tableMachines.getColumns().addAll(machIdCol, machDescCol, machPosteCol, machColorCol);
@@ -91,17 +92,17 @@ public class GammeDashboardView {
 
         TableColumn<Gamme, String> gammeOpCol = new TableColumn<>("Opérations");
         gammeOpCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-            data.getValue().getOperations().isEmpty()
-                    ? "-"
-                    : data.getValue().getOperations().get(0).getDescription() // Première opération seulement pour l'aperçu
+                data.getValue().getOperations().isEmpty()
+                        ? "-"
+                        : data.getValue().getOperations().get(0).getDescription() // Première opération seulement pour l'aperçu
         ));
 
         TableColumn<Gamme, String> gammeMachCol = new TableColumn<>("Machine");
         gammeMachCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-            data.getValue().getListeEquipements().isEmpty()
-                    ? "-"
-                    : (data.getValue().getListeEquipements().get(0) instanceof Machine
-                        ? ((Machine)data.getValue().getListeEquipements().get(0)).getDmachine()
+                data.getValue().getListeEquipements().isEmpty()
+                        ? "-"
+                        : (data.getValue().getListeEquipements().get(0) instanceof Machine
+                        ? ((Machine) data.getValue().getListeEquipements().get(0)).getDmachine()
                         : data.getValue().getListeEquipements().get(0).affiche())
         ));
 
@@ -129,10 +130,10 @@ public class GammeDashboardView {
         titre3.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         root.getChildren().addAll(
-            titre1, tableOperations,
-            titre2, tableMachines,
-            titre3, tableGammes,
-            detailsLabel
+                titre1, tableOperations,
+                titre2, tableMachines,
+                titre3, tableGammes,
+                detailsLabel
         );
     }
 
@@ -171,7 +172,8 @@ public class GammeDashboardView {
         }
         sb.append("Machines/Eq. utilisées :\n");
         for (Equipement eq : gamme.getListeEquipements()) {
-            if (eq instanceof Machine m) {
+            if (eq instanceof Machine) {
+                Machine m = (Machine) eq;
                 sb.append("  - Machine: ").append(m.getDmachine());
                 sb.append(" [poste: ").append(getPosteNameForMachine(m, postesList)).append("]");
                 sb.append(", coût horaire: ").append(m.getC()).append(" €\n");
