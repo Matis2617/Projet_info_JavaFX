@@ -16,7 +16,6 @@ import java.util.List;
 
 public class GammeFormView {
 
-    // Palette de couleurs pour postes (doit être identique partout !)
     private static final Color[] couleursPostes = {
             Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
             Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
@@ -29,21 +28,26 @@ public class GammeFormView {
             String nomFichier,
             Runnable onRetourAccueil
     ) {
+        // --- Root layout (HBox, prend tout l'espace) ---
         HBox root = new HBox(32);
-        root.setPadding(new Insets(22, 38, 22, 38));
+        root.setPadding(new Insets(18));
+        root.setStyle("-fx-background-color: #f4f8fb;");
+        HBox.setHgrow(root, Priority.ALWAYS);
 
-        // --- Section gauche : Sélection opération/machine ---
-        VBox leftBox = new VBox(18);
-        leftBox.setPrefWidth(350);
+        // --- LEFT ---
+        VBox leftBox = new VBox(16);
+        leftBox.setPrefWidth(330);
+        leftBox.setStyle("-fx-background-color: #ffffff; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-color: #e2e2e2;");
+        VBox.setVgrow(leftBox, Priority.ALWAYS);
 
         Label titreForm = new Label("Créer une gamme");
-        titreForm.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        titreForm.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 0 0 4 0;");
 
-        // Tableau opérations
+        // Table Opérations
         Label opLabel = new Label("Sélectionnez une opération :");
         TableView<Operation> tableOperations = new TableView<>(operationsList);
-        tableOperations.setPrefHeight(150);
-        tableOperations.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableOperations.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        VBox.setVgrow(tableOperations, Priority.ALWAYS);
 
         TableColumn<Operation, Number> opIdCol = new TableColumn<>("ID");
         opIdCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getId_operation()));
@@ -53,19 +57,17 @@ public class GammeFormView {
         opDureeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(data.getValue().getDuree()));
         tableOperations.getColumns().addAll(opIdCol, opDescCol, opDureeCol);
 
-        // Tableau machines
+        // Table Machines
         ObservableList<Machine> machinesList = FXCollections.observableArrayList();
         for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) machinesList.add((Machine) eq);
         }
-
-        // Pour les postes (pour trouver couleur et nom de poste)
         ObservableList<Poste> postesList = FXCollections.observableArrayList(atelier.getPostes());
 
         Label machLabel = new Label("Sélectionnez une machine :");
         TableView<Machine> tableMachines = new TableView<>(machinesList);
-        tableMachines.setPrefHeight(150);
-        tableMachines.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableMachines.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        VBox.setVgrow(tableMachines, Priority.ALWAYS);
 
         TableColumn<Machine, Number> machIdCol = new TableColumn<>("ID");
         machIdCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getRefmachine()));
@@ -90,15 +92,14 @@ public class GammeFormView {
         machColorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(getColorForMachine(data.getValue(), postesList)));
         tableMachines.getColumns().addAll(machIdCol, machDescCol, machPosteCol, machColorCol);
 
-        // Champ référence
+        // Formulaire référence gamme
         Label refGammeLabel = new Label("Référence de la gamme :");
         TextField refGammeInput = new TextField();
 
-        // Boutons
         Button creerBtn = new Button("Créer la gamme");
-        creerBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #8fd14f;");
+        creerBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #8fd14f; -fx-padding: 5 24 5 24;");
         Label creerMsg = new Label();
-        creerMsg.setStyle("-fx-text-fill: green;");
+        creerMsg.setStyle("-fx-text-fill: #1a8838;");
 
         creerBtn.setOnAction(e -> {
             String ref = refGammeInput.getText().trim();
@@ -126,6 +127,8 @@ public class GammeFormView {
         });
 
         Button retourBtn = new Button("Retour Accueil");
+        retourBtn.setStyle("-fx-background-color: #e4e4e4; -fx-font-weight: bold;");
+        retourBtn.setMaxWidth(Double.MAX_VALUE);
         retourBtn.setOnAction(e -> { if (onRetourAccueil != null) onRetourAccueil.run(); });
 
         leftBox.getChildren().addAll(
@@ -135,17 +138,22 @@ public class GammeFormView {
                 refGammeLabel, refGammeInput,
                 creerBtn, creerMsg, retourBtn
         );
+        VBox.setVgrow(tableOperations, Priority.ALWAYS);
+        VBox.setVgrow(tableMachines, Priority.ALWAYS);
 
-        // --- Section droite : Gammes créées et détails ---
-        VBox rightBox = new VBox(14);
-        rightBox.setPrefWidth(440);
+        // --- RIGHT ---
+        VBox rightBox = new VBox(18);
+        rightBox.setPrefWidth(480);
+        rightBox.setStyle("-fx-background-color: #fff; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-color: #e2e2e2;");
+        VBox.setVgrow(rightBox, Priority.ALWAYS);
 
         Label gammesLbl = new Label("Gammes créées");
-        gammesLbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        gammesLbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 2 0 2 0;");
 
         TableView<Gamme> gammeTable = new TableView<>(gammesList);
-        gammeTable.setPrefHeight(210);
-        gammeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        gammeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        gammeTable.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(gammeTable, Priority.ALWAYS);
 
         TableColumn<Gamme, String> gammeRefCol = new TableColumn<>("Référence");
         gammeRefCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getRefGamme() == null ? "" : data.getValue().getRefGamme()));
@@ -163,13 +171,14 @@ public class GammeFormView {
         ));
         gammeTable.getColumns().addAll(gammeRefCol, gammeOpCol, gammeMachCol);
 
-        // Label/VBox détails de la gamme
+        // Détails
         Label detailsTitre = new Label("Détails de la gamme sélectionnée");
         detailsTitre.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-underline: true;");
 
         VBox gammeDetailsBox = new VBox(7);
-        gammeDetailsBox.setStyle("-fx-background-color: #f6f8fa; -fx-padding: 16; -fx-border-color: #b3b3b3; -fx-border-radius: 8; -fx-background-radius: 8;");
-        gammeDetailsBox.setMinWidth(350);
+        gammeDetailsBox.setStyle("-fx-background-color: #f7fafc; -fx-padding: 16; -fx-border-color: #d7d7d7; -fx-border-radius: 8; -fx-background-radius: 8;");
+        gammeDetailsBox.setMinWidth(370);
+        VBox.setVgrow(gammeDetailsBox, Priority.ALWAYS);
 
         gammeTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, gamme) -> {
             gammeDetailsBox.getChildren().clear();
@@ -216,12 +225,19 @@ public class GammeFormView {
                 gammesLbl, gammeTable,
                 detailsTitre, gammeDetailsBox
         );
+        VBox.setVgrow(gammeTable, Priority.ALWAYS);
+        VBox.setVgrow(gammeDetailsBox, Priority.ALWAYS);
+
+        // Les deux sections prennent tout l'espace
+        HBox.setHgrow(leftBox, Priority.ALWAYS);
+        HBox.setHgrow(rightBox, Priority.ALWAYS);
 
         root.getChildren().addAll(leftBox, new Separator(javafx.geometry.Orientation.VERTICAL), rightBox);
+        HBox.setHgrow(root, Priority.ALWAYS);
+
         return root;
     }
 
-    // Utilitaires pour trouver le poste associé à une machine
     private static String getPosteNameForMachine(Machine m, List<Poste> postesList) {
         for (Poste poste : postesList) {
             if (poste.getMachines().contains(m)) return poste.getNomPoste();
