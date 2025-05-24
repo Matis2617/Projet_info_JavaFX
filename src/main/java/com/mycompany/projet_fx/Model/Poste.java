@@ -1,49 +1,35 @@
 package com.mycompany.projet_fx.Model;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Poste extends Equipement implements Serializable {
-    private int refposte;
-    private String dposte;
-    private ArrayList<Machine> machines;
+    private String nomPoste;
+    private List<Machine> machines;
 
-    // ---- CONSTRUCTEUR ----
-    public Poste(int refposte, String dposte, ArrayList<Machine> machines, int id_equipement) {
-        super(id_equipement);
-        this.refposte = refposte;
-        this.dposte = dposte;
-        this.machines = machines;
+    // --- CONSTRUCTEUR ---
+    public Poste(String nomPoste) {
+        super(0); // id_equipement inutilisé pour Poste ou à adapter
+        this.nomPoste = nomPoste;
+        this.machines = new ArrayList<>();
     }
 
-    // ---- GETTERS / SETTERS ----
-    public int getRefposte() { return refposte; }
-    public void setRefposte(int refposte) { this.refposte = refposte; }
+    // --- GETTERS / SETTERS ---
+    public String getNomPoste() { return nomPoste; }
+    public void setNomPoste(String nomPoste) { this.nomPoste = nomPoste; }
 
-    public String getDposte() { return dposte; }
-    public void setDposte(String dposte) { this.dposte = dposte; }
+    public List<Machine> getMachines() { return machines; }
+    public void setMachines(List<Machine> machines) { this.machines = machines; }
 
-    public ArrayList<Machine> getMachines() { return machines; }
-    public void setMachines(ArrayList<Machine> machines) { this.machines = machines; }
-
-    // ---- AFFICHAGE POUR MVC / DEBUG ----
+    // Pour l'affichage dans TableView ou ComboBox
     @Override
     public String toString() {
-        return "Poste: " + dposte + " (Réf: " + refposte + ")";
+        return nomPoste;
     }
 
-    // Méthode pour afficher les machines liées à ce poste
-    public String machinesToString() {
-        if (machines == null || machines.isEmpty()) return "Aucune machine";
-        StringBuilder sb = new StringBuilder();
-        for (Machine m : machines) {
-            sb.append(m.getDmachine()).append(" | ");
-        }
-        return sb.toString();
-    }
-
-    // (Optionnel, garder la méthode "affiche" si tu veux, mais toString est la norme MVC)
     @Override
     public String affiche() {
-        return "Référence = " + refposte + ", dposte = " + dposte;
+        return "Nom du poste : " + nomPoste;
     }
 }
