@@ -13,8 +13,10 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.text.Font;
+// Importe les autres vues nécessaires selon ton projet
+
 import com.mycompany.projet_fx.view.FiabiliteView;
-import com.mycompany.projet_fx.controller.FiabiliteController;
+import com.mycompany.projet_fx.Controller.FiabiliteController;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,8 +40,6 @@ public class AtelierView extends Application {
     };
 
     private String nomUtilisateur;
-
-    private final FiabiliteController fiabiliteController = new FiabiliteController();
 
     @Override
     public void start(Stage primaryStage) {
@@ -85,12 +85,13 @@ public class AtelierView extends Application {
             }
         }
         if (atelier.getPostes() != null) postesList.addAll(atelier.getPostes());
+        if (atelier.getProduits() != null) listeProduits.addAll(atelier.getProduits());
 
         // Barre de menu
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Menu");
 
-        // Ordre : accueil, machines, poste, operations, personnes, operateur, gammes, produit, produits finis, fiabilite
+        // Ordre : accueil, machines, poste, operations, personnes, operateur, gammes, produit, fiabilite
         MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem posteItem = new MenuItem("Poste");
@@ -98,21 +99,19 @@ public class AtelierView extends Application {
         MenuItem personnesItem = new MenuItem("Personnes");
         MenuItem operateurItem = new MenuItem("Opérateur");
         MenuItem gammeItem = new MenuItem("Gammes");
-        MenuItem produitItem = new MenuItem("Produit");
-        MenuItem listeProduitItem = new MenuItem("Produits finis");
+        MenuItem produitItem = new MenuItem("Produits finis");
         MenuItem fiabiliteItem = new MenuItem("Fiabilité");
 
         menu.getItems().addAll(
-                accueilItem,
-                machineItem,
-                posteItem,
-                operationItem,
-                personnesItem,
-                operateurItem,
-                gammeItem,
-                produitItem,
-                listeProduitItem,
-                fiabiliteItem
+            accueilItem,
+            machineItem,
+            posteItem,
+            operationItem,
+            personnesItem,
+            operateurItem,
+            gammeItem,
+            produitItem,
+            fiabiliteItem
         );
         menuBar.getMenus().add(menu);
 
@@ -127,9 +126,8 @@ public class AtelierView extends Application {
         personnesItem.setOnAction(e -> afficherPersonne());
         operateurItem.setOnAction(e -> afficherOperateur());
         gammeItem.setOnAction(e -> afficherGamme());
-        produitItem.setOnAction(e -> afficherProduit());
-        listeProduitItem.setOnAction(e -> afficherListeProduits());
-        fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteController).getView()));
+        produitItem.setOnAction(e -> afficherListeProduits());
+        fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(new FiabiliteController()).getView()));
 
         afficherAccueil();
 
@@ -177,10 +175,6 @@ public class AtelierView extends Application {
         root.setCenter(new OperationView(atelier, operationsList, nomFichier, this::refreshAfterOperationChange).getView());
     }
 
-    private void afficherProduit() {
-    root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, this::afficherAccueil));
-}
-
     private void afficherGamme() {
         root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, nomFichier, this::refreshAfterGammeChange));
     }
@@ -189,27 +183,21 @@ public class AtelierView extends Application {
         root.setCenter(ProduitFormView.getListeProduitsView(listeProduits, this::afficherAccueil));
     }
 
+    private void afficherProduit() {
+        root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, this::afficherListeProduits));
+    }
+
     private void afficherPersonne() {
-        // Remplacer ceci par la vraie vue personne si elle existe
-        Label l = new Label("Vue Personnes à implémenter !");
-        l.setStyle("-fx-font-size: 22px; -fx-text-fill: #3B5998; -fx-padding: 120;");
-        VBox v = new VBox(l);
-        v.setAlignment(Pos.CENTER);
-        root.setCenter(v);
+        // À compléter selon ta logique de PersonneView
     }
 
     private void afficherOperateur() {
-        // Remplacer ceci par la vraie vue opérateur si elle existe
-        Label l = new Label("Vue Opérateur à implémenter !");
-        l.setStyle("-fx-font-size: 22px; -fx-text-fill: #009688; -fx-padding: 120;");
-        VBox v = new VBox(l);
-        v.setAlignment(Pos.CENTER);
-        root.setCenter(v);
+        // À compléter selon ta logique de OperateurView
     }
 
     // --- Rafraîchissements : chaque modification doit remettre à jour les listes pour la vue synthétique ---
     private void refreshAfterMachineChange() {
-        machinesList.clear();
+        machinesList.setAll();
         for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) machinesList.add((Machine) eq);
         }
