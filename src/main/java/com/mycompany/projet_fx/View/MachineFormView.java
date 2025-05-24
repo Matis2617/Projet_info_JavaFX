@@ -24,10 +24,10 @@ public class MachineFormView {
         descField.setPromptText("Description");
 
         TextField abscField = new TextField();
-        abscField.setPromptText("Abscisse (0-49)");
+        abscField.setPromptText("Abscisse (0-4)");
 
         TextField ordField = new TextField();
-        ordField.setPromptText("Ordonnée (0-49)");
+        ordField.setPromptText("Ordonnée (0-4)");
 
         TextField coutField = new TextField();
         coutField.setPromptText("Coût");
@@ -49,7 +49,7 @@ public class MachineFormView {
                 float cout = Float.parseFloat(coutField.getText());
                 Machine.ETAT etat = etatBox.getValue();
 
-                if (absc < 0 || absc >= 50 || ord < 0 || ord >= 50) {
+                if (absc < 0 || absc >= 5 || ord < 0 || ord >= 5) {
                     erreurLabel.setText("Erreur : Coordonnées hors de l'atelier !");
                     return;
                 }
