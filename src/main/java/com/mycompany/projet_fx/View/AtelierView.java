@@ -15,7 +15,7 @@ import javafx.geometry.Pos;
 import javafx.scene.text.Font;
 
 import com.mycompany.projet_fx.view.FiabiliteView;
-import com.mycompany.projet_fx.controller.FiabiliteController; // corrige ici le package ! 
+import com.mycompany.projet_fx.controller.FiabiliteController;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -179,14 +179,9 @@ public class AtelierView extends Application {
     }
 
     private void afficherProduit() {
-    root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, this::afficherListeProduits));
-}
-
-private void afficherListeProduits() {
-    // Réutilise le même écran, ou tu peux créer une méthode dédiée si besoin
-    root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, this::afficherAccueil));
-}
-
+        // Important : passer atelier ET nomFichier pour la sauvegarde des produits créés !
+        root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, atelier, nomFichier, this::afficherAccueil));
+    }
 
     private void afficherPersonne() {
         // À compléter selon ta logique de PersonneView
