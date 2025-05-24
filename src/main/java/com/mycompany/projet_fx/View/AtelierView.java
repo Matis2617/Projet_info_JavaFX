@@ -8,45 +8,33 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.stage.Stage;
-import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.geometry.Pos;
+import javafx.scene.text.Font;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Optional;
-
-import com.mycompany.projet_fx.controller.FiabiliteController;
-import com.mycompany.projet_fx.view.FiabiliteView;
-import com.mycompany.projet_fx.controller.PersonneController;
-import com.mycompany.projet_fx.view.PersonneView;
-import com.mycompany.projet_fx.controller.OperateurController;
-import com.mycompany.projet_fx.view.OperateurView;
-import com.mycompany.projet_fx.controller.StockBrutController;
-import com.mycompany.projet_fx.view.StockBrutView;
 
 public class AtelierView extends Application {
 
     private BorderPane root;
     private Atelier atelier;
     private String nomFichier;
-    private FiabiliteController fiabiliteController = new FiabiliteController();
 
-    // Listes observables partagées avec les vues
     private ObservableList<Gamme> gammesList = FXCollections.observableArrayList();
     private ObservableList<Produit> listeProduits = FXCollections.observableArrayList();
     private ObservableList<Operation> operationsList = FXCollections.observableArrayList();
+    private ObservableList<Machine> machinesList = FXCollections.observableArrayList();
+    private ObservableList<Poste> postesList = FXCollections.observableArrayList();
 
-    // Palette de couleurs pour postes (doit être la même que dans PlanAtelierView ET PosteFormView)
     private final javafx.scene.paint.Color[] couleursPostes = {
-        javafx.scene.paint.Color.ROYALBLUE, javafx.scene.paint.Color.DARKORANGE, javafx.scene.paint.Color.FORESTGREEN, javafx.scene.paint.Color.DARKVIOLET, javafx.scene.paint.Color.DARKCYAN,
-        javafx.scene.paint.Color.CRIMSON, javafx.scene.paint.Color.DARKMAGENTA, javafx.scene.paint.Color.GOLD, javafx.scene.paint.Color.MEDIUMPURPLE, javafx.scene.paint.Color.DARKSLATEGRAY
+            javafx.scene.paint.Color.ROYALBLUE, javafx.scene.paint.Color.DARKORANGE, javafx.scene.paint.Color.FORESTGREEN, javafx.scene.paint.Color.DARKVIOLET, javafx.scene.paint.Color.DARKCYAN,
+            javafx.scene.paint.Color.CRIMSON, javafx.scene.paint.Color.DARKMAGENTA, javafx.scene.paint.Color.GOLD, javafx.scene.paint.Color.MEDIUMPURPLE, javafx.scene.paint.Color.DARKSLATEGRAY
     };
 
-    private String nomUtilisateur; // à utiliser dans toute la classe
-    private String article;        // "de " ou "d'"
+    private String nomUtilisateur;
 
     @Override
     public void start(Stage primaryStage) {
@@ -58,15 +46,6 @@ public class AtelierView extends Application {
         Optional<String> result = dialog.showAndWait();
         nomUtilisateur = result.orElse("Utilisateur").trim();
         nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
-
-        // Calcul du bon article ("de " ou "d'")
-        article = "de ";
-        if (!nomUtilisateur.isEmpty()) {
-            char firstLetter = Character.toLowerCase(nomUtilisateur.charAt(0));
-            if ("aeiouy".indexOf(firstLetter) != -1) {
-                article = "d'";
-            }
-        }
 
         Atelier atelierCharge = null;
         File f = new File(nomFichier);
@@ -92,15 +71,21 @@ public class AtelierView extends Application {
             atelier = atelierCharge;
         }
 
-        // Synchronisation des listes observables depuis atelier à l’ouverture
+        // Chargement des listes pour les TableView/tableaux
         if (atelier.getGammes() != null) gammesList.addAll(atelier.getGammes());
         if (atelier.getOperations() != null) operationsList.addAll(atelier.getOperations());
+        if (atelier.getEquipements() != null) {
+            for (Equipement eq : atelier.getEquipements()) {
+                if (eq instanceof Machine) machinesList.add((Machine) eq);
+            }
+        }
+        if (atelier.getPostes() != null) postesList.addAll(atelier.getPostes());
 
-        // Barre de menu (avec style amélioré)
+        // Barre de menu
         MenuBar menuBar = new MenuBar();
-        menuBar.setStyle("-fx-font-size: 15px; -fx-font-family: 'Segoe UI', 'Arial', sans-serif; -fx-background-color: #f3f4f8; -fx-border-color: #dedede;");
+        menuBar.setStyle("-fx-font-family: 'Segoe UI Semibold', 'Arial', sans-serif; -fx-font-size: 15px;");
+
         Menu menu = new Menu("Menu");
-        menu.setStyle("-fx-font-size: 15px; -fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
         MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem personnesItem = new MenuItem("Personnes");
@@ -110,18 +95,16 @@ public class AtelierView extends Application {
         MenuItem produitItem = new MenuItem("Produit");
         MenuItem gammeItem = new MenuItem("Gamme");
         MenuItem listeProduitItem = new MenuItem("Produits finis");
-        MenuItem fiabiliteItem = new MenuItem("Fiabilité");
-        MenuItem stockBrutItem = new MenuItem("Stock Brut");
+        MenuItem syntheseItem = new MenuItem("Synthèse");
         menu.getItems().addAll(
-            accueilItem, machineItem, personnesItem, operateurItem, posteItem, operationItem,
-            produitItem, gammeItem, listeProduitItem, fiabiliteItem, stockBrutItem
+                accueilItem, machineItem, personnesItem, operateurItem, posteItem, operationItem,
+                produitItem, gammeItem, listeProduitItem, syntheseItem
         );
         menuBar.getMenus().add(menu);
 
         root = new BorderPane();
         root.setTop(menuBar);
 
-        // Actions menu
         accueilItem.setOnAction(e -> afficherAccueil());
         machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
         posteItem.setOnAction(e -> afficherPoste());
@@ -129,55 +112,54 @@ public class AtelierView extends Application {
         produitItem.setOnAction(e -> afficherProduit());
         gammeItem.setOnAction(e -> afficherGamme());
         listeProduitItem.setOnAction(e -> afficherListeProduits());
-        fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteController).getView()));
+        syntheseItem.setOnAction(e -> afficherSynthese());
         personnesItem.setOnAction(e -> afficherPersonne());
         operateurItem.setOnAction(e -> afficherOperateur());
-        stockBrutItem.setOnAction(e -> afficherStockBrut());
 
         afficherAccueil();
 
-        Scene scene = new Scene(root, 1050, 740);
-        primaryStage.setTitle("Atelier " + article + nomUtilisateur);
+        Scene scene = new Scene(root, 1120, 800);
+        primaryStage.setTitle(getTitreAtelier());
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    // Méthode pour obtenir un noeud d'accueil customisé
-    private Node getAccueilPaneBeau() {
-        VBox accueil = new VBox(28);
-        accueil.setStyle("-fx-alignment: center; -fx-padding: 44 0 0 0; -fx-background-color: #f8fafc;");
-        Label titre = new Label("Bienvenue dans l’atelier " + article + nomUtilisateur);
-        titre.setFont(Font.font("Segoe UI", FontWeight.BOLD, 32));
-        titre.setStyle("-fx-text-fill: #2d3a4a; -fx-effect: dropshadow(gaussian, #b3b8c5, 6,0,2,2);");
-        Label info = new Label("Gérez vos machines, postes, opérations et plus grâce au menu ci-dessus !");
-        info.setFont(Font.font("Segoe UI", 18));
-        info.setStyle("-fx-text-fill: #60697a; -fx-padding: 12 0 0 0;");
-        accueil.getChildren().addAll(titre, info);
-
-        // Ajoute le plan d’atelier joliment en dessous si tu veux
-        PlanAtelierView planView = new PlanAtelierView(atelier, couleursPostes);
-        accueil.getChildren().add(planView.creerPlanAtelier());
-
-        return accueil;
+    // Ateliers de / d'
+    private String getTitreAtelier() {
+        if (nomUtilisateur.isEmpty()) return "Atelier";
+        char first = Character.toLowerCase(nomUtilisateur.charAt(0));
+        String voyelles = "aeiouyéèêëàâäîïôöùûü";
+        String prefixe = voyelles.indexOf(first) >= 0 ? "Atelier d'" : "Atelier de ";
+        return prefixe + nomUtilisateur;
     }
 
     private void afficherAccueil() {
-    AccueilView accueilView = new AccueilView(atelier, couleursPostes);
-    root.setCenter(accueilView.getAccueilPane());
-}
+        VBox vbox = new VBox(24);
+        vbox.setAlignment(Pos.CENTER);
 
+        Label titre = new Label("Bienvenue dans " + getTitreAtelier());
+        titre.setFont(Font.font("Segoe UI Semibold", 26));
+        titre.setStyle("-fx-text-fill: #284785; -fx-font-weight: bold; -fx-padding: 30 0 15 0;");
+
+        // Plan centré
+        HBox centerHBox = new HBox();
+        centerHBox.setAlignment(Pos.CENTER);
+        centerHBox.getChildren().add(new PlanAtelierView(atelier, couleursPostes).creerPlanAtelier());
+
+        vbox.getChildren().addAll(titre, centerHBox);
+        root.setCenter(vbox);
+    }
 
     private void afficherFormulaireAjoutMachine() {
-        root.setCenter(MachineFormView.getMachineForm(atelier, nomFichier, this::afficherAccueil));
+        root.setCenter(MachineFormView.getMachineForm(atelier, nomFichier, this::refreshAfterMachineChange));
     }
 
     private void afficherPoste() {
-        root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::afficherAccueil));
+        root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::refreshAfterPosteChange));
     }
 
     private void afficherOperation() {
-        OperationView opView = new OperationView(atelier, operationsList, nomFichier, this::afficherAccueil);
-        root.setCenter(opView.getView());
+        root.setCenter(new OperationView(atelier, operationsList, nomFichier, this::refreshAfterOperationChange).getView());
     }
 
     private void afficherProduit() {
@@ -185,7 +167,7 @@ public class AtelierView extends Application {
     }
 
     private void afficherGamme() {
-        root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, nomFichier, this::afficherAccueil));
+        root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, nomFichier, this::refreshAfterGammeChange));
     }
 
     private void afficherListeProduits() {
@@ -193,19 +175,48 @@ public class AtelierView extends Application {
     }
 
     private void afficherPersonne() {
-        PersonneView personneView = new PersonneView(new PersonneController());
-        root.setCenter(personneView.getView());
+        // À compléter selon ta logique de PersonneView
     }
 
     private void afficherOperateur() {
-        OperateurView operateurView = new OperateurView(new OperateurController());
-        root.setCenter(operateurView.getView());
+        // À compléter selon ta logique de OperateurView
     }
 
-    private void afficherStockBrut() {
-        StockBrutController stockBrutController = new StockBrutController();
-        StockBrutView stockBrutView = new StockBrutView(stockBrutController, atelier, nomFichier);
-        root.setCenter(stockBrutView);
+    private void afficherSynthese() {
+        // On met à jour les listes pour la synthèse
+        machinesList.setAll();
+        for (Equipement eq : atelier.getEquipements()) {
+            if (eq instanceof Machine) machinesList.add((Machine) eq);
+        }
+        postesList.setAll(atelier.getPostes());
+        gammesList.setAll(atelier.getGammes());
+        operationsList.setAll(atelier.getOperations());
+
+        root.setCenter(new GammeDashboardView(operationsList, machinesList, gammesList, postesList).getView());
+    }
+
+    // --- Rafraîchissements : chaque modification doit remettre à jour les listes pour la vue synthétique ---
+    private void refreshAfterMachineChange() {
+        machinesList.setAll();
+        for (Equipement eq : atelier.getEquipements()) {
+            if (eq instanceof Machine) machinesList.add((Machine) eq);
+        }
+        afficherAccueil();
+    }
+
+    private void refreshAfterPosteChange() {
+        postesList.setAll(atelier.getPostes());
+        afficherAccueil();
+    }
+
+    private void refreshAfterGammeChange() {
+        gammesList.setAll(atelier.getGammes());
+        afficherAccueil();
+    }
+
+    private void refreshAfterOperationChange() {
+        operationsList.setAll(atelier.getOperations());
+        afficherAccueil();
     }
 
     public static void main(String[] args) {
