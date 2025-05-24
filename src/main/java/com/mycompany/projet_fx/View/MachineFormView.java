@@ -4,11 +4,13 @@ import com.mycompany.projet_fx.Model.Machine;
 import com.mycompany.projet_fx.Model.Equipement;
 import com.mycompany.projet_fx.Model.Atelier;
 import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
+
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class MachineFormView {
 
@@ -16,52 +18,46 @@ public class MachineFormView {
         VBox box = new VBox(16);
         box.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
-        // ----------- TABLEAU DES MACHINES -----------
+        // Liste observable des machines existantes
         ObservableList<Machine> machinesList = FXCollections.observableArrayList();
-        // Synchronise avec les équipements de l’atelier
         for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) machinesList.add((Machine) eq);
         }
-        TableView<Machine> tableView = new TableView<>(machinesList);
-        tableView.setPrefHeight(170);
 
-        // Colonne Identifiant
+        // TableView
+        TableView<Machine> tableView = new TableView<>(machinesList);
+        tableView.setPrefHeight(200);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        VBox.setVgrow(tableView, Priority.ALWAYS);
+
         TableColumn<Machine, Number> idCol = new TableColumn<>("Identifiant");
         idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getRefmachine()));
 
-        // Colonne Description
         TableColumn<Machine, String> descCol = new TableColumn<>("Description");
         descCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDmachine()));
 
-        // Colonne Abscisse
         TableColumn<Machine, Number> abscCol = new TableColumn<>("Abscisse");
         abscCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getAbscisse()));
 
-        // Colonne Ordonnée
         TableColumn<Machine, Number> ordCol = new TableColumn<>("Ordonnée");
         ordCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getOrdonnee()));
 
-        // Colonne Coût
         TableColumn<Machine, Number> coutCol = new TableColumn<>("Coût horaire");
         coutCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(data.getValue().getC()));
 
         tableView.getColumns().addAll(idCol, descCol, abscCol, ordCol, coutCol);
 
-        // ----------- FORMULAIRE D'AJOUT/EDITION -----------
+        // Champs de saisie
         TextField idField = new TextField();
-        idField.setPromptText("Identifiant");
-
+        idField.setPromptText("Identifiant (unique)");
         TextField descField = new TextField();
         descField.setPromptText("Description");
-
         TextField abscField = new TextField();
         abscField.setPromptText("Abscisse (0-9)");
-
         TextField ordField = new TextField();
         ordField.setPromptText("Ordonnée (0-9)");
-
         TextField coutField = new TextField();
-        coutField.setPromptText("Coût horaire");
+        coutField.setPromptText("Coût horaire (€)");
 
         ComboBox<Machine.ETAT> etatBox = new ComboBox<>();
         etatBox.getItems().addAll(Machine.ETAT.values());
@@ -70,8 +66,13 @@ public class MachineFormView {
         Label erreurLabel = new Label();
         erreurLabel.setStyle("-fx-text-fill: red;");
 
-        // ----------- BOUTON AJOUTER -----------
-        Button ajouterBtn = new Button("Ajouter la machine");
+        // Boutons
+        Button ajouterBtn = new Button("Ajouter");
+        Button modifierBtn = new Button("Modifier");
+        Button supprimerBtn = new Button("Supprimer");
+        Button retourBtn = new Button("Retour");
+
+        // Ajouter une machine
         ajouterBtn.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(idField.getText());
@@ -85,119 +86,137 @@ public class MachineFormView {
                     erreurLabel.setText("Erreur : Coordonnées hors de l'atelier !");
                     return;
                 }
-
-                // Vérification unicité
-                boolean existe = false;
+                if (desc.isEmpty() || etat == null) {
+                    erreurLabel.setText("Veuillez remplir tous les champs.");
+                    return;
+                }
+                // Vérifie unicité identifiant et position
                 for (Equipement eq : atelier.getEquipements()) {
                     if (eq instanceof Machine) {
                         Machine m = (Machine) eq;
                         if (m.getRefmachine() == id) {
-                            existe = true;
                             erreurLabel.setText("Erreur : Identifiant déjà utilisé !");
-                            break;
+                            return;
                         }
                         if (m.getAbscisse() == absc && m.getOrdonnee() == ord) {
-                            existe = true;
                             erreurLabel.setText("Erreur : Coordonnées déjà utilisées !");
-                            break;
+                            return;
                         }
                     }
                 }
-                if (!existe) {
-                    Machine m = new Machine(
-                            atelier.getEquipements().size() + 1, // id_equipement (unique)
-                            id, desc, absc, ord, cout, etat
-                    );
-                    atelier.getEquipements().add(m);
-                    machinesList.add(m);
-                    AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
-                    erreurLabel.setText("Machine ajoutée !");
-                    // reset form
-                    idField.clear(); descField.clear(); abscField.clear();
-                    ordField.clear(); coutField.clear(); etatBox.getSelectionModel().clearSelection();
-                    if (onSuccess != null) onSuccess.run();
-                }
+
+                Machine m = new Machine(
+                        atelier.getEquipements().size() + 1, // id_equipement unique interne
+                        id, desc, absc, ord, cout, etat
+                );
+                atelier.getEquipements().add(m);
+                machinesList.add(m);
+                AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+
+                idField.clear();
+                descField.clear();
+                abscField.clear();
+                ordField.clear();
+                coutField.clear();
+                etatBox.setValue(null);
+                erreurLabel.setText("");
+                if (onSuccess != null) onSuccess.run();
+
             } catch (Exception ex) {
                 erreurLabel.setText("Erreur : Données invalides.");
             }
         });
 
-        // ----------- BOUTON MODIFIER -----------
-        Button modifierBtn = new Button("Modifier");
-        modifierBtn.setOnAction(ev -> {
-            Machine selected = tableView.getSelectionModel().getSelectedItem();
+        // Remplir les champs lors de la sélection d'une ligne
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, selected) -> {
             if (selected != null) {
-                // Popup édition
-                modifierMachine(selected, atelier, nomFichier, () -> {
-                    tableView.refresh();
-                    AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
-                });
+                idField.setText(String.valueOf(selected.getRefmachine()));
+                descField.setText(selected.getDmachine());
+                abscField.setText(String.valueOf(selected.getAbscisse()));
+                ordField.setText(String.valueOf(selected.getOrdonnee()));
+                coutField.setText(String.valueOf(selected.getC()));
+                etatBox.setValue(selected.getEtat());
             }
         });
 
-        // ----------- BOUTON SUPPRIMER -----------
-        Button supprimerBtn = new Button("Supprimer");
-        supprimerBtn.setOnAction(ev -> {
+        // Modifier une machine sélectionnée
+        modifierBtn.setOnAction(e -> {
             Machine selected = tableView.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                atelier.getEquipements().remove(selected);
-                machinesList.remove(selected);
+            if (selected == null) {
+                erreurLabel.setText("Sélectionnez une machine à modifier.");
+                return;
+            }
+            try {
+                int id = Integer.parseInt(idField.getText());
+                String desc = descField.getText();
+                int absc = Integer.parseInt(abscField.getText());
+                int ord = Integer.parseInt(ordField.getText());
+                float cout = Float.parseFloat(coutField.getText());
+                Machine.ETAT etat = etatBox.getValue();
+
+                if (absc < 0 || absc >= 10 || ord < 0 || ord >= 10) {
+                    erreurLabel.setText("Erreur : Coordonnées hors de l'atelier !");
+                    return;
+                }
+                if (desc.isEmpty() || etat == null) {
+                    erreurLabel.setText("Veuillez remplir tous les champs.");
+                    return;
+                }
+                // Vérifie unicité sur les autres machines
+                for (Machine m : machinesList) {
+                    if (m != selected) {
+                        if (m.getRefmachine() == id) {
+                            erreurLabel.setText("Erreur : Identifiant déjà utilisé !");
+                            return;
+                        }
+                        if (m.getAbscisse() == absc && m.getOrdonnee() == ord) {
+                            erreurLabel.setText("Erreur : Coordonnées déjà utilisées !");
+                            return;
+                        }
+                    }
+                }
+                selected.setRefmachine(id);
+                selected.setDmachine(desc);
+                selected.setAbscisse(absc);
+                selected.setOrdonnee(ord);
+                selected.setC(cout);
+                selected.setEtat(etat);
+                tableView.refresh();
                 AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
-                erreurLabel.setText("Machine supprimée.");
+
+                erreurLabel.setText("Machine modifiée !");
+            } catch (Exception ex) {
+                erreurLabel.setText("Erreur : Données invalides.");
             }
         });
 
-        Button retourBtn = new Button("Annuler");
-        retourBtn.setOnAction(e -> { if (onSuccess != null) onSuccess.run(); });
+        // Supprimer une machine sélectionnée
+        supprimerBtn.setOnAction(e -> {
+            Machine selected = tableView.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                erreurLabel.setText("Sélectionnez une machine à supprimer.");
+                return;
+            }
+            atelier.getEquipements().remove(selected);
+            machinesList.remove(selected);
+            tableView.getSelectionModel().clearSelection();
+            AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+            erreurLabel.setText("Machine supprimée.");
+        });
+
+        retourBtn.setOnAction(e -> {
+            if (onSuccess != null) onSuccess.run();
+        });
 
         HBox boutonsBox = new HBox(10, ajouterBtn, modifierBtn, supprimerBtn, retourBtn);
 
         box.getChildren().addAll(
                 new Label("Machines créées :"), tableView,
-                new Label("Ajouter une machine :"),
+                new Label("Ajouter ou modifier une machine :"),
                 idField, descField, abscField, ordField, coutField,
                 etatBox, boutonsBox, erreurLabel
         );
+
         return box;
-    }
-
-    public static void modifierMachine(Machine machine, Atelier atelier, String nomFichier, Runnable onRefresh) {
-        Dialog<Void> dlg = new Dialog<>();
-        dlg.setTitle("Modifier la machine");
-        VBox box = new VBox(10);
-        box.setPadding(new Insets(8));
-
-        TextField descField = new TextField(machine.getDmachine());
-        TextField abscField = new TextField(String.valueOf(machine.getAbscisse()));
-        TextField ordField = new TextField(String.valueOf(machine.getOrdonnee()));
-        TextField coutField = new TextField(String.valueOf(machine.getC()));
-        ComboBox<Machine.ETAT> etatBox = new ComboBox<>();
-        etatBox.getItems().addAll(Machine.ETAT.values());
-        etatBox.setValue(machine.getEtat());
-
-        Button valider = new Button("Valider");
-        valider.setOnAction(ev -> {
-            machine.setDmachine(descField.getText());
-            machine.setAbscisse(Integer.parseInt(abscField.getText()));
-            machine.setOrdonnee(Integer.parseInt(ordField.getText()));
-            machine.setC(Float.parseFloat(coutField.getText()));
-            machine.setEtat(etatBox.getValue());
-            AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
-            dlg.setResult(null);
-            dlg.close();
-            if (onRefresh != null) onRefresh.run();
-        });
-
-        box.getChildren().addAll(
-                new Label("Description :"), descField,
-                new Label("Abscisse :"), abscField,
-                new Label("Ordonnée :"), ordField,
-                new Label("Coût :"), coutField,
-                new Label("État :"), etatBox,
-                valider
-        );
-        dlg.getDialogPane().setContent(box);
-        dlg.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        dlg.showAndWait();
     }
 }
