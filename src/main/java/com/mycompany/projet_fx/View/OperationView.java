@@ -27,10 +27,13 @@ public class OperationView {
         opList.setPrefHeight(150);
 
         TextField idField = new TextField();
-        idField.setPromptText("ID opération");
+        idField.setPromptText("ID opération (entier)");
 
         TextField dureeField = new TextField();
-        dureeField.setPromptText("Durée");
+        dureeField.setPromptText("Durée (minutes)");
+
+        TextField refEqField = new TextField();
+        refEqField.setPromptText("Référence Équipement");
 
         Label errorLabel = new Label();
         errorLabel.setStyle("-fx-text-fill: red;");
@@ -38,20 +41,23 @@ public class OperationView {
         Button ajouterBtn = new Button("Ajouter");
         ajouterBtn.setOnAction(e -> {
             try {
-                String idOp = idField.getText().trim();
+                String idOpStr = idField.getText().trim();
                 String dureeStr = dureeField.getText().trim();
-                if (idOp.isEmpty() || dureeStr.isEmpty()) {
+                String refEq = refEqField.getText().trim();
+                if (idOpStr.isEmpty() || dureeStr.isEmpty() || refEq.isEmpty()) {
                     errorLabel.setText("Tous les champs sont obligatoires.");
                     return;
                 }
-                double duree = Double.parseDouble(dureeStr);
-                Operation op = new Operation(idOp, duree, refEq); // Adapte selon ton constructeur
+                int idOp = Integer.parseInt(idOpStr);
+                float duree = Float.parseFloat(dureeStr);
+                Operation op = new Operation(idOp, duree, refEq);
                 operations.add(op);
                 idField.clear();
                 dureeField.clear();
+                refEqField.clear();
                 errorLabel.setText("");
             } catch (NumberFormatException ex) {
-                errorLabel.setText("La durée doit être un nombre.");
+                errorLabel.setText("L'ID et la durée doivent être des nombres valides.");
             } catch (Exception ex) {
                 errorLabel.setText("Erreur: " + ex.getMessage());
             }
@@ -62,7 +68,9 @@ public class OperationView {
             if (onRetourAccueil != null) onRetourAccueil.run();
         });
 
-        root.getChildren().addAll(titre, opList, idField, dureeField, ajouterBtn, retourBtn, errorLabel);
+        root.getChildren().addAll(
+            titre, opList, idField, dureeField, refEqField, ajouterBtn, retourBtn, errorLabel
+        );
     }
 
     public VBox getView() {
