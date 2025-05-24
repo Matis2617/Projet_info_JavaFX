@@ -32,4 +32,15 @@ public class Poste extends Equipement implements Serializable {
     public String affiche() {
         return "Nom du poste : " + nomPoste;
     }
+    private Operateur operateur;
+public Operateur getOperateur() { return operateur; }
+public void setOperateur(Operateur operateur) { this.operateur = operateur; }
+
+public List<Machine> getMachines() {
+    List<Machine> machines = new ArrayList<>();
+    for (Equipement eq : this.getEquipements()) {
+        if (eq instanceof Machine) machines.add((Machine) eq);
+    }
+    return machines;
+}
 }
