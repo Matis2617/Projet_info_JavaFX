@@ -12,6 +12,9 @@ public class Gamme implements Serializable {
     private List<Operation> operations;
     private List<Equipement> listeEquipements;
 
+    // Ajouté pour le lien avec l'atelier
+    private transient Atelier atelier; // On peut mettre transient si tu ne veux pas sérialiser tout l'atelier avec chaque gamme
+
     // --- Constructeurs ---
     public Gamme() {
         this.operations = new ArrayList<>();
@@ -32,6 +35,10 @@ public class Gamme implements Serializable {
 
     public List<Equipement> getListeEquipements() { return listeEquipements; }
     public void setListeEquipements(List<Equipement> listeEquipements) { this.listeEquipements = new ArrayList<>(listeEquipements); }
+
+    // --- Pour l'atelier ---
+    public Atelier getAtelier() { return atelier; }
+    public void setAtelier(Atelier atelier) { this.atelier = atelier; }
 
     // --- Méthodes métier ---
     /**
@@ -63,34 +70,32 @@ public class Gamme implements Serializable {
      * Calcule le coût total de la gamme.
      * Attention : Cast Equipement → Machine : OK uniquement si tous les équipements sont bien des machines !
      */
-public float coutGamme() {
-    float coutTotal = 0;
-    int n = Math.min(operations.size(), listeEquipements.size());
-    for (int i = 0; i < n; i++) {
-        Operation op = operations.get(i);
-        Equipement eq = listeEquipements.get(i);
-        if (eq instanceof Machine) {
-            Machine m = (Machine) eq;
-            coutTotal += m.getC() * op.getDuree(); // coût horaire × durée (en heures)
+    public float coutGamme() {
+        float coutTotal = 0;
+        int n = Math.min(operations.size(), listeEquipements.size());
+        for (int i = 0; i < n; i++) {
+            Operation op = operations.get(i);
+            Equipement eq = listeEquipements.get(i);
+            if (eq instanceof Machine) {
+                Machine m = (Machine) eq;
+                coutTotal += m.getC() * op.getDuree(); // coût horaire × durée (en heures)
+            }
         }
+        return coutTotal;
     }
-    return coutTotal;
-}
-
 
     /**
      * Calcule la durée totale de la gamme (somme des durées des opérations).
      */
-public float dureeGamme() {
-    float dureeTotale = 0;
-    for (Operation operation : operations) {
-        if (operation != null) {
-            dureeTotale += operation.getDuree();
+    public float dureeGamme() {
+        float dureeTotale = 0;
+        for (Operation operation : operations) {
+            if (operation != null) {
+                dureeTotale += operation.getDuree();
+            }
         }
+        return dureeTotale;
     }
-    return dureeTotale;
-}
-
 
     @Override
     public String toString() {
