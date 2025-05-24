@@ -13,25 +13,44 @@ import java.util.ArrayList;
 
 public class GammeFormView {
 
-    public static Node getGammeForm(Atelier atelier, ObservableList<Gamme> gammesList, ObservableList<Operation> operationsList, Runnable onRetourAccueil) {
+    public static Node getGammeForm(
+            Atelier atelier,
+            ObservableList<Gamme> gammesList,
+            ObservableList<Operation> operationsList,
+            Runnable onRetourAccueil
+    ) {
         VBox vbox = new VBox(15);
         vbox.setPadding(new Insets(20));
 
         Label titre = new Label("Gestion des Gammes");
         titre.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        // Listes à sélectionner pour composer la gamme
+        // ---- LISTES À SÉLECTIONNER POUR COMPOSER LA GAMME ----
         Label opLabel = new Label("Opérations disponibles :");
         ListView<Operation> listOp = new ListView<>();
-        listOp.setItems(operationsList); 
+        listOp.setItems(operationsList);
         listOp.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        listOp.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Operation op, boolean empty) {
+                super.updateItem(op, empty);
+                setText((empty || op == null) ? "" : op.toString());
+            }
+        });
 
         Label eqLabel = new Label("Équipements disponibles :");
         ListView<Equipement> listEq = new ListView<>();
         listEq.getItems().addAll(atelier.getEquipements());
         listEq.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        listEq.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Equipement eq, boolean empty) {
+                super.updateItem(eq, empty);
+                setText((empty || eq == null) ? "" : eq.affiche());
+            }
+        });
 
-        // Création d'une gamme
+        // ---- CRÉATION D'UNE GAMME ----
         Label refGammeLabel = new Label("Référence de la gamme :");
         TextField refGammeInput = new TextField();
 
@@ -62,7 +81,7 @@ public class GammeFormView {
             listEq.getSelectionModel().clearSelection();
         });
 
-        // ListView des gammes
+        // ---- LISTE DES GAMMES ----
         Label gammesLbl = new Label("Gammes créées :");
         ListView<Gamme> gammesView = new ListView<>(gammesList);
         gammesView.setPrefHeight(100);
@@ -70,11 +89,18 @@ public class GammeFormView {
             @Override
             protected void updateItem(Gamme g, boolean empty) {
                 super.updateItem(g, empty);
-                setText(empty || g == null ? "" : g.getRefGamme());
+                if (empty || g == null) setText("");
+                else setText(
+                    "Réf: " + g.getRefGamme() +
+                    " | Équipements: " + g.getListeEquipements().size() +
+                    " | Opérations: " + g.getOperations().size() +
+                    " | Coût: " + g.coutGamme() +
+                    " | Durée: " + g.dureeGamme() + " min"
+                );
             }
         });
 
-        // Boutons d'action sur la gamme sélectionnée
+        // ---- BOUTONS D'ACTION ----
         HBox actions = new HBox(10);
         Button afficherBtn = new Button("Afficher");
         Button modifierBtn = new Button("Modifier");
@@ -86,7 +112,7 @@ public class GammeFormView {
         Label infoGamme = new Label();
         infoGamme.setStyle("-fx-font-size: 13px; -fx-padding: 5;");
 
-        // Actions
+        // -- ACTIONS --
         afficherBtn.setOnAction(e -> {
             Gamme g = gammesView.getSelectionModel().getSelectedItem();
             if (g != null) {
@@ -94,10 +120,12 @@ public class GammeFormView {
                 sb.append("Référence : ").append(g.getRefGamme()).append("\n");
                 sb.append("Opérations :\n");
                 for (Operation op : g.getOperations())
-                    sb.append("- ").append(op.getId_operation()).append("\n");
+                    sb.append("- ").append(op.toString()).append("\n");
                 sb.append("Équipements :\n");
                 for (Equipement eq : g.getListeEquipements())
                     sb.append("- ").append(eq.affiche()).append("\n");
+                sb.append("Coût total : ").append(g.coutGamme()).append("\n");
+                sb.append("Durée totale : ").append(g.dureeGamme()).append(" min\n");
                 infoGamme.setText(sb.toString());
             }
         });
@@ -112,15 +140,28 @@ public class GammeFormView {
             modifBox.setPadding(new Insets(8));
 
             ListView<Operation> opEdit = new ListView<>();
-            if (atelier.getOperations() != null)
-                opEdit.getItems().addAll(atelier.getOperations());
+            opEdit.getItems().addAll(operationsList);
             opEdit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            opEdit.setCellFactory(lv -> new ListCell<>() {
+                @Override
+                protected void updateItem(Operation op, boolean empty) {
+                    super.updateItem(op, empty);
+                    setText((empty || op == null) ? "" : op.toString());
+                }
+            });
             for (Operation op : g.getOperations())
                 opEdit.getSelectionModel().select(op);
 
             ListView<Equipement> eqEdit = new ListView<>();
             eqEdit.getItems().addAll(atelier.getEquipements());
             eqEdit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            eqEdit.setCellFactory(lv -> new ListCell<>() {
+                @Override
+                protected void updateItem(Equipement eq, boolean empty) {
+                    super.updateItem(eq, empty);
+                    setText((empty || eq == null) ? "" : eq.affiche());
+                }
+            });
             for (Equipement eq : g.getListeEquipements())
                 eqEdit.getSelectionModel().select(eq);
 
@@ -150,7 +191,7 @@ public class GammeFormView {
         dureeBtn.setOnAction(e -> {
             Gamme g = gammesView.getSelectionModel().getSelectedItem();
             if (g != null)
-                showAlert("Durée gamme", "Durée de la gamme : " + g.dureeGamme());
+                showAlert("Durée gamme", "Durée de la gamme : " + g.dureeGamme() + " min");
         });
 
         retourBtn.setOnAction(e -> {
