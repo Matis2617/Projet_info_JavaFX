@@ -41,12 +41,6 @@ public class AtelierView extends Application {
     private ObservableList<Gamme> gammesList = FXCollections.observableArrayList();
     private ObservableList<Produit> listeProduits = FXCollections.observableArrayList(); // Liste des produits
 
-    private final Color[] couleursPostes = {
-            Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
-            Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
-    };
-
-
     @Override
     public void start(Stage primaryStage) {
         // Saisie du nom de l'utilisateur
@@ -122,60 +116,11 @@ private void afficherAccueil() {
 }
 
 
-    // Génération du plan de l’atelier
-    private Pane creerPlanAtelier() {
-        Pane planPane = new Pane();
-        int tailleAtelier = 500;
-        int grille = 50;
-        double unite = (double) tailleAtelier / grille;
-
-        planPane.setPrefSize(tailleAtelier, tailleAtelier);
-
-        // Fond atelier
-        Rectangle fond = new Rectangle(0, 0, tailleAtelier, tailleAtelier);
-        fond.setFill(Color.LIGHTGRAY);
-        fond.setStroke(Color.GRAY);
-        planPane.getChildren().add(fond);
-
-        // Dessine les machines
-        for (Equipement eq : atelier.getEquipements()) {
-            if (eq instanceof Machine) {
-                Machine m = (Machine) eq;
-                double x = m.getAbscisse() * unite;
-                double y = m.getOrdonnee() * unite;
-
-                Rectangle carre = new Rectangle(x, y, unite, unite);
-                carre.setFill(getColorForMachine(m));
-                carre.setStroke(Color.DARKBLUE);
-                carre.setArcWidth(8); carre.setArcHeight(8);
-
-                // Détails au clic
-                carre.setOnMouseClicked(ev -> afficherFicheMachine(m));
-
-                planPane.getChildren().add(carre);
-            }
-        }
-        return planPane;
-    }
-
-    // Pop-up d’information sur une machine
-    private void afficherFicheMachine(Machine m) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Détails de la machine");
-        alert.setHeaderText(m.getDmachine());
-        alert.setContentText(
-                "Description: " + m.getDmachine() + "\n"
-                + "Abscisse: " + m.getAbscisse() + "\n"
-                + "Ordonnée: " + m.getOrdonnee() + "\n"
-                + "Coût: " + m.getC() + "\n"
-                + "Temps de préparation: " + m.getT() + "\n"
-                + "État: " + m.getEtat()
-        );
-        alert.showAndWait();
-    }
-
-   root.setCenter(MachineFormView.getMachineForm(atelier, nomFichier, this::afficherAccueil));
+    
+    root.setCenter(MachineFormView.getMachineForm(atelier, nomFichier, this::afficherAccueil));
     root.setCenter(PlaceholderView.getPlaceholder("Module Personnes à venir..."));
+    root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::afficherAccueil));
+
 
 
     // Ajout d'un poste
