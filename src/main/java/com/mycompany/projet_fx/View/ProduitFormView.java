@@ -156,4 +156,75 @@ public class ProduitFormView {
 
         return root;
     }
+    public static Node getProduitTableView(ObservableList<Produit> listeProduits, Runnable onRetourAccueil) {
+    VBox box = new VBox(15);
+    box.setStyle("-fx-padding: 20; -fx-alignment: stretch;");
+
+    Label titre = new Label("Tableau des produits finis");
+    titre.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+    TableView<Produit> produitTable = new TableView<>(listeProduits);
+    produitTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+    TableColumn<Produit, String> idCol = new TableColumn<>("Identifiant");
+    idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getId()));
+    TableColumn<Produit, String> gammeCol = new TableColumn<>("Gamme utilisée");
+    gammeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        data.getValue().getGamme() != null ? data.getValue().getGamme().getRefGamme() : ""
+    ));
+    TableColumn<Produit, String> prixCol = new TableColumn<>("Prix");
+    prixCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        data.getValue().getPrix() + " €"
+    ));
+    TableColumn<Produit, String> coutCol = new TableColumn<>("Coût d'utilisation");
+    coutCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        data.getValue().getGamme() != null ? data.getValue().getGamme().coutGamme() + " €" : ""
+    ));
+
+    produitTable.getColumns().addAll(idCol, gammeCol, prixCol, coutCol);
+
+    Label detail = new Label("Sélectionnez un produit pour voir le détail.");
+    detail.setStyle("-fx-background-color: #f8f8f8; -fx-padding: 12; -fx-border-color: #e0e0e0; -fx-font-size: 15px;");
+
+    produitTable.getSelectionModel().selectedItemProperty().addListener((obs, old, prod) -> {
+        if (prod != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Identifiant : ").append(prod.getId()).append("\n");
+            sb.append("Gamme utilisée : ");
+            if (prod.getGamme() != null) {
+                sb.append(prod.getGamme().getRefGamme()).append("\n");
+                sb.append("Opérations :\n");
+                for (Operation op : prod.getGamme().getOperations()) {
+                    sb.append("  - ").append(op.getDescription()).append("\n");
+                }
+                sb.append("Machines associées :\n");
+                for (Equipement eq : prod.getGamme().getListeEquipements()) {
+                    if (eq instanceof Machine) {
+                        Machine m = (Machine) eq;
+                        sb.append("  - ").append(m.getDmachine()).append("\n");
+                    } else {
+                        sb.append("  - ").append(eq.affiche()).append("\n");
+                    }
+                }
+                sb.append("Coût total : ").append(prod.getGamme().coutGamme()).append(" €\n");
+                sb.append("Durée totale : ").append(prod.getGamme().dureeGamme()).append(" h");
+            } else {
+                sb.append("Aucune gamme associée.\n");
+            }
+            sb.append("Prix du produit : ").append(prod.getPrix()).append(" €\n");
+            detail.setText(sb.toString());
+        } else {
+            detail.setText("Sélectionnez un produit pour voir le détail.");
+        }
+    });
+
+    Button retourBtn = new Button("Retour");
+    retourBtn.setOnAction(e -> {
+        if (onRetourAccueil != null) onRetourAccueil.run();
+    });
+
+    box.getChildren().addAll(titre, produitTable, detail, retourBtn);
+    return box;
+}
+
 }
