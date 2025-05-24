@@ -9,6 +9,8 @@ public class OperationView {
     private VBox root;
     private final ObservableList<Operation> operations;
     private final Runnable onRetourAccueil;
+    private final Atelier atelier;         
+    private final String nomFichier;
 
     public OperationView(Atelier atelier, ObservableList<Operation> operations, String nomFichier, Runnable onRetourAccueil) {
     this.atelier = atelier;
