@@ -9,12 +9,16 @@ public class FicheMachineView {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Détails de la machine");
         alert.setHeaderText(m.getDmachine());
+        String operateurInfo = (m.getOperateur() != null) ?
+            m.getOperateur().getNom() + " " + m.getOperateur().getPrenom() :
+            "Aucun";
         alert.setContentText(
                 "Description: " + m.getDmachine() + "\n"
-                        + "Abscisse: " + m.getAbscisse() + "\n"
-                        + "Ordonnée: " + m.getOrdonnee() + "\n"
-                        + "Coût: " + m.getC() + "\n"
-                        + "État: " + m.getEtat()
+                + "Abscisse: " + m.getAbscisse() + "\n"
+                + "Ordonnée: " + m.getOrdonnee() + "\n"
+                + "Coût: " + m.getC() + "\n"
+                + "État: " + m.getEtat() + "\n"
+                + "Opérateur associé : " + operateurInfo
         );
         alert.showAndWait();
     }
