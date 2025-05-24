@@ -9,7 +9,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import com.mycompany.projet_fx.Model.Atelier;
 import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import java.util.ArrayList;
 
@@ -22,7 +21,6 @@ public class GammeFormView {
             String nomFichier,
             Runnable onRetourAccueil
     ) {
-        // Layout principal en HBox : Formulaire à gauche, liste à droite
         HBox root = new HBox(25);
         root.setPadding(new Insets(16, 32, 16, 32));
 
@@ -135,7 +133,6 @@ public class GammeFormView {
         Button modifierBtn = new Button("Modifier cette gamme");
         modifierBtn.setStyle("-fx-background-color: #ffca3a; -fx-font-weight: bold;");
 
-        // Sélection d'une gamme -> affiche toutes les infos
         gammesView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, g) -> {
             if (g != null) {
                 StringBuilder sb = new StringBuilder();
@@ -164,7 +161,6 @@ public class GammeFormView {
             gammesLbl, gammesView, infoGamme, modifierBtn
         );
 
-        // Ajoute les deux blocs au root horizontalement
         root.getChildren().addAll(vboxForm, new Separator(javafx.geometry.Orientation.VERTICAL), vboxListe);
         return root;
     }
