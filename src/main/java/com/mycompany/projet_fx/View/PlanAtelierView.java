@@ -3,11 +3,11 @@ package com.mycompany.projet_fx.View;
 import com.mycompany.projet_fx.Model.Atelier;
 import com.mycompany.projet_fx.Model.Equipement;
 import com.mycompany.projet_fx.Model.Machine;
+import com.mycompany.projet_fx.Model.Poste;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Alert;
-import com.mycompany.projet_fx.Model.Poste;
 
 public class PlanAtelierView {
 
@@ -69,16 +69,18 @@ public class PlanAtelierView {
         return planPane;
     }
 
+    // CORRECTION : utilise == pour comparer les instances de Machine !
     private Color getColorForMachine(Machine m) {
-    for (int i = 0; i < atelier.getPostes().size(); i++) {
-        Poste poste = atelier.getPostes().get(i);
-        if (poste.getMachines().contains(m)) {
-            return couleursPostes[i % couleursPostes.length];
+        for (int i = 0; i < atelier.getPostes().size(); i++) {
+            Poste poste = atelier.getPostes().get(i);
+            for (Machine pm : poste.getMachines()) {
+                if (pm == m) {
+                    return couleursPostes[i % couleursPostes.length];
+                }
+            }
         }
+        return Color.DARKSLATEBLUE; // Machine sans poste
     }
-    return Color.DARKSLATEBLUE; 
-}
-
 
     private void afficherFicheMachine(Machine m) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
