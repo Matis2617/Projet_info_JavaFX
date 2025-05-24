@@ -7,7 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class FiabiliteView {
@@ -24,68 +23,64 @@ public class FiabiliteView {
         // TableView pour afficher les fiabilités
         TableView<Fiabilite> table = new TableView<>();
         table.setItems(controller.getFiabilites());
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Fiabilite, String> nomCol = new TableColumn<>("Nom Machine");
         nomCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNomMachine()));
 
-        TableColumn<Fiabilite, String> marcheCol = new TableColumn<>("Temps de marche (min)");
-        marcheCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                String.valueOf(data.getValue().getTotalTempsDeMarche())));
+        TableColumn<Fiabilite, String> debutCol = new TableColumn<>("Début Panne");
+        debutCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                data.getValue().getDebutPanne().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
 
-        TableColumn<Fiabilite, String> panneCol = new TableColumn<>("Temps de panne (min)");
-        panneCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                String.valueOf(data.getValue().getTotalTempsDePanne())));
+        TableColumn<Fiabilite, String> finCol = new TableColumn<>("Fin Panne");
+        finCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                data.getValue().getFinPanne().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
 
         TableColumn<Fiabilite, String> causeCol = new TableColumn<>("Cause");
         causeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getCause()));
-
-        TableColumn<Fiabilite, String> dateHeureCol = new TableColumn<>("Date/Heure Panne");
-        dateHeureCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getDateHeurePanne().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
 
         TableColumn<Fiabilite, String> tauxCol = new TableColumn<>("Taux de fiabilité");
         tauxCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
                 String.format("%.2f %%", data.getValue().calculerFiabilite() * 100)));
 
-        table.getColumns().addAll(nomCol, marcheCol, panneCol, causeCol, dateHeureCol, tauxCol);
+        table.getColumns().addAll(nomCol, debutCol, finCol, causeCol, tauxCol);
 
         // Champs de saisie
         TextField nomField = new TextField();
         nomField.setPromptText("Nom machine");
 
-        TextField marcheField = new TextField();
-        marcheField.setPromptText("Temps marche");
+        DatePicker debutDatePicker = new DatePicker();
+        TextField debutHeureField = new TextField();
+        debutHeureField.setPromptText("Heure début (HH:mm)");
 
-        TextField panneField = new TextField();
-        panneField.setPromptText("Temps panne");
+        DatePicker finDatePicker = new DatePicker();
+        TextField finHeureField = new TextField();
+        finHeureField.setPromptText("Heure fin (HH:mm)");
 
         TextField causeField = new TextField();
         causeField.setPromptText("Cause");
-
-        DatePicker datePicker = new DatePicker();
-        TextField heureField = new TextField();
-        heureField.setPromptText("Heure (HH:mm)");
 
         Button ajouterBtn = new Button("Ajouter");
         ajouterBtn.setOnAction(e -> {
             try {
                 String nom = nomField.getText();
-                int marche = Integer.parseInt(marcheField.getText());
-                int panne = Integer.parseInt(panneField.getText());
-                String cause = causeField.getText();
-                LocalDateTime dateHeurePanne = datePicker.getValue().atTime(
-                    LocalTime.parse(heureField.getText(), DateTimeFormatter.ofPattern("HH:mm"))
+                LocalDateTime debutPanne = debutDatePicker.getValue().atTime(
+                    java.time.LocalTime.parse(debutHeureField.getText(), DateTimeFormatter.ofPattern("HH:mm"))
                 );
+                LocalDateTime finPanne = finDatePicker.getValue().atTime(
+                    java.time.LocalTime.parse(finHeureField.getText(), DateTimeFormatter.ofPattern("HH:mm"))
+                );
+                String cause = causeField.getText();
 
-                Fiabilite f = new Fiabilite(nom, marche, panne, cause, dateHeurePanne);
+                Fiabilite f = new Fiabilite(nom, debutPanne, finPanne, cause);
                 controller.ajouterFiabilite(f);
 
                 nomField.clear();
-                marcheField.clear();
-                panneField.clear();
+                debutDatePicker.setValue(null);
+                debutHeureField.clear();
+                finDatePicker.setValue(null);
+                finHeureField.clear();
                 causeField.clear();
-                datePicker.setValue(null);
-                heureField.clear();
             } catch (Exception ex) {
                 showAlert("Erreur de saisie", "Veuillez vérifier les entrées.");
             }
@@ -99,7 +94,7 @@ public class FiabiliteView {
             }
         });
 
-        HBox inputBox = new HBox(10, nomField, marcheField, panneField, causeField, datePicker, heureField, ajouterBtn, supprimerBtn);
+        HBox inputBox = new HBox(10, nomField, debutDatePicker, debutHeureField, finDatePicker, finHeureField, causeField, ajouterBtn, supprimerBtn);
         inputBox.setPadding(new Insets(10));
 
         root = new VBox(10, table, inputBox);
