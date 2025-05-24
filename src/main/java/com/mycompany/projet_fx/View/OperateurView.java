@@ -31,9 +31,6 @@ public class OperateurView {
         ListView<Operateur> operateurList = new ListView<>(controller.getOperateurs());
         operateurList.setPrefHeight(120);
 
-        TextField idField = new TextField();
-        idField.setPromptText("ID");
-
         TextField nomField = new TextField();
         nomField.setPromptText("Nom");
 
@@ -52,18 +49,16 @@ public class OperateurView {
 
         Button ajouterBtn = new Button("Ajouter");
         ajouterBtn.setOnAction(e -> {
-            String id = idField.getText();
             String nom = nomField.getText();
             String prenom = prenomField.getText();
             String competences = competencesField.getText();
             int idOp = Integer.parseInt(idOpField.getText());
             ETAT etat = etatBox.getValue();
 
-            if (!id.isEmpty() && !nom.isEmpty() && !prenom.isEmpty() && !competences.isEmpty() && idOp > 0 && etat != null) {
-                Operateur nouvelOperateur = new Operateur(id, nom, prenom, competences, idOp, etat);
+            if (!nom.isEmpty() && !prenom.isEmpty() && !competences.isEmpty() && idOp > 0 && etat != null) {
+                Operateur nouvelOperateur = new Operateur(nom, prenom, competences, idOp, etat);
                 controller.ajouterOperateur(nouvelOperateur);
 
-                idField.clear();
                 nomField.clear();
                 prenomField.clear();
                 competencesField.clear();
@@ -72,7 +67,7 @@ public class OperateurView {
             }
         });
 
-        root.getChildren().addAll(titre, operateurList, idField, nomField, prenomField, competencesField, idOpField, etatBox, ajouterBtn);
+        root.getChildren().addAll(titre, operateurList, nomField, prenomField, competencesField, idOpField, etatBox, ajouterBtn);
     }
 
     public VBox getView() {
