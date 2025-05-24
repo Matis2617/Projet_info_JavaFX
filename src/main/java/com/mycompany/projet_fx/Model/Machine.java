@@ -2,26 +2,24 @@ package com.mycompany.projet_fx.Model;
 
 import java.io.Serializable;
 
-public class Machine extends Equipement implements Serializable { 
+public class Machine extends Equipement implements Serializable {
     public enum ETAT {occupe, disponible}
 
-    private int refmachine; // identifiant unique par machine
+    private int refmachine;
     private String dmachine;
     private int abscisse;
     private int ordonnee;
-    private float c;
-    private float t;
+    private float c;        // coût
     private ETAT etat;
 
-    // Constructeur
-    public Machine(int id_equipement, int refmachine, String dmachine, int abscisse, int ordonnee, float c, float t, ETAT etat) {
+    // Constructeur SANS temps de préparation
+    public Machine(int id_equipement, int refmachine, String dmachine, int abscisse, int ordonnee, float c, ETAT etat) {
         super(id_equipement);
         this.refmachine = refmachine;
         this.dmachine = dmachine;
         this.abscisse = abscisse;
         this.ordonnee = ordonnee;
         this.c = c;
-        this.t = t;
         this.etat = etat;
     }
 
@@ -41,22 +39,17 @@ public class Machine extends Equipement implements Serializable {
     public float getC() { return c; }
     public void setC(float c) { this.c = c; }
 
-    public float getT() { return t; }
-    public void setT(float t) { this.t = t; }
-
     public ETAT getEtat() { return etat; }
     public void setEtat(ETAT etat) { this.etat = etat; }
 
     @Override
-public String affiche() {
-    return "Identifiant équipement : " + getId_equipement()
-        + ", identifiant machine : " + refmachine
-        + ", description = " + dmachine
-        + ", abscisse = " + abscisse
-        + ", ordonnée = " + ordonnee
-        + ", coût = " + c
-        + ", temps = " + t
-        + ", état = " + etat;
-}
-
+    public String affiche() {
+        return "Identifiant équipement : " + getId_equipement()
+            + ", identifiant machine : " + refmachine
+            + ", description = " + dmachine
+            + ", abscisse = " + abscisse
+            + ", ordonnée = " + ordonnee
+            + ", coût = " + c
+            + ", état = " + etat;
+    }
 }
