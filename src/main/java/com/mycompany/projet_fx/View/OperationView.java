@@ -46,32 +46,35 @@ public class OperationView {
 
         Button ajouterBtn = new Button("Ajouter");
         ajouterBtn.setOnAction(e -> {
-            try {
-                String idStr = idField.getText().trim();
-                String description = descField.getText().trim();
-                if (idStr.isEmpty() || description.isEmpty()) {
-                    errorLabel.setText("Tous les champs sont obligatoires.");
-                    return;
-                }
-                int idOp = Integer.parseInt(idStr);
-                boolean existe = operations.stream().anyMatch(op -> op.getId_operation() == idOp);
-                if (existe) {
-                    errorLabel.setText("Cet identifiant existe déjà !");
-                    return;
-                }
-                Operation op = new Operation(idOp, description);
-                operations.add(op);
-                atelier.setOperations(new ArrayList<>(operations));
-                AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
-                idField.clear();
-                descField.clear();
-                errorLabel.setText("");
-            } catch (NumberFormatException ex) {
-                errorLabel.setText("L'identifiant doit être un nombre entier.");
-            } catch (Exception ex) {
-                errorLabel.setText("Erreur: " + ex.getMessage());
-            }
-        });
+    try {
+        String idStr = idField.getText().trim();
+        String description = descField.getText().trim();
+        String dureeStr = dureeField.getText().trim();
+        if (idStr.isEmpty() || description.isEmpty() || dureeStr.isEmpty()) {
+            errorLabel.setText("Tous les champs sont obligatoires.");
+            return;
+        }
+        int idOp = Integer.parseInt(idStr);
+        float duree = Float.parseFloat(dureeStr);
+        boolean existe = operations.stream().anyMatch(op -> op.getId_operation() == idOp);
+        if (existe) {
+            errorLabel.setText("Cet identifiant existe déjà !");
+            return;
+        }
+        Operation op = new Operation(idOp, description, duree);
+        operations.add(op);
+        atelier.setOperations(new ArrayList<>(operations));
+        AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+        idField.clear();
+        descField.clear();
+        dureeField.clear();
+        errorLabel.setText("");
+    } catch (NumberFormatException ex) {
+        errorLabel.setText("Identifiant et durée doivent être numériques.");
+    } catch (Exception ex) {
+        errorLabel.setText("Erreur: " + ex.getMessage());
+    }
+});
 
         Button supprimerBtn = new Button("Supprimer sélection");
         supprimerBtn.setOnAction(e -> {
@@ -89,11 +92,11 @@ public class OperationView {
         });
 
         root.getChildren().addAll(
-            titre, opList,
-            new Label("Ajout d'une opération :"),
-            idField, descField,
-            ajouterBtn, supprimerBtn, retourBtn, errorLabel
-        );
+    titre, opList,
+    new Label("Ajout d'une opération :"),
+    idField, descField, dureeField,
+    ajouterBtn, supprimerBtn, retourBtn, errorLabel
+);
     }
 
     public VBox getView() {
