@@ -8,8 +8,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.geometry.Insets;
-import javafx.collections.FXCollections;
-
 import java.util.ArrayList;
 
 public class OperationView {
@@ -63,6 +61,7 @@ public class OperationView {
         errorLabel.setStyle("-fx-text-fill: red;");
 
         Button ajouterBtn = new Button("Ajouter");
+        Button modifierBtn = new Button("Modifier");
         Button supprimerBtn = new Button("Supprimer sélection");
         Button retourBtn = new Button("Retour");
 
@@ -91,6 +90,61 @@ public class OperationView {
                 descField.clear();
                 dureeField.clear();
                 errorLabel.setText("");
+                tableView.getSelectionModel().clearSelection();
+            } catch (NumberFormatException ex) {
+                errorLabel.setText("Identifiant et durée doivent être numériques.");
+            } catch (Exception ex) {
+                errorLabel.setText("Erreur: " + ex.getMessage());
+            }
+        });
+
+        // Sélection d'une opération : remplir les champs
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            if (selected != null) {
+                idField.setText(String.valueOf(selected.getId_operation()));
+                descField.setText(selected.getDescription());
+                dureeField.setText(String.valueOf(selected.getDuree()));
+                errorLabel.setText("");
+            }
+        });
+
+        // Modification
+        modifierBtn.setOnAction(e -> {
+            Operation selected = tableView.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                errorLabel.setText("Sélectionnez une opération à modifier.");
+                return;
+            }
+            try {
+                String idStr = idField.getText().trim();
+                String description = descField.getText().trim();
+                String dureeStr = dureeField.getText().trim();
+                if (idStr.isEmpty() || description.isEmpty() || dureeStr.isEmpty()) {
+                    errorLabel.setText("Tous les champs sont obligatoires.");
+                    return;
+                }
+                int idOp = Integer.parseInt(idStr);
+                float duree = Float.parseFloat(dureeStr);
+
+                // Vérifie unicité identifiant (autre que la sélectionnée)
+                for (Operation op : operations) {
+                    if (op != selected && op.getId_operation() == idOp) {
+                        errorLabel.setText("Cet identifiant existe déjà !");
+                        return;
+                    }
+                }
+                selected.setId_operation(idOp);
+                selected.setDescription(description);
+                selected.setDuree(duree);
+
+                tableView.refresh();
+                atelier.setOperations(new ArrayList<>(operations));
+                AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+                errorLabel.setText("Opération modifiée !");
+                tableView.getSelectionModel().clearSelection();
+                idField.clear();
+                descField.clear();
+                dureeField.clear();
             } catch (NumberFormatException ex) {
                 errorLabel.setText("Identifiant et durée doivent être numériques.");
             } catch (Exception ex) {
@@ -105,6 +159,11 @@ public class OperationView {
                 operations.remove(selected);
                 atelier.setOperations(new ArrayList<>(operations));
                 AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+                tableView.getSelectionModel().clearSelection();
+                idField.clear();
+                descField.clear();
+                dureeField.clear();
+                errorLabel.setText("");
             }
         });
 
@@ -113,7 +172,7 @@ public class OperationView {
         });
 
         // Organisation
-        HBox champsBox = new HBox(10, idField, descField, dureeField, ajouterBtn);
+        HBox champsBox = new HBox(10, idField, descField, dureeField, ajouterBtn, modifierBtn);
         champsBox.setStyle("-fx-alignment: center;");
         HBox boutonsBox = new HBox(12, supprimerBtn, retourBtn);
         boutonsBox.setStyle("-fx-alignment: center;");
@@ -121,7 +180,7 @@ public class OperationView {
         root.getChildren().addAll(
                 titre,
                 tableView,
-                new Label("Ajout d'une opération :"),
+                new Label("Ajout ou modification d'une opération :"),
                 champsBox,
                 boutonsBox,
                 errorLabel
