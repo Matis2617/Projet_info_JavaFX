@@ -32,6 +32,7 @@ public class AtelierView extends Application {
     private ObservableList<Operation> operationsList = FXCollections.observableArrayList();
     private ObservableList<Machine> machinesList = FXCollections.observableArrayList();
     private ObservableList<Poste> postesList = FXCollections.observableArrayList();
+    private ObservableList<Operateur> operateursList = FXCollections.observableArrayList(); // Ajouté
 
     private final javafx.scene.paint.Color[] couleursPostes = {
             javafx.scene.paint.Color.ROYALBLUE, javafx.scene.paint.Color.DARKORANGE, javafx.scene.paint.Color.FORESTGREEN, javafx.scene.paint.Color.DARKVIOLET, javafx.scene.paint.Color.DARKCYAN,
@@ -85,18 +86,18 @@ public class AtelierView extends Application {
         }
         if (atelier.getPostes() != null) postesList.addAll(atelier.getPostes());
         if (atelier.getProduits() != null) listeProduits.addAll(atelier.getProduits());
+        if (atelier.getOperateurs() != null) operateursList.addAll(atelier.getOperateurs()); // Ajouté
 
         // Barre de menu
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Menu");
 
-        // Ordre : accueil, machines, poste, operations, personnes, operateur, gammes, produits, fiabilite
+        // Ordre : accueil, machines, poste, operations, operateur, gammes, produits, fiabilite
         MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem posteItem = new MenuItem("Poste");
         MenuItem operationItem = new MenuItem("Opérations");
-        MenuItem personnesItem = new MenuItem("Personnes");
-        MenuItem operateurItem = new MenuItem("Opérateur");
+        MenuItem operateurItem = new MenuItem("Opérateur"); // Personnes supprimé !
         MenuItem gammeItem = new MenuItem("Gammes");
         MenuItem produitItem = new MenuItem("Produits");
         MenuItem fiabiliteItem = new MenuItem("Fiabilité");
@@ -106,8 +107,7 @@ public class AtelierView extends Application {
             machineItem,
             posteItem,
             operationItem,
-            personnesItem,
-            operateurItem,
+            operateurItem, // ici
             gammeItem,
             produitItem,
             fiabiliteItem
@@ -122,8 +122,7 @@ public class AtelierView extends Application {
         machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
         posteItem.setOnAction(e -> afficherPoste());
         operationItem.setOnAction(e -> afficherOperation());
-        personnesItem.setOnAction(e -> afficherPersonne());
-        operateurItem.setOnAction(e -> afficherOperateur());
+        operateurItem.setOnAction(e -> afficherOperateur()); // ici
         gammeItem.setOnAction(e -> afficherGamme());
         produitItem.setOnAction(e -> afficherProduit());
         fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(new FiabiliteController()).getView()));
@@ -183,12 +182,8 @@ public class AtelierView extends Application {
         root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, atelier, nomFichier, this::afficherAccueil));
     }
 
-    private void afficherPersonne() {
-        // À compléter selon ta logique de PersonneView
-    }
-
     private void afficherOperateur() {
-        // À compléter selon ta logique de OperateurView
+        root.setCenter(OperateurFormView.getOperateurForm(operateursList, atelier, nomFichier, this::afficherAccueil));
     }
 
     // --- Rafraîchissements : chaque modification doit remettre à jour les listes pour la vue synthétique ---
