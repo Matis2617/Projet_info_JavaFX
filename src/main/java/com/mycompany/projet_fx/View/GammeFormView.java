@@ -28,7 +28,7 @@ public class GammeFormView {
         // ----------- TABLEAU DES OPERATIONS -----------
         TableView<Operation> opTable = new TableView<>(operationsList);
         opTable.setPrefHeight(180);
-        opTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        opTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         opTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         TableColumn<Operation, Number> opIdCol = new TableColumn<>("ID");
@@ -47,7 +47,7 @@ public class GammeFormView {
 
         TableView<Machine> machTable = new TableView<>(machinesList);
         machTable.setPrefHeight(180);
-        machTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        machTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         machTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         TableColumn<Machine, Number> machIdCol = new TableColumn<>("ID");
@@ -76,7 +76,7 @@ public class GammeFormView {
         // ----------- TABLEAU DES GAMMES -----------
         TableView<Gamme> gammeTable = new TableView<>(gammesList);
         gammeTable.setPrefHeight(180);
-        gammeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        gammeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         gammeTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         TableColumn<Gamme, String> gammeRefCol = new TableColumn<>("Réf");
