@@ -49,7 +49,7 @@ public class Machine extends Equipement implements Serializable {
 
     @Override
 public String affiche() {
-    return "Identifiant équipement : " + refequipement
+    return "Identifiant équipement : " + getRefequipement()
         + ", identifiant machine : " + refmachine
         + ", description = " + dmachine
         + ", abscisse = " + abscisse
