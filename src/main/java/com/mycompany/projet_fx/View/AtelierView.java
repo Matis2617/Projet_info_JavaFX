@@ -183,8 +183,8 @@ public class AtelierView extends Application {
     }
 
     private void afficherListeProduits() {
-        root.setCenter(ProduitFormView.getProduitTableView(listeProduits, this::afficherAccueil));
-    }
+    root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, this::afficherAccueil));
+}
 
     private void afficherPersonne() {
         // À compléter selon ta logique de PersonneView
