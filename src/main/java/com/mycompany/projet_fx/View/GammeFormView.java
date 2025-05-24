@@ -9,6 +9,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import com.mycompany.projet_fx.Model.Atelier;
+import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import java.util.ArrayList;
 
 public class GammeFormView {
