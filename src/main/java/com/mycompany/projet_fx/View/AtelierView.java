@@ -179,12 +179,14 @@ public class AtelierView extends Application {
     }
 
     private void afficherProduit() {
-        root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, this::afficherListeProduits));
-    }
+    root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, this::afficherListeProduits));
+}
 
-    private void afficherListeProduits() {
+private void afficherListeProduits() {
+    // Réutilise le même écran, ou tu peux créer une méthode dédiée si besoin
     root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, this::afficherAccueil));
 }
+
 
     private void afficherPersonne() {
         // À compléter selon ta logique de PersonneView
