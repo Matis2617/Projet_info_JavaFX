@@ -92,7 +92,8 @@ public class ProduitFormView {
                 }
                 sb.append("<b>Machines :</b>\n");
                 for (Equipement eq : g.getListeEquipements()) {
-                    if (eq instanceof Machine m) {
+                    if (eq instanceof Machine) {
+                        Machine m = (Machine) eq;
                         sb.append("   • ").append(m.getDmachine())
                           .append(" (").append(m.getC()).append(" €/h)").append("\n");
                     } else {
