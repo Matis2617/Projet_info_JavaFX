@@ -44,8 +44,16 @@ public class MachineFormView {
 
         TableColumn<Machine, Number> coutCol = new TableColumn<>("Coût horaire");
         coutCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(data.getValue().getC()));
-
-        tableView.getColumns().addAll(idCol, descCol, abscCol, ordCol, coutCol);
+        
+        TableColumn<Machine, String> etatCol = new TableColumn<>("État");
+        etatCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getEtat().toString()));
+        
+        TableColumn<Machine, String> operateurCol = new TableColumn<>("Opérateur");
+        operateurCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+            data.getValue().getOperateur() != null ? data.getValue().getOperateur().getNom() + " " + data.getValue().getOperateur().getPrenom() : "Aucun"
+        ));
+        
+        tableView.getColumns().addAll(idCol, descCol, abscCol, ordCol, coutCol,etatCol, operateurCol);
 
         // Champs de saisie
         TextField idField = new TextField();
