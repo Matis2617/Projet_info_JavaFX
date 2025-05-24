@@ -19,6 +19,7 @@ public class GammeFormView {
             Atelier atelier,
             ObservableList<Gamme> gammesList,
             ObservableList<Operation> operationsList,
+            String nomFichier,
             Runnable onRetourAccueil
     ) {
         // Layout principal en HBox : Formulaire à gauche, liste à droite
