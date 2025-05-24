@@ -1,20 +1,21 @@
 package com.mycompany.projet_fx.Model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
-/**
- * Représente la fiabilité d'une machine (temps de marche/panne).
- */
 public class Fiabilite implements Serializable {
     private String nomMachine;
     private int totalTempsDeMarche; // en minutes
     private int totalTempsDePanne;  // en minutes
+    private String cause;
+    private LocalDateTime dateHeurePanne;
 
-    // Constructeur
-    public Fiabilite(String nomMachine, int totalTempsDeMarche, int totalTempsDePanne) {
+    public Fiabilite(String nomMachine, int totalTempsDeMarche, int totalTempsDePanne, String cause, LocalDateTime dateHeurePanne) {
         this.nomMachine = nomMachine;
         this.totalTempsDeMarche = totalTempsDeMarche;
         this.totalTempsDePanne = totalTempsDePanne;
+        this.cause = cause;
+        this.dateHeurePanne = dateHeurePanne;
     }
 
     public String getNomMachine() { return nomMachine; }
@@ -26,7 +27,12 @@ public class Fiabilite implements Serializable {
     public int getTotalTempsDePanne() { return totalTempsDePanne; }
     public void setTotalTempsDePanne(int totalTempsDePanne) { this.totalTempsDePanne = totalTempsDePanne; }
 
-    // Méthodes pour ajouter du temps
+    public String getCause() { return cause; }
+    public void setCause(String cause) { this.cause = cause; }
+
+    public LocalDateTime getDateHeurePanne() { return dateHeurePanne; }
+    public void setDateHeurePanne(LocalDateTime dateHeurePanne) { this.dateHeurePanne = dateHeurePanne; }
+
     public void ajouterTempsDeMarche(int minutes) {
         this.totalTempsDeMarche += minutes;
     }
@@ -35,10 +41,6 @@ public class Fiabilite implements Serializable {
         this.totalTempsDePanne += minutes;
     }
 
-    /**
-     * Calcul du taux de fiabilité (proportion de temps de marche).
-     * @return fiabilité entre 0 et 1
-     */
     public double calculerFiabilite() {
         int totalTemps = totalTempsDeMarche + totalTempsDePanne;
         if (totalTemps == 0) return 0.0;
@@ -47,8 +49,10 @@ public class Fiabilite implements Serializable {
 
     @Override
     public String toString() {
-        return "Fiabilite{" + "nomMachine=" + nomMachine 
-            + ", totalTempsDeMarche=" + totalTempsDeMarche 
-            + ", totalTempsDePanne=" + totalTempsDePanne + '}';
+        return "Fiabilite{" + "nomMachine=" + nomMachine
+            + ", totalTempsDeMarche=" + totalTempsDeMarche
+            + ", totalTempsDePanne=" + totalTempsDePanne
+            + ", cause=" + cause
+            + ", dateHeurePanne=" + dateHeurePanne + '}';
     }
 }
