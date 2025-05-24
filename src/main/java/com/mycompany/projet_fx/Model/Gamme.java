@@ -66,9 +66,10 @@ public class Gamme implements Serializable {
     public float coutGamme() {
         float coutTotal = 0;
         for (Operation operation : this.operations) {
+            float duree = (operation != null) ? operation.getDureeOperation() : 0;
             for (Equipement equipement : this.listeEquipements) {
                 if (equipement instanceof Machine) {
-                    coutTotal += ((Machine) equipement).getC() * operation.getDureeOperation();
+                    coutTotal += ((Machine) equipement).getC() * duree;
                 }
             }
         }
@@ -81,7 +82,9 @@ public class Gamme implements Serializable {
     public float dureeGamme() {
         float dureeTotale = 0;
         for (Operation operation : operations) {
-            dureeTotale += operation.getDureeOperation();
+            if (operation != null) {
+                dureeTotale += operation.getDureeOperation();
+            }
         }
         return dureeTotale;
     }
