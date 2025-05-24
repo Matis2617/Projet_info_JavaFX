@@ -13,7 +13,10 @@ public class PlanAtelierView {
     private Atelier atelier;
     private Color[] couleursPostes;
 
-    // Le listener au clic peut être passé en paramètre si tu veux rendre la classe plus générique
+    public static final int NB_LIGNES = 5;
+    public static final int NB_COLONNES = 5;
+    public static final int TAILLE_CASE = 80;
+    public static final int TAILLE_PLAN = NB_LIGNES * TAILLE_CASE;
 
     public PlanAtelierView(Atelier atelier, Color[] couleursPostes) {
         this.atelier = atelier;
@@ -22,34 +25,43 @@ public class PlanAtelierView {
 
     public Pane creerPlanAtelier() {
         Pane planPane = new Pane();
-        int tailleAtelier = 500;
-        int grille = 50;
-        double unite = (double) tailleAtelier / grille;
-
-        planPane.setPrefSize(tailleAtelier, tailleAtelier);
+        planPane.setPrefSize(TAILLE_PLAN, TAILLE_PLAN);
 
         // Fond atelier
-        Rectangle fond = new Rectangle(0, 0, tailleAtelier, tailleAtelier);
+        Rectangle fond = new Rectangle(0, 0, TAILLE_PLAN, TAILLE_PLAN);
         fond.setFill(Color.LIGHTGRAY);
         fond.setStroke(Color.GRAY);
         planPane.getChildren().add(fond);
 
-        // Dessine les machines
+        // Quadrillage
+        for (int i = 0; i < NB_LIGNES; i++) {
+            for (int j = 0; j < NB_COLONNES; j++) {
+                Rectangle carre = new Rectangle(j * TAILLE_CASE, i * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
+                carre.setFill(Color.rgb(245, 245, 245, 0.5));
+                carre.setStroke(Color.LIGHTGRAY);
+                planPane.getChildren().add(carre);
+            }
+        }
+
+        // Machines sur la grille
         for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) {
                 Machine m = (Machine) eq;
-                double x = m.getAbscisse() * unite;
-                double y = m.getOrdonnee() * unite;
+                int x = m.getAbscisse();
+                int y = m.getOrdonnee();
 
-                Rectangle carre = new Rectangle(x, y, unite, unite);
-                carre.setFill(getColorForMachine(m));
-                carre.setStroke(Color.DARKBLUE);
-                carre.setArcWidth(8); carre.setArcHeight(8);
+                // Ignore si la machine est hors limites
+                if (x >= 0 && x < NB_COLONNES && y >= 0 && y < NB_LIGNES) {
+                    Rectangle carre = new Rectangle(x * TAILLE_CASE, y * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
+                    carre.setFill(getColorForMachine(m));
+                    carre.setStroke(Color.DARKBLUE);
+                    carre.setArcWidth(10); carre.setArcHeight(10);
 
-                // Détails au clic
-                carre.setOnMouseClicked(ev -> afficherFicheMachine(m));
+                    // Afficher détails au clic
+                    carre.setOnMouseClicked(ev -> afficherFicheMachine(m));
 
-                planPane.getChildren().add(carre);
+                    planPane.getChildren().add(carre);
+                }
             }
         }
         return planPane;
@@ -61,20 +73,19 @@ public class PlanAtelierView {
                 return couleursPostes[i % couleursPostes.length];
             }
         }
-        return Color.BLACK; // machine sans poste
+        return Color.DARKSLATEBLUE;
     }
 
-    // Optionnel, si tu veux déplacer aussi la fiche machine ici
     private void afficherFicheMachine(Machine m) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Détails de la machine");
-        alert.setHeaderText(m.getDmachine());
+        alert.setHeaderText("Machine #" + m.getRefmachine());
         alert.setContentText(
-                "Description: " + m.getDmachine() + "\n"
-                + "Abscisse: " + m.getAbscisse() + "\n"
-                + "Ordonnée: " + m.getOrdonnee() + "\n"
-                + "Coût: " + m.getC() + "\n"
-                + "État: " + m.getEtat()
+                "Description : " + m.getDmachine() + "\n"
+                + "Abscisse : " + m.getAbscisse() + "\n"
+                + "Ordonnée : " + m.getOrdonnee() + "\n"
+                + "Coût : " + m.getC() + "\n"
+                + "État : " + m.getEtat()
         );
         alert.showAndWait();
     }
