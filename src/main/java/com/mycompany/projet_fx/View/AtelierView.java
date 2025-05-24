@@ -178,8 +178,8 @@ public class AtelierView extends Application {
     }
 
     private void afficherProduit() {
-        root.setCenter(ProduitFormView.getProduitForm(listeProduits, this::afficherAccueil));
-    }
+    root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, this::afficherAccueil));
+}
 
     private void afficherGamme() {
         root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, nomFichier, this::refreshAfterGammeChange));
