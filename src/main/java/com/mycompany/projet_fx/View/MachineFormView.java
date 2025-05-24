@@ -22,8 +22,30 @@ public class MachineFormView {
         for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) machinesList.add((Machine) eq);
         }
-        ListView<Machine> listView = new ListView<>(machinesList);
-        listView.setPrefHeight(170);
+        TableView<Machine> tableView = new TableView<>(machinesList);
+        tableView.setPrefHeight(170);
+
+        // Colonne Identifiant
+        TableColumn<Machine, Number> idCol = new TableColumn<>("Identifiant");
+        idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getRefmachine()));
+
+        // Colonne Description
+        TableColumn<Machine, String> descCol = new TableColumn<>("Description");
+        descCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDmachine()));
+
+        // Colonne Abscisse
+        TableColumn<Machine, Number> abscCol = new TableColumn<>("Abscisse");
+        abscCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getAbscisse()));
+
+        // Colonne Ordonnée
+        TableColumn<Machine, Number> ordCol = new TableColumn<>("Ordonnée");
+        ordCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getOrdonnee()));
+
+        // Colonne Coût
+        TableColumn<Machine, Number> coutCol = new TableColumn<>("Coût horaire");
+        coutCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(data.getValue().getC()));
+
+        tableView.getColumns().addAll(idCol, descCol, abscCol, ordCol, coutCol);
 
         // ----------- FORMULAIRE D'AJOUT/EDITION -----------
         TextField idField = new TextField();
@@ -39,7 +61,7 @@ public class MachineFormView {
         ordField.setPromptText("Ordonnée (0-9)");
 
         TextField coutField = new TextField();
-        coutField.setPromptText("Coût");
+        coutField.setPromptText("Coût horaire");
 
         ComboBox<Machine.ETAT> etatBox = new ComboBox<>();
         etatBox.getItems().addAll(Machine.ETAT.values());
@@ -103,11 +125,11 @@ public class MachineFormView {
         // ----------- BOUTON MODIFIER -----------
         Button modifierBtn = new Button("Modifier");
         modifierBtn.setOnAction(ev -> {
-            Machine selected = listView.getSelectionModel().getSelectedItem();
+            Machine selected = tableView.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 // Popup édition
                 modifierMachine(selected, atelier, nomFichier, () -> {
-                    listView.refresh();
+                    tableView.refresh();
                     AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
                 });
             }
@@ -116,7 +138,7 @@ public class MachineFormView {
         // ----------- BOUTON SUPPRIMER -----------
         Button supprimerBtn = new Button("Supprimer");
         supprimerBtn.setOnAction(ev -> {
-            Machine selected = listView.getSelectionModel().getSelectedItem();
+            Machine selected = tableView.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 atelier.getEquipements().remove(selected);
                 machinesList.remove(selected);
@@ -131,7 +153,7 @@ public class MachineFormView {
         HBox boutonsBox = new HBox(10, ajouterBtn, modifierBtn, supprimerBtn, retourBtn);
 
         box.getChildren().addAll(
-                new Label("Machines créées :"), listView,
+                new Label("Machines créées :"), tableView,
                 new Label("Ajouter une machine :"),
                 idField, descField, abscField, ordField, coutField,
                 etatBox, boutonsBox, erreurLabel
