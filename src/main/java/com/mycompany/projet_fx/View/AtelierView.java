@@ -8,7 +8,10 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.scene.Node;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,6 +44,9 @@ public class AtelierView extends Application {
         javafx.scene.paint.Color.CRIMSON, javafx.scene.paint.Color.DARKMAGENTA, javafx.scene.paint.Color.GOLD, javafx.scene.paint.Color.MEDIUMPURPLE, javafx.scene.paint.Color.DARKSLATEGRAY
     };
 
+    private String nomUtilisateur; // à utiliser dans toute la classe
+    private String article;        // "de " ou "d'"
+
     @Override
     public void start(Stage primaryStage) {
         // Saisie nom utilisateur
@@ -49,8 +55,17 @@ public class AtelierView extends Application {
         dialog.setHeaderText("Bienvenue dans la gestion de l'atelier");
         dialog.setContentText("Veuillez entrer votre nom :");
         Optional<String> result = dialog.showAndWait();
-        String nomUtilisateur = result.orElse("Utilisateur");
+        nomUtilisateur = result.orElse("Utilisateur").trim();
         nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
+
+        // Calcul du bon article ("de " ou "d'")
+        article = "de ";
+        if (!nomUtilisateur.isEmpty()) {
+            char firstLetter = Character.toLowerCase(nomUtilisateur.charAt(0));
+            if ("aeiouy".indexOf(firstLetter) != -1) {
+                article = "d'";
+            }
+        }
 
         Atelier atelierCharge = null;
         File f = new File(nomFichier);
@@ -80,9 +95,11 @@ public class AtelierView extends Application {
         if (atelier.getGammes() != null) gammesList.addAll(atelier.getGammes());
         if (atelier.getOperations() != null) operationsList.addAll(atelier.getOperations());
 
-        // Barre de menu
+        // Barre de menu (avec style amélioré)
         MenuBar menuBar = new MenuBar();
+        menuBar.setStyle("-fx-font-size: 15px; -fx-font-family: 'Segoe UI', 'Arial', sans-serif; -fx-background-color: #f3f4f8; -fx-border-color: #dedede;");
         Menu menu = new Menu("Menu");
+        menu.setStyle("-fx-font-size: 15px; -fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
         MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem personnesItem = new MenuItem("Personnes");
@@ -119,15 +136,32 @@ public class AtelierView extends Application {
         afficherAccueil();
 
         Scene scene = new Scene(root, 1050, 740);
-        primaryStage.setTitle("Atelier de " + atelier.getNom());
+        primaryStage.setTitle("Atelier " + article + nomUtilisateur);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
+    // Méthode pour obtenir un noeud d'accueil customisé
+    private Node getAccueilPaneBeau() {
+        VBox accueil = new VBox(28);
+        accueil.setStyle("-fx-alignment: center; -fx-padding: 44 0 0 0; -fx-background-color: #f8fafc;");
+        Label titre = new Label("Bienvenue dans l’atelier " + article + nomUtilisateur);
+        titre.setFont(Font.font("Segoe UI", FontWeight.BOLD, 32));
+        titre.setStyle("-fx-text-fill: #2d3a4a; -fx-effect: dropshadow(gaussian, #b3b8c5, 6,0,2,2);");
+        Label info = new Label("Gérez vos machines, postes, opérations et plus grâce au menu ci-dessus !");
+        info.setFont(Font.font("Segoe UI", 18));
+        info.setStyle("-fx-text-fill: #60697a; -fx-padding: 12 0 0 0;");
+        accueil.getChildren().addAll(titre, info);
+
+        // Ajoute le plan d’atelier joliment en dessous si tu veux
+        PlanAtelierView planView = new PlanAtelierView(atelier, couleursPostes);
+        accueil.getChildren().add(planView.creerPlanAtelier());
+
+        return accueil;
+    }
+
     private void afficherAccueil() {
-        // Utilisation de la palette pour l’affichage plan atelier (machines colorées par poste)
-        AccueilView accueilView = new AccueilView(atelier, couleursPostes);
-        root.setCenter(accueilView.getAccueilPane());
+        root.setCenter(getAccueilPaneBeau());
     }
 
     private void afficherFormulaireAjoutMachine() {
@@ -135,12 +169,10 @@ public class AtelierView extends Application {
     }
 
     private void afficherPoste() {
-        // Passe bien la palette de couleurs pour la cohérence des couleurs de postes
         root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::afficherAccueil));
     }
 
     private void afficherOperation() {
-        // Passe atelier, operationsList, nomFichier, callback pour que la sauvegarde se fasse correctement
         OperationView opView = new OperationView(atelier, operationsList, nomFichier, this::afficherAccueil);
         root.setCenter(opView.getView());
     }
@@ -150,7 +182,6 @@ public class AtelierView extends Application {
     }
 
     private void afficherGamme() {
-        // Passe la liste observable des opérations pour la sélection dans la gamme
         root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, nomFichier, this::afficherAccueil));
     }
 
