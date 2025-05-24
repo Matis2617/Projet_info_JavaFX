@@ -19,14 +19,19 @@ public class GammeFormView {
             ObservableList<Operation> operationsList,
             Runnable onRetourAccueil
     ) {
-        VBox vbox = new VBox(15);
-        vbox.setPadding(new Insets(20));
+        // Layout principal en HBox : Formulaire à gauche, liste à droite
+        HBox root = new HBox(25);
+        root.setPadding(new Insets(16, 32, 16, 32));
 
-        Label titre = new Label("Gestion des Gammes");
+        // ---- Formulaire de création/modif à gauche ----
+        VBox vboxForm = new VBox(14);
+        vboxForm.setPadding(new Insets(5));
+        vboxForm.setPrefWidth(370);
+
+        Label titre = new Label("Créer une gamme");
         titre.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        // ---- LISTES À SÉLECTIONNER POUR COMPOSER LA GAMME ----
-        Label opLabel = new Label("Opérations disponibles :");
+        Label opLabel = new Label("Opérations :");
         ListView<Operation> listOp = new ListView<>();
         listOp.setItems(operationsList);
         listOp.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -38,7 +43,7 @@ public class GammeFormView {
             }
         });
 
-        Label eqLabel = new Label("Équipements disponibles :");
+        Label eqLabel = new Label("Équipements :");
         ListView<Equipement> listEq = new ListView<>();
         listEq.getItems().addAll(atelier.getEquipements());
         listEq.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -50,8 +55,7 @@ public class GammeFormView {
             }
         });
 
-        // ---- CRÉATION D'UNE GAMME ----
-        Label refGammeLabel = new Label("Référence de la gamme :");
+        Label refGammeLabel = new Label("Référence :");
         TextField refGammeInput = new TextField();
 
         Button creerBtn = new Button("Créer la gamme");
@@ -81,139 +85,153 @@ public class GammeFormView {
             listEq.getSelectionModel().clearSelection();
         });
 
-        // ---- LISTE DES GAMMES ----
-        Label gammesLbl = new Label("Gammes créées :");
+        Button retourBtn = new Button("Retour Accueil");
+        retourBtn.setOnAction(e -> { if (onRetourAccueil != null) onRetourAccueil.run(); });
+
+        vboxForm.getChildren().addAll(
+            titre,
+            opLabel, listOp,
+            eqLabel, listEq,
+            refGammeLabel, refGammeInput,
+            creerBtn, retourBtn, creerMsg
+        );
+
+        // ---- Liste et détails des gammes à droite ----
+        VBox vboxListe = new VBox(16);
+        vboxListe.setPadding(new Insets(5));
+        vboxListe.setPrefWidth(400);
+
+        Label gammesLbl = new Label("Gammes créées");
+        gammesLbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
         ListView<Gamme> gammesView = new ListView<>(gammesList);
-        gammesView.setPrefHeight(100);
+        gammesView.setPrefHeight(220);
         gammesView.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(Gamme g, boolean empty) {
                 super.updateItem(g, empty);
-                if (empty || g == null) setText("");
-                else setText(
-                    "Réf: " + g.getRefGamme() +
-                    " | Équipements: " + g.getListeEquipements().size() +
-                    " | Opérations: " + g.getOperations().size() +
-                    " | Coût: " + g.coutGamme() +
-                    " | Durée: " + g.dureeGamme() + " min"
-                );
+                setText((empty || g == null) ? "" : (
+                    "Réf: " + g.getRefGamme()
+                    + " | Opérations: " + g.getOperations().size()
+                    + " | Équipements: " + g.getListeEquipements().size()
+                ));
             }
         });
 
-        // ---- BOUTONS D'ACTION ----
-        HBox actions = new HBox(10);
-        Button afficherBtn = new Button("Afficher");
-        Button modifierBtn = new Button("Modifier");
-        Button coutBtn = new Button("Calculer coût");
-        Button dureeBtn = new Button("Calculer durée");
-        Button retourBtn = new Button("Retour Accueil");
-        actions.getChildren().addAll(afficherBtn, modifierBtn, coutBtn, dureeBtn, retourBtn);
-
+        // Label de détail qui s'affiche instantanément quand on clique sur une gamme
         Label infoGamme = new Label();
-        infoGamme.setStyle("-fx-font-size: 13px; -fx-padding: 5;");
+        infoGamme.setStyle("-fx-font-size: 13px; -fx-padding: 6; -fx-background-color: #f4f4f4;");
+        infoGamme.setMinHeight(120);
+        infoGamme.setMaxWidth(390);
+        infoGamme.setWrapText(true);
 
-        // -- ACTIONS --
-        afficherBtn.setOnAction(e -> {
-            Gamme g = gammesView.getSelectionModel().getSelectedItem();
+        // Bouton Modifier gamme (popup)
+        Button modifierBtn = new Button("Modifier cette gamme");
+        modifierBtn.setStyle("-fx-background-color: #ffca3a; -fx-font-weight: bold;");
+
+        // Sélection d'une gamme -> affiche toutes les infos
+        gammesView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, g) -> {
             if (g != null) {
                 StringBuilder sb = new StringBuilder();
-                sb.append("Référence : ").append(g.getRefGamme()).append("\n");
+                sb.append("Référence : ").append(g.getRefGamme()).append("\n\n");
                 sb.append("Opérations :\n");
                 for (Operation op : g.getOperations())
-                    sb.append("- ").append(op.toString()).append("\n");
-                sb.append("Équipements :\n");
+                    sb.append(" - ").append(op.toString()).append("\n");
+                sb.append("\nÉquipements :\n");
                 for (Equipement eq : g.getListeEquipements())
-                    sb.append("- ").append(eq.affiche()).append("\n");
-                sb.append("Coût total : ").append(g.coutGamme()).append("\n");
-                sb.append("Durée totale : ").append(g.dureeGamme()).append(" min\n");
+                    sb.append(" - ").append(eq.affiche()).append("\n");
+                sb.append("\nCoût total : ").append(g.coutGamme());
+                sb.append("\nDurée totale : ").append(g.dureeGamme()).append(" min\n");
                 infoGamme.setText(sb.toString());
+            } else {
+                infoGamme.setText("");
             }
         });
 
         modifierBtn.setOnAction(e -> {
-            Gamme g = gammesView.getSelectionModel().getSelectedItem();
-            if (g == null) return;
-            // Ouvre un mini formulaire pour resélectionner ops & eqs
-            Dialog<Void> modifDlg = new Dialog<>();
-            modifDlg.setTitle("Modifier la gamme");
-            VBox modifBox = new VBox(8);
-            modifBox.setPadding(new Insets(8));
-
-            ListView<Operation> opEdit = new ListView<>();
-            opEdit.getItems().addAll(operationsList);
-            opEdit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-            opEdit.setCellFactory(lv -> new ListCell<>() {
-                @Override
-                protected void updateItem(Operation op, boolean empty) {
-                    super.updateItem(op, empty);
-                    setText((empty || op == null) ? "" : op.toString());
-                }
-            });
-            for (Operation op : g.getOperations())
-                opEdit.getSelectionModel().select(op);
-
-            ListView<Equipement> eqEdit = new ListView<>();
-            eqEdit.getItems().addAll(atelier.getEquipements());
-            eqEdit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-            eqEdit.setCellFactory(lv -> new ListCell<>() {
-                @Override
-                protected void updateItem(Equipement eq, boolean empty) {
-                    super.updateItem(eq, empty);
-                    setText((empty || eq == null) ? "" : eq.affiche());
-                }
-            });
-            for (Equipement eq : g.getListeEquipements())
-                eqEdit.getSelectionModel().select(eq);
-
-            modifBox.getChildren().addAll(
-                new Label("Modifier opérations :"), opEdit,
-                new Label("Modifier équipements :"), eqEdit
-            );
-            Button valider = new Button("Valider");
-            valider.setOnAction(evt -> {
-                g.setOperations(new ArrayList<>(opEdit.getSelectionModel().getSelectedItems()));
-                g.setListeEquipements(new ArrayList<>(eqEdit.getSelectionModel().getSelectedItems()));
-                modifDlg.setResult(null);
-                modifDlg.close();
-            });
-            modifBox.getChildren().add(valider);
-            modifDlg.getDialogPane().setContent(modifBox);
-            modifDlg.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-            modifDlg.showAndWait();
+            Gamme selectedGamme = gammesView.getSelectionModel().getSelectedItem();
+            if (selectedGamme == null) return;
+            afficherPopupModificationGamme(selectedGamme, atelier, operationsList, gammesList);
         });
 
-        coutBtn.setOnAction(e -> {
-            Gamme g = gammesView.getSelectionModel().getSelectedItem();
-            if (g != null)
-                showAlert("Coût gamme", "Coût de la gamme : " + g.coutGamme());
-        });
-
-        dureeBtn.setOnAction(e -> {
-            Gamme g = gammesView.getSelectionModel().getSelectedItem();
-            if (g != null)
-                showAlert("Durée gamme", "Durée de la gamme : " + g.dureeGamme() + " min");
-        });
-
-        retourBtn.setOnAction(e -> {
-            if (onRetourAccueil != null) onRetourAccueil.run();
-        });
-
-        vbox.getChildren().addAll(
-            titre,
-            opLabel, listOp,
-            eqLabel, listEq,
-            refGammeLabel, refGammeInput, creerBtn, creerMsg,
-            new Separator(),
-            gammesLbl, gammesView, actions, infoGamme
+        vboxListe.getChildren().addAll(
+            gammesLbl, gammesView, infoGamme, modifierBtn
         );
-        return vbox;
+
+        // Ajoute les deux blocs au root horizontalement
+        root.getChildren().addAll(vboxForm, new Separator(javafx.geometry.Orientation.VERTICAL), vboxListe);
+        return root;
     }
 
-    private static void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    private static void afficherPopupModificationGamme(
+            Gamme gamme,
+            Atelier atelier,
+            ObservableList<Operation> operationsList,
+            ObservableList<Gamme> gammesList
+    ) {
+        Dialog<Void> modifDlg = new Dialog<>();
+        modifDlg.setTitle("Modifier la gamme");
+        VBox modifBox = new VBox(10);
+        modifBox.setPadding(new Insets(10));
+
+        TextField refField = new TextField(gamme.getRefGamme());
+
+        ListView<Operation> opEdit = new ListView<>();
+        opEdit.getItems().addAll(operationsList);
+        opEdit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        opEdit.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Operation op, boolean empty) {
+                super.updateItem(op, empty);
+                setText((empty || op == null) ? "" : op.toString());
+            }
+        });
+        for (Operation op : gamme.getOperations())
+            opEdit.getSelectionModel().select(op);
+
+        ListView<Equipement> eqEdit = new ListView<>();
+        eqEdit.getItems().addAll(atelier.getEquipements());
+        eqEdit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        eqEdit.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Equipement eq, boolean empty) {
+                super.updateItem(eq, empty);
+                setText((empty || eq == null) ? "" : eq.affiche());
+            }
+        });
+        for (Equipement eq : gamme.getListeEquipements())
+            eqEdit.getSelectionModel().select(eq);
+
+        Button valider = new Button("Valider");
+        valider.setStyle("-fx-background-color: #8fd14f; -fx-font-weight: bold;");
+        Label modifMsg = new Label();
+        modifMsg.setStyle("-fx-text-fill: green;");
+
+        valider.setOnAction(ev -> {
+            String ref = refField.getText().trim();
+            if (ref.isEmpty()) {
+                modifMsg.setText("Référence obligatoire !");
+                return;
+            }
+            if (opEdit.getSelectionModel().isEmpty() || eqEdit.getSelectionModel().isEmpty()) {
+                modifMsg.setText("Sélectionnez opérations ET équipements !");
+                return;
+            }
+            gamme.setRefGamme(ref);
+            gamme.setOperations(new ArrayList<>(opEdit.getSelectionModel().getSelectedItems()));
+            gamme.setListeEquipements(new ArrayList<>(eqEdit.getSelectionModel().getSelectedItems()));
+            modifDlg.setResult(null);
+            modifDlg.close();
+        });
+
+        modifBox.getChildren().addAll(
+            new Label("Modifier référence :"), refField,
+            new Label("Modifier opérations :"), opEdit,
+            new Label("Modifier équipements :"), eqEdit,
+            valider, modifMsg
+        );
+        modifDlg.getDialogPane().setContent(modifBox);
+        modifDlg.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        modifDlg.showAndWait();
     }
 }
