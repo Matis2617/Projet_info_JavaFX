@@ -38,6 +38,9 @@ public class OperationView {
         TextField descField = new TextField();
         descField.setPromptText("Description de l'opération");
 
+        TextField dureeField = new TextField();
+        dureeField.setPromptText("Durée (en heures)");
+
         Label errorLabel = new Label();
         errorLabel.setStyle("-fx-text-fill: red;");
 
