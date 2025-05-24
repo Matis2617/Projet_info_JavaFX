@@ -49,7 +49,7 @@ public class MachineFormView {
                 float cout = Float.parseFloat(coutField.getText());
                 Machine.ETAT etat = etatBox.getValue();
 
-                if (absc < 0 || absc >= 5 || ord < 0 || ord >= 5) {
+                if (absc < 0 || absc >= 10 || ord < 0 || ord >= 10) {
                     erreurLabel.setText("Erreur : Coordonnées hors de l'atelier !");
                     return;
                 }
