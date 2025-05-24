@@ -1,29 +1,27 @@
 package com.mycompany.projet_fx.View;
 
+import com.mycompany.projet_fx.Model.Atelier;
 import com.mycompany.projet_fx.Model.Operation;
+import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
-import com.mycompany.projet_fx.Model.Atelier;
-import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import java.util.ArrayList;
-
 
 public class OperationView {
     private VBox root;
     private final ObservableList<Operation> operations;
     private final Runnable onRetourAccueil;
-    private final Atelier atelier;         
+    private final Atelier atelier;
     private final String nomFichier;
 
     public OperationView(Atelier atelier, ObservableList<Operation> operations, String nomFichier, Runnable onRetourAccueil) {
-    this.atelier = atelier;
-    this.operations = operations;
-    this.nomFichier = nomFichier;
-    this.onRetourAccueil = onRetourAccueil;
-    createView();
-}
-
+        this.atelier = atelier;
+        this.operations = operations;
+        this.nomFichier = nomFichier;
+        this.onRetourAccueil = onRetourAccueil;
+        createView();
+    }
 
     private void createView() {
         root = new VBox(15);
@@ -37,7 +35,6 @@ public class OperationView {
 
         TextField idField = new TextField();
         idField.setPromptText("Identifiant opération (numérique)");
-
         TextField descField = new TextField();
         descField.setPromptText("Description de l'opération");
 
@@ -49,13 +46,11 @@ public class OperationView {
             try {
                 String idStr = idField.getText().trim();
                 String description = descField.getText().trim();
-
                 if (idStr.isEmpty() || description.isEmpty()) {
                     errorLabel.setText("Tous les champs sont obligatoires.");
                     return;
                 }
                 int idOp = Integer.parseInt(idStr);
-                // Vérification unicité (optionnel)
                 boolean existe = operations.stream().anyMatch(op -> op.getId_operation() == idOp);
                 if (existe) {
                     errorLabel.setText("Cet identifiant existe déjà !");
@@ -75,6 +70,16 @@ public class OperationView {
             }
         });
 
+        Button supprimerBtn = new Button("Supprimer sélection");
+        supprimerBtn.setOnAction(e -> {
+            Operation selected = opList.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                operations.remove(selected);
+                atelier.setOperations(new ArrayList<>(operations));
+                AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+            }
+        });
+
         Button retourBtn = new Button("Retour");
         retourBtn.setOnAction(e -> {
             if (onRetourAccueil != null) onRetourAccueil.run();
@@ -84,7 +89,7 @@ public class OperationView {
             titre, opList,
             new Label("Ajout d'une opération :"),
             idField, descField,
-            ajouterBtn, retourBtn, errorLabel
+            ajouterBtn, supprimerBtn, retourBtn, errorLabel
         );
     }
 
