@@ -193,7 +193,6 @@ public class AtelierView extends Application {
         gammesList.setAll(atelier.getGammes());
         operationsList.setAll(atelier.getOperations());
 
-        root.setCenter(new GammeDashboardView(operationsList, machinesList, gammesList, postesList).getView());
     }
 
     // --- Rafraîchissements : chaque modification doit remettre à jour les listes pour la vue synthétique ---
