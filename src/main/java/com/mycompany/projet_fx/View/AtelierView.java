@@ -175,15 +175,8 @@ private void afficherAccueil() {
     }
 
    root.setCenter(MachineFormView.getMachineForm(atelier, nomFichier, this::afficherAccueil));
+    root.setCenter(PlaceholderView.getPlaceholder("Module Personnes à venir..."));
 
-
-    // Placeholder pour les autres modules
-    private void afficherPlaceholder(String texte) {
-        VBox box = new VBox(15);
-        box.setStyle("-fx-alignment: center; -fx-padding: 60;");
-        box.getChildren().add(new Label(texte));
-        root.setCenter(box);
-    }
 
     // Ajout d'un poste
     private void afficherPoste() {
