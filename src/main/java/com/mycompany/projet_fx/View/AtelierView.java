@@ -13,10 +13,9 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.text.Font;
-// Importe les autres vues nécessaires selon ton projet
 
 import com.mycompany.projet_fx.view.FiabiliteView;
-import com.mycompany.projet_fx.Controller.FiabiliteController;
+import com.mycompany.projet_fx.controller.FiabiliteController; // corrige ici le package ! 
 
 import java.io.File;
 import java.util.ArrayList;
@@ -91,7 +90,7 @@ public class AtelierView extends Application {
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Menu");
 
-        // Ordre : accueil, machines, poste, operations, personnes, operateur, gammes, produit, fiabilite
+        // Ordre : accueil, machines, poste, operations, personnes, operateur, gammes, produits, fiabilite
         MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem posteItem = new MenuItem("Poste");
@@ -99,7 +98,7 @@ public class AtelierView extends Application {
         MenuItem personnesItem = new MenuItem("Personnes");
         MenuItem operateurItem = new MenuItem("Opérateur");
         MenuItem gammeItem = new MenuItem("Gammes");
-        MenuItem produitItem = new MenuItem("Produits finis");
+        MenuItem produitItem = new MenuItem("Produits");
         MenuItem fiabiliteItem = new MenuItem("Fiabilité");
 
         menu.getItems().addAll(
@@ -126,7 +125,7 @@ public class AtelierView extends Application {
         personnesItem.setOnAction(e -> afficherPersonne());
         operateurItem.setOnAction(e -> afficherOperateur());
         gammeItem.setOnAction(e -> afficherGamme());
-        produitItem.setOnAction(e -> afficherListeProduits());
+        produitItem.setOnAction(e -> afficherProduit());
         fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(new FiabiliteController()).getView()));
 
         afficherAccueil();
@@ -179,12 +178,12 @@ public class AtelierView extends Application {
         root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, nomFichier, this::refreshAfterGammeChange));
     }
 
-    private void afficherListeProduits() {
-        root.setCenter(ProduitFormView.getListeProduitsView(listeProduits, this::afficherAccueil));
-    }
-
     private void afficherProduit() {
         root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, this::afficherListeProduits));
+    }
+
+    private void afficherListeProduits() {
+        root.setCenter(ProduitFormView.getListeProduitsView(listeProduits, this::afficherAccueil));
     }
 
     private void afficherPersonne() {
