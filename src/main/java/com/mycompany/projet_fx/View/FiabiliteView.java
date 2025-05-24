@@ -115,6 +115,29 @@ public class FiabiliteView {
                 }
             }
         });
+        Button analyserBtn = new Button("Analyser fiabilité depuis le fichier");
+analyserBtn.setOnAction(e -> {
+    // Remplace le chemin si besoin
+    String cheminFichier = "suiviMaintenance.txt";
+
+    // Ex : observation sur le 20/01/2020 06h00 à 20h00 (à ajuster si ton fichier contient plusieurs jours)
+    LocalDateTime heureDebut = LocalDateTime.of(2020, 1, 20, 6, 0);
+    LocalDateTime heureFin   = LocalDateTime.of(2020, 1, 20, 20, 0);
+
+    Map<String, List<FiabiliteUtils.PeriodePanne>> pannes = FiabiliteUtils.chargerPannesMachines(cheminFichier);
+    Map<String, Double> fiabilites = FiabiliteUtils.calculerFiabilites(pannes, heureDebut, heureFin);
+    List<Map.Entry<String, Double>> tri = FiabiliteUtils.trierMachinesParFiabilite(fiabilites);
+
+    StringBuilder sb = new StringBuilder("Fiabilité des machines (décroissant):\n");
+    for (Map.Entry<String, Double> entry : tri) {
+        sb.append(String.format("%s : %.2f %%\n", entry.getKey(), entry.getValue() * 100));
+    }
+    Alert alert = new Alert(Alert.AlertType.INFORMATION, sb.toString());
+    alert.setTitle("Analyse de fiabilité");
+    alert.setHeaderText("Résultat analyse fichier");
+    alert.showAndWait();
+});
+
 
         HBox inputBox = new HBox(10, nomField, debutDatePicker, debutHeureField, finDatePicker, finHeureField, causeField, ajouterBtn, supprimerBtn);
         inputBox.setPadding(new Insets(10));
