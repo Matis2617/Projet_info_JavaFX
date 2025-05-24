@@ -24,7 +24,7 @@ public class StockBrutView extends VBox {
         // Gestion des événements pour les boutons
         btnAjouter.setOnAction(event -> {
             // Logique pour ajouter un produit
-            Produit nouveauProduit = new Produit("Nouveau Produit", 10); // Exemple
+            Produit nouveauProduit = new Produit(10,"Nouveau Produit"); // Exemple
             controller.ajouterProduitBrut(nouveauProduit);
         });
 
