@@ -81,7 +81,7 @@ public class OperateurView {
             }
         });
 
-        root.getChildren().addAll(titre, operateurList, nomField, prenomField, competencesField, idOpField, etatBox, ajouterBtn);
+        root.getChildren().addAll(titre, operateurList, nomField, prenomField, competencesField, idOpField, etatBox, ajouterBtn, supprimerBtn);
     }
 
     public VBox getView() {
