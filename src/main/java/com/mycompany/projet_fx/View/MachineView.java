@@ -38,7 +38,7 @@ public class MachineView {
                 int id = Integer.parseInt(idField.getText());
                 String desc = descField.getText();
                 // Ajouter abscisse, ordonnée, coût, etc.
-                Machine m = new Machine(id, id, desc, 0, 0, 0f, 0f, Machine.ETAT.disponible); // adapte
+                Machine m = new Machine(id, id, desc, 0, 0, 0f, Machine.ETAT.disponible); // adapte
                 controller.ajouterMachine(m);
                 idField.clear(); descField.clear();
             } catch (Exception ex) { ex.printStackTrace(); }

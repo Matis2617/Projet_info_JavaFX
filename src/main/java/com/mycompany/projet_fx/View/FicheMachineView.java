@@ -14,7 +14,6 @@ public class FicheMachineView {
                         + "Abscisse: " + m.getAbscisse() + "\n"
                         + "Ordonnée: " + m.getOrdonnee() + "\n"
                         + "Coût: " + m.getC() + "\n"
-                        + "Temps de préparation: " + m.getT() + "\n"
                         + "État: " + m.getEtat()
         );
         alert.showAndWait();

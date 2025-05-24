@@ -79,7 +79,7 @@ public class MachineFormView {
                 if (!existe) {
                     Machine m = new Machine(
                             atelier.getEquipements().size() + 1,
-                            id, desc, absc, ord, cout, temps, etat
+                            id, desc, absc, ord, cout, etat
                     );
                     atelier.getEquipements().add(m);
                     AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
@@ -113,7 +113,6 @@ public class MachineFormView {
     TextField abscField = new TextField(String.valueOf(machine.getAbscisse()));
     TextField ordField = new TextField(String.valueOf(machine.getOrdonnee()));
     TextField coutField = new TextField(String.valueOf(machine.getC()));
-    TextField tempsField = new TextField(String.valueOf(machine.getT()));
     ComboBox<Machine.ETAT> etatBox = new ComboBox<>();
     etatBox.getItems().addAll(Machine.ETAT.values());
     etatBox.setValue(machine.getEtat());
@@ -124,7 +123,6 @@ public class MachineFormView {
         machine.setAbscisse(Integer.parseInt(abscField.getText()));
         machine.setOrdonnee(Integer.parseInt(ordField.getText()));
         machine.setC(Float.parseFloat(coutField.getText()));
-        machine.setT(Float.parseFloat(tempsField.getText()));
         machine.setEtat(etatBox.getValue());
         // Sauvegarder atelier...
         // AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
@@ -138,7 +136,6 @@ public class MachineFormView {
         new Label("Abscisse :"), abscField,
         new Label("Ordonnée :"), ordField,
         new Label("Coût :"), coutField,
-        new Label("Temps préparation :"), tempsField,
         new Label("État :"), etatBox,
         valider
     );
