@@ -8,7 +8,7 @@ package com.mycompany.projet_fx.View;
  *
  * @author Oscar
  */
-import com.mycompany.projet_fx.controller.OperateurController;
+import com.mycompany.projet_fx.Controller.OperateurController;
 import com.mycompany.projet_fx.Model.Operateur;
 import com.mycompany.projet_fx.Model.Machine.ETAT;
 import javafx.scene.control.*;
