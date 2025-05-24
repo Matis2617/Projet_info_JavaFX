@@ -8,7 +8,7 @@ import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Node; // <-- AJOUT ICI
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -34,6 +34,9 @@ public class PosteFormView {
         machineTable.setPrefHeight(300);
         machineTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        // Permettre la sélection multiple
+        machineTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
         TableColumn<Machine, Number> idCol = new TableColumn<>("Identifiant");
         idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getRefmachine()));
         TableColumn<Machine, String> descCol = new TableColumn<>("Description");
@@ -50,7 +53,7 @@ public class PosteFormView {
         posteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Poste, String> posteNomCol = new TableColumn<>("Nom Poste");
-        posteNomCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNomPoste()));
+        posteNomCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDposte()));
         // Couleur
         TableColumn<Poste, Poste> colorCol = new TableColumn<>("Couleur");
         colorCol.setCellFactory(tc -> new TableCell<>() {
@@ -63,6 +66,10 @@ public class PosteFormView {
                     Rectangle rect = new Rectangle(18, 18, getColorForPoste(postesList.indexOf(poste)));
                     setGraphic(rect);
                 }
+            }
+            @Override
+            public void updateIndex(int i) {
+                super.updateIndex(i);
             }
         });
         colorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue()));
@@ -96,7 +103,7 @@ public class PosteFormView {
         Button ajouterBtn = new Button("Créer Poste");
         Button modifierBtn = new Button("Renommer");
         Button supprimerBtn = new Button("Supprimer");
-        Button ajouterMachineBtn = new Button("Affecter machine →");
+        Button ajouterMachineBtn = new Button("Affecter machine(s) →");
         Button retirerMachineBtn = new Button("← Retirer machine");
 
         Label msgLabel = new Label();
@@ -110,11 +117,12 @@ public class PosteFormView {
                 return;
             }
             // Vérifier unicité
-            for (Poste p : postesList) if (p.getNomPoste().equalsIgnoreCase(nom)) {
+            for (Poste p : postesList) if (p.getDposte().equalsIgnoreCase(nom)) {
                 msgLabel.setText("Nom déjà pris.");
                 return;
             }
-            Poste p = new Poste(nom);
+            // Création avec refposte auto (taille + 1), nom, liste vide, id_equipement fictif (peut être adapté)
+            Poste p = new Poste(postesList.size() + 1, nom, new ArrayList<>(), atelier.getEquipements().size() + 1);
             postesList.add(p);
             atelier.getPostes().add(p);
             AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
@@ -134,7 +142,7 @@ public class PosteFormView {
                 msgLabel.setText("Le nom ne peut pas être vide.");
                 return;
             }
-            sel.setNomPoste(nom);
+            sel.setDposte(nom);
             posteTable.refresh();
             AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
             msgLabel.setText("Nom modifié.");
@@ -155,20 +163,28 @@ public class PosteFormView {
             posteDetailsBox.getChildren().clear();
         });
 
-        // Ajouter machine sélectionnée à un poste
+        // --------- SÉLECTION MULTIPLE POUR AFFECTATION ---------
         ajouterMachineBtn.setOnAction(e -> {
-            Machine m = machineTable.getSelectionModel().getSelectedItem();
+            List<Machine> machinesSelectionnees = new ArrayList<>(machineTable.getSelectionModel().getSelectedItems());
             Poste p = posteTable.getSelectionModel().getSelectedItem();
-            if (m == null || p == null) {
-                msgLabel.setText("Sélectionnez la machine ET le poste.");
+            if (machinesSelectionnees.isEmpty() || p == null) {
+                msgLabel.setText("Sélectionnez au moins une machine ET un poste.");
                 return;
             }
-            if (!p.getMachines().contains(m)) {
-                p.getMachines().add(m);
+            int ajout = 0;
+            for (Machine m : machinesSelectionnees) {
+                if (!p.getMachines().contains(m)) {
+                    p.getMachines().add(m);
+                    ajout++;
+                }
+            }
+            if (ajout > 0) {
                 posteTable.refresh();
                 AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
-                msgLabel.setText("Machine affectée.");
+                msgLabel.setText("Machine(s) affectée(s).");
                 posteTable.getSelectionModel().select(p);
+            } else {
+                msgLabel.setText("Machines déjà dans ce poste.");
             }
         });
 
