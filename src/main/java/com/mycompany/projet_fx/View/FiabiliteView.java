@@ -1,150 +1,143 @@
 package com.mycompany.projet_fx.view;
 
-import com.mycompany.projet_fx.Model.Atelier;
-import com.mycompany.projet_fx.Model.Fiabilite;
-import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
-import com.mycompany.projet_fx.controller.FiabiliteController;
+import com.mycompany.projet_fx.Model.EvenementMaintenance;
+import com.mycompany.projet_fx.Model.FiabiliteUtils;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.List;
-import com.mycompany.projet_fx.Model.FiabiliteUtils;
-
-
+import java.util.*;
 
 public class FiabiliteView {
 
-    private FiabiliteController controller;
     private VBox root;
+    private ObservableList<EvenementMaintenance> evenements = FXCollections.observableArrayList();
 
-    private Atelier atelier;           // Ajout pour la sauvegarde
-    private String nomFichier;         // Ajout pour la sauvegarde
-
-    // Modifiez le constructeur pour accepter atelier et nomFichier
-    public FiabiliteView(FiabiliteController controller, Atelier atelier, String nomFichier) {
-        this.controller = controller;
-        this.atelier = atelier;
-        this.nomFichier = nomFichier;
+    public FiabiliteView() {
         createView();
     }
 
     private void createView() {
-        // TableView pour afficher les fiabilités
-        TableView<Fiabilite> table = new TableView<>();
-        table.setItems(controller.getFiabilites());
+        // TableView pour les événements
+        TableView<EvenementMaintenance> table = new TableView<>(evenements);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        TableColumn<Fiabilite, String> nomCol = new TableColumn<>("Nom Machine");
-        nomCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNomMachine()));
+        TableColumn<EvenementMaintenance, String> dateCol = new TableColumn<>("Date");
+        dateCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                data.getValue().getDateHeure().toLocalDate().toString()));
 
-        TableColumn<Fiabilite, String> debutCol = new TableColumn<>("Début Panne");
-        debutCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getDebutPanne().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
+        TableColumn<EvenementMaintenance, String> heureCol = new TableColumn<>("Heure");
+        heureCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                data.getValue().getDateHeure().toLocalTime().toString()));
 
-        TableColumn<Fiabilite, String> finCol = new TableColumn<>("Fin Panne");
-        finCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getFinPanne().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
+        TableColumn<EvenementMaintenance, String> machineCol = new TableColumn<>("Machine");
+        machineCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getMachine()));
 
-        TableColumn<Fiabilite, String> causeCol = new TableColumn<>("Cause");
+        TableColumn<EvenementMaintenance, String> eventCol = new TableColumn<>("Evénement");
+        eventCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getEvenement()));
+
+        TableColumn<EvenementMaintenance, String> operateurCol = new TableColumn<>("Opérateur");
+        operateurCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getOperateur()));
+
+        TableColumn<EvenementMaintenance, String> causeCol = new TableColumn<>("Cause");
         causeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getCause()));
 
-        TableColumn<Fiabilite, String> tauxCol = new TableColumn<>("Taux de fiabilité");
-        tauxCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                String.format("%.2f %%", data.getValue().calculerFiabilite() * 100)));
-
-        table.getColumns().addAll(nomCol, debutCol, finCol, causeCol, tauxCol);
+        table.getColumns().addAll(dateCol, heureCol, machineCol, eventCol, operateurCol, causeCol);
 
         // Champs de saisie
-        TextField nomField = new TextField();
-        nomField.setPromptText("Nom machine");
-
-        DatePicker debutDatePicker = new DatePicker();
-        TextField debutHeureField = new TextField();
-        debutHeureField.setPromptText("Heure début (HH:mm)");
-
-        DatePicker finDatePicker = new DatePicker();
-        TextField finHeureField = new TextField();
-        finHeureField.setPromptText("Heure fin (HH:mm)");
-
-        TextField causeField = new TextField();
-        causeField.setPromptText("Cause");
+        DatePicker datePicker = new DatePicker();
+        TextField heureField = new TextField();  heureField.setPromptText("Heure (HH:mm)");
+        TextField machineField = new TextField(); machineField.setPromptText("Machine");
+        ComboBox<String> eventBox = new ComboBox<>();
+        eventBox.getItems().addAll("A", "D");
+        eventBox.setPromptText("Evénement");
+        TextField operateurField = new TextField(); operateurField.setPromptText("Opérateur");
+        TextField causeField = new TextField();    causeField.setPromptText("Cause");
 
         Button ajouterBtn = new Button("Ajouter");
         ajouterBtn.setOnAction(e -> {
             try {
-                String nom = nomField.getText();
-                LocalDateTime debutPanne = debutDatePicker.getValue().atTime(
-                        java.time.LocalTime.parse(debutHeureField.getText(), DateTimeFormatter.ofPattern("HH:mm"))
-                );
-                LocalDateTime finPanne = finDatePicker.getValue().atTime(
-                        java.time.LocalTime.parse(finHeureField.getText(), DateTimeFormatter.ofPattern("HH:mm"))
-                );
+                LocalDate date = datePicker.getValue();
+                LocalTime heure = LocalTime.parse(heureField.getText(), DateTimeFormatter.ofPattern("HH:mm"));
+                String machine = machineField.getText();
+                String evenement = eventBox.getValue();
+                String operateur = operateurField.getText();
                 String cause = causeField.getText();
 
-                Fiabilite f = new Fiabilite(nom, debutPanne, finPanne, cause);
-                controller.ajouterFiabilite(f);
-
-                // === SAUVEGARDE APRÈS AJOUT ===
-                if (atelier != null) {
-                    atelier.getFiabilites().clear();
-                    atelier.getFiabilites().addAll(controller.getFiabilites());
-                    AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+                if (date == null || machine.isEmpty() || evenement == null || operateur.isEmpty() || cause.isEmpty()) {
+                    showAlert("Erreur", "Veuillez remplir tous les champs.");
+                    return;
                 }
 
-                nomField.clear();
-                debutDatePicker.setValue(null);
-                debutHeureField.clear();
-                finDatePicker.setValue(null);
-                finHeureField.clear();
+                evenements.add(new EvenementMaintenance(LocalDateTime.of(date, heure), machine, evenement, operateur, cause));
+                datePicker.setValue(null);
+                heureField.clear();
+                machineField.clear();
+                eventBox.setValue(null);
+                operateurField.clear();
                 causeField.clear();
             } catch (Exception ex) {
-                showAlert("Erreur de saisie", "Veuillez vérifier les entrées.");
+                showAlert("Erreur", "Format de saisie incorrect.");
             }
         });
 
-        Button supprimerBtn = new Button("Supprimer sélection");
-        supprimerBtn.setOnAction(e -> {
-            Fiabilite selected = table.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                controller.supprimerFiabilite(selected);
+        Button analyserBtn = new Button("Analyser la fiabilité");
+        analyserBtn.setOnAction(e -> {
+            // Construction de la map machine -> liste des événements (pour FiabiliteUtils)
+            Map<String, List<EvenementMaintenance>> map = new HashMap<>();
+            for (EvenementMaintenance ev : evenements) {
+                map.computeIfAbsent(ev.getMachine(), k -> new ArrayList<>()).add(ev);
+            }
+            // On trie les événements par date (important)
+            for (List<EvenementMaintenance> list : map.values()) {
+                list.sort(Comparator.comparing(EvenementMaintenance::getDateHeure));
+            }
 
-                // === SAUVEGARDE APRÈS SUPPRESSION ===
-                if (atelier != null) {
-                    atelier.getFiabilites().clear();
-                    atelier.getFiabilites().addAll(controller.getFiabilites());
-                    AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+            // Conversion vers périodes de panne pour FiabiliteUtils
+            Map<String, List<FiabiliteUtils.PeriodePanne>> pannesParMachine = new HashMap<>();
+            for (String machine : map.keySet()) {
+                List<EvenementMaintenance> evts = map.get(machine);
+                List<FiabiliteUtils.PeriodePanne> pannes = new ArrayList<>();
+                LocalDateTime debut = null;
+                for (EvenementMaintenance ev : evts) {
+                    if (ev.getEvenement().equals("A")) debut = ev.getDateHeure();
+                    else if (ev.getEvenement().equals("D") && debut != null) {
+                        pannes.add(new FiabiliteUtils.PeriodePanne(debut, ev.getDateHeure()));
+                        debut = null;
+                    }
                 }
+                pannesParMachine.put(machine, pannes);
             }
+
+            // Période d'observation = de la première à la dernière date
+            if (evenements.isEmpty()) {
+                showAlert("Info", "Aucun événement saisi.");
+                return;
+            }
+            LocalDateTime obsDebut = evenements.stream().map(EvenementMaintenance::getDateHeure).min(LocalDateTime::compareTo).orElse(LocalDateTime.now());
+            LocalDateTime obsFin = evenements.stream().map(EvenementMaintenance::getDateHeure).max(LocalDateTime::compareTo).orElse(LocalDateTime.now()).plusMinutes(1);
+
+            Map<String, Double> fiabilites = FiabiliteUtils.calculerFiabilites(pannesParMachine, obsDebut, obsFin);
+            List<Map.Entry<String, Double>> tri = FiabiliteUtils.trierMachinesParFiabilite(fiabilites);
+
+            StringBuilder sb = new StringBuilder("Fiabilité des machines (décroissant):\n");
+            for (Map.Entry<String, Double> entry : tri) {
+                sb.append(String.format("%s : %.2f %%\n", entry.getKey(), entry.getValue() * 100));
+            }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, sb.toString());
+            alert.setTitle("Analyse de fiabilité");
+            alert.setHeaderText("Résultat analyse événements");
+            alert.showAndWait();
         });
-        Button analyserBtn = new Button("Analyser fiabilité depuis le fichier");
-analyserBtn.setOnAction(e -> {
-    // Remplace le chemin si besoin
-    String cheminFichier = "suiviMaintenance.txt";
 
-    // Ex : observation sur le 20/01/2020 06h00 à 20h00 (à ajuster si ton fichier contient plusieurs jours)
-    LocalDateTime heureDebut = LocalDateTime.of(2020, 1, 20, 6, 0);
-    LocalDateTime heureFin   = LocalDateTime.of(2020, 1, 20, 20, 0);
-
-    Map<String, List<FiabiliteUtils.PeriodePanne>> pannes = FiabiliteUtils.chargerPannesMachines(cheminFichier);
-    Map<String, Double> fiabilites = FiabiliteUtils.calculerFiabilites(pannes, heureDebut, heureFin);
-    List<Map.Entry<String, Double>> tri = FiabiliteUtils.trierMachinesParFiabilite(fiabilites);
-
-    StringBuilder sb = new StringBuilder("Fiabilité des machines (décroissant):\n");
-    for (Map.Entry<String, Double> entry : tri) {
-        sb.append(String.format("%s : %.2f %%\n", entry.getKey(), entry.getValue() * 100));
-    }
-    Alert alert = new Alert(Alert.AlertType.INFORMATION, sb.toString());
-    alert.setTitle("Analyse de fiabilité");
-    alert.setHeaderText("Résultat analyse fichier");
-    alert.showAndWait();
-});
-
-
-        HBox inputBox = new HBox(10, nomField, debutDatePicker, debutHeureField, finDatePicker, finHeureField, causeField, ajouterBtn, supprimerBtn);
+        HBox inputBox = new HBox(10, datePicker, heureField, machineField, eventBox, operateurField, causeField, ajouterBtn);
         inputBox.setPadding(new Insets(10));
 
         root = new VBox(10, table, inputBox, analyserBtn);
