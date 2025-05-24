@@ -8,11 +8,12 @@ import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Node; // <-- AJOUT ICI
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.Node;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,10 +63,6 @@ public class PosteFormView {
                     Rectangle rect = new Rectangle(18, 18, getColorForPoste(postesList.indexOf(poste)));
                     setGraphic(rect);
                 }
-            }
-            @Override
-            public void updateIndex(int i) {
-                super.updateIndex(i);
             }
         });
         colorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue()));
