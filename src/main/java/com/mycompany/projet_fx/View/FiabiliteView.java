@@ -142,7 +142,7 @@ analyserBtn.setOnAction(e -> {
         HBox inputBox = new HBox(10, nomField, debutDatePicker, debutHeureField, finDatePicker, finHeureField, causeField, ajouterBtn, supprimerBtn);
         inputBox.setPadding(new Insets(10));
 
-        root = new VBox(10, table, inputBox);
+        root = new VBox(10, table, inputBox, analyserBtn);
         root.setPadding(new Insets(10));
     }
 
