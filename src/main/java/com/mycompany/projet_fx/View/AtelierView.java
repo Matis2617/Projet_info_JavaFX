@@ -96,7 +96,8 @@ public class AtelierView extends Application {
         MenuItem stockBrutItem = new MenuItem("Stock Brut");
         menu.getItems().addAll(
                 accueilItem, machineItem, personnesItem, posteItem, operationItem,
-                produitItem, gammeItem, listeProduitItem, fiabiliteItem, stockBrutItem
+                produitItem, gammeItem, listeProduitItem, fiabiliteItem, stockBrutItem,
+                operateurItem
         );
         menuBar.getMenus().add(menu);
 
