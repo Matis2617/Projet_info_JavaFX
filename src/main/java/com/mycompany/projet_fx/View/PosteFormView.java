@@ -20,18 +20,15 @@ import java.util.List;
 public class PosteFormView {
 
     public static Node getPosteForm(Atelier atelier, String nomFichier, Runnable onRetourAccueil) {
-        // Liste observable des machines
         ObservableList<Machine> machinesList = FXCollections.observableArrayList();
         for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) machinesList.add((Machine) eq);
         }
 
-        // Liste observable des postes
         ObservableList<Poste> postesList = FXCollections.observableArrayList(atelier.getPostes());
 
         // Tableau des machines
         TableView<Machine> machineTable = new TableView<>(machinesList);
-        machineTable.setPrefHeight(300);
         machineTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         machineTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -47,7 +44,6 @@ public class PosteFormView {
 
         // Tableau des postes
         TableView<Poste> posteTable = new TableView<>(postesList);
-        posteTable.setPrefHeight(300);
         posteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Poste, String> posteNomCol = new TableColumn<>("Nom Poste");
@@ -68,7 +64,6 @@ public class PosteFormView {
         colorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue()));
         posteTable.getColumns().addAll(posteNomCol, colorCol);
 
-        // ----------- CORRECTION ICI -------------
         VBox posteDetailsBox = new VBox(8);
         posteDetailsBox.setPadding(new Insets(8));
         posteDetailsBox.setStyle("-fx-background-color: #f7f7f7; -fx-border-color: #c0c0c0;");
@@ -81,7 +76,6 @@ public class PosteFormView {
                 titre.setStyle("-fx-font-weight: bold;");
                 posteDetailsBox.getChildren().add(titre);
                 for (Machine m : selected.getMachines()) {
-                    // Affiche UNIQUEMENT la description de la machine :
                     HBox h = new HBox(7, new Rectangle(12, 12, color), new Label(m.getDmachine()));
                     posteDetailsBox.getChildren().add(h);
                 }
@@ -90,7 +84,6 @@ public class PosteFormView {
                 }
             }
         });
-        // ----------- FIN CORRECTION -------------
 
         TextField nomField = new TextField();
         nomField.setPromptText("Nom du poste");
@@ -203,15 +196,29 @@ public class PosteFormView {
             });
         });
 
+        // --- Layout Responsive ---
         VBox leftBox = new VBox(10, new Label("Machines"), machineTable, ajouterMachineBtn);
         VBox rightBox = new VBox(10, new Label("Postes"), posteTable, new HBox(7, nomField, ajouterBtn, modifierBtn, supprimerBtn), retirerMachineBtn, msgLabel, posteDetailsBox);
 
-        leftBox.setPrefWidth(370);
-        rightBox.setPrefWidth(380);
+        leftBox.setPrefWidth(400);
+        rightBox.setPrefWidth(450);
 
-        HBox root = new HBox(16, leftBox, rightBox);
-        root.setPadding(new Insets(20));
+        // Important : HGrow pour que ça occupe tout l’espace
+        HBox.setHgrow(leftBox, Priority.ALWAYS);
+        HBox.setHgrow(rightBox, Priority.ALWAYS);
+        VBox.setVgrow(machineTable, Priority.ALWAYS);
+        VBox.setVgrow(posteTable, Priority.ALWAYS);
 
+        HBox contentBox = new HBox(16, leftBox, rightBox);
+        contentBox.setPadding(new Insets(20));
+        contentBox.setFillHeight(true);
+        HBox.setHgrow(contentBox, Priority.ALWAYS);
+
+        // root VBox qui prend toute la hauteur de la fenêtre
+        VBox root = new VBox(contentBox);
+        VBox.setVgrow(contentBox, Priority.ALWAYS);
+
+        // Retour accueil
         Button retourBtn = new Button("Retour");
         retourBtn.setOnAction(e -> { if (onRetourAccueil != null) onRetourAccueil.run(); });
         rightBox.getChildren().add(retourBtn);
