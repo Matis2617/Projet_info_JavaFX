@@ -10,6 +10,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.List;
+
 
 public class FiabiliteView {
 
