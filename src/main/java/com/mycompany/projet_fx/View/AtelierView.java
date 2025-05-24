@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.text.Font;
 import com.mycompany.projet_fx.view.FiabiliteView;
+import com.mycompany.projet_fx.Controller.FiabiliteController;
 
 import java.io.File;
 import java.util.ArrayList;
