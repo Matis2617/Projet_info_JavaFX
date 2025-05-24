@@ -12,6 +12,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.scene.Node;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 
 import java.io.File;
 import java.util.ArrayList;
