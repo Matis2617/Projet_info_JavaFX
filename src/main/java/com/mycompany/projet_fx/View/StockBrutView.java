@@ -1,31 +1,42 @@
 package com.mycompany.projet_fx.view;
 
-import com.mycompany.projet_fx.controller.StockBrutController;
 import com.mycompany.projet_fx.Model.Produit;
+import com.mycompany.projet_fx.controller.StockBrutController;
+import javafx.collections.ListChangeListener;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.*;
 
-public class StockBrutView {
-    private VBox root;
-    private final StockBrutController controller;
+public class StockBrutView extends VBox {
+    private StockBrutController controller;
+    private ListView<Produit> listViewProduits;
 
     public StockBrutView(StockBrutController controller) {
         this.controller = controller;
-        createView();
+
+        // Initialisation de la ListView pour afficher les produits
+        listViewProduits = new ListView<>(controller.getProduitsBruts());
+
+        // Boutons pour ajouter et supprimer des produits
+        Button btnAjouter = new Button("Ajouter Produit");
+        Button btnSupprimer = new Button("Supprimer Produit");
+
+        // Gestion des événements pour les boutons
+        btnAjouter.setOnAction(event -> {
+            // Logique pour ajouter un produit
+            Produit nouveauProduit = new Produit("Nouveau Produit", 10); // Exemple
+            controller.ajouterProduitBrut(nouveauProduit);
+        });
+
+        btnSupprimer.setOnAction(event -> {
+            // Logique pour supprimer le produit sélectionné
+            Produit produitSelectionne = listViewProduits.getSelectionModel().getSelectedItem();
+            if (produitSelectionne != null) {
+                controller.supprimerProduitBrut(produitSelectionne);
+            }
+        });
+
+        // Ajout des composants à la vue
+        this.getChildren().addAll(listViewProduits, btnAjouter, btnSupprimer);
     }
-
-    private void createView() {
-        root = new VBox(15);
-        root.setStyle("-fx-padding: 30;");
-        Label titre = new Label("Stock Brut");
-        titre.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-        ListView<Produit> list = new ListView<>(controller.getProduitsBruts());
-        list.setPrefHeight(120);
-
-        // ... Ajout de produit brut
-
-        root.getChildren().addAll(titre, list /*, champs d'ajout, bouton ... */);
-    }
-
-    public VBox getView() { return root; }
 }
