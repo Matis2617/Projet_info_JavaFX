@@ -42,13 +42,42 @@ public class AtelierView extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Saisie nom utilisateur
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Bienvenue !");
-        dialog.setHeaderText("Bienvenue dans la gestion de l'atelier");
-        dialog.setContentText("Veuillez entrer votre nom :");
-        Optional<String> result = dialog.showAndWait();
-        nomUtilisateur = result.orElse("Utilisateur").trim();
-        nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
+        // ----------- Boîte de saisie personnalisée pour le nom utilisateur -----------
+Dialog<String> dialog = new Dialog<>();
+dialog.setTitle("Bienvenue !");
+dialog.setHeaderText(null);
+
+dialog.getDialogPane().setStyle("-fx-background-color: #f8fbff; -fx-border-radius: 14; -fx-background-radius: 14;");
+
+Label titre = new Label("Bienvenue dans la gestion de l'atelier");
+titre.setStyle("-fx-font-size: 20px; -fx-font-family: 'Segoe UI', 'Arial', sans-serif; -fx-font-weight: bold; -fx-text-fill: #23374d;");
+
+Label prompt = new Label("Veuillez entrer votre nom :");
+prompt.setStyle("-fx-font-size: 14px; -fx-text-fill: #274472; -fx-padding: 12 0 4 0;");
+
+TextField nameField = new TextField();
+nameField.setPromptText("Votre prénom...");
+nameField.setStyle("-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #bcd4f6; -fx-background-color: #fff; -fx-font-size: 15px; -fx-padding: 8;");
+
+VBox vbox = new VBox(10, titre, prompt, nameField);
+vbox.setStyle("-fx-padding: 20;");
+vbox.setAlignment(Pos.CENTER_LEFT);
+
+dialog.getDialogPane().setContent(vbox);
+ButtonType valider = new ButtonType("Valider", ButtonBar.ButtonData.OK_DONE);
+dialog.getDialogPane().getButtonTypes().setAll(valider);
+
+dialog.setResultConverter(b -> {
+    if (b == valider) {
+        return nameField.getText();
+    }
+    return null;
+});
+
+Optional<String> result = dialog.showAndWait();
+String nomUtilisateur = result.orElse("Utilisateur").trim();
+if (nomUtilisateur.isEmpty()) nomUtilisateur = "Utilisateur";
+String nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
 
         Atelier atelierCharge = null;
         File f = new File(nomFichier);
