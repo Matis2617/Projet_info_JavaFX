@@ -114,9 +114,15 @@ public class MachineFormView {
                 }
 
                 Machine m = new Machine(
-                        atelier.getEquipements().size() + 1, // id_equipement unique interne
-                        id, desc, absc, ord, cout, etat
-                );
+            atelier.getEquipements().size() + 1, // id_equipement unique interne
+            id,                                  // refmachine
+            desc,                                // description
+            absc,
+            ord,
+            cout,
+            etat
+        );
+                
                 atelier.getEquipements().add(m);
                 machinesList.add(m);
                 AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
