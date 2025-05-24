@@ -10,50 +10,34 @@ import javafx.geometry.Insets;
 
 public class ProduitFormView {
 
-    public static Node getProduitForm(
-            ObservableList<Produit> listeProduits,
-            ObservableList<Gamme> listeGammes,
-            Runnable onRetourAccueil
-    ) {
+    // Vue d'ajout d'un produit
+    public static Node getProduitForm(ObservableList<Produit> listeProduits, ObservableList<Gamme> gammesList, Runnable onRetourAccueil) {
         VBox box = new VBox(18);
-        box.setPadding(new Insets(28));
-        box.setStyle("-fx-alignment: center;");
-
-        Label titre = new Label("Ajouter un produit fini");
-        titre.setStyle("-fx-font-size: 19px; -fx-font-weight: bold;");
+        box.setStyle("-fx-padding: 30; -fx-alignment: center;");
 
         TextField idField = new TextField();
-        idField.setPromptText("Identifiant du produit");
+        idField.setPromptText("Identifiant du produit fini");
 
-        ComboBox<Gamme> gammeCombo = new ComboBox<>(listeGammes);
-        gammeCombo.setPromptText("Choisir une gamme utilisée");
+        ComboBox<Gamme> gammeCombo = new ComboBox<>(gammesList);
+        gammeCombo.setPromptText("Choisir la gamme utilisée");
 
         Label erreurLabel = new Label();
         erreurLabel.setStyle("-fx-text-fill: red;");
 
-        Button ajouterBtn = new Button("Ajouter le produit");
+        Button ajouterBtn = new Button("Ajouter le produit fini");
         ajouterBtn.setOnAction(e -> {
-            try {
-                String id = idField.getText().trim();
-                Gamme gamme = gammeCombo.getValue();
-                if (id.isEmpty() || gamme == null) {
-                    erreurLabel.setText("Remplir tous les champs.");
-                    return;
-                }
-                // Vérifier unicité
-                boolean existe = listeProduits.stream().anyMatch(p -> p.getId().equals(id));
-                if (existe) {
-                    erreurLabel.setText("Identifiant déjà utilisé !");
-                    return;
-                }
-                Produit produit = new Produit(id, gamme);
-                listeProduits.add(produit);
-                idField.clear();
-                gammeCombo.setValue(null);
-                erreurLabel.setText("");
-            } catch (Exception ex) {
-                erreurLabel.setText("Erreur : Données invalides.");
+            String id = idField.getText().trim();
+            Gamme gamme = gammeCombo.getValue();
+            if (id.isEmpty() || gamme == null) {
+                erreurLabel.setText("Veuillez renseigner l'identifiant et choisir une gamme.");
+                return;
             }
+            Produit produit = new Produit(id, gamme);
+            listeProduits.add(produit);
+            idField.clear();
+            gammeCombo.setValue(null);
+            erreurLabel.setText("");
+            if (onRetourAccueil != null) onRetourAccueil.run();
         });
 
         Button retourBtn = new Button("Annuler");
@@ -61,53 +45,90 @@ public class ProduitFormView {
             if (onRetourAccueil != null) onRetourAccueil.run();
         });
 
-        // Tableau des produits finis
-        TableView<Produit> tableProduits = new TableView<>(listeProduits);
-        tableProduits.setPrefHeight(220);
-        tableProduits.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        box.getChildren().addAll(
+                new Label("Ajouter un produit fini :"),
+                idField, gammeCombo,
+                ajouterBtn, retourBtn, erreurLabel
+        );
+        return box;
+    }
+
+    // Vue d'affichage et gestion de la liste des produits finis
+    public static Node getListeProduitsView(ObservableList<Produit> listeProduits, Runnable onRetourAccueil) {
+        VBox box = new VBox(18);
+        box.setStyle("-fx-padding: 30; -fx-alignment: center;");
+
+        Label titre = new Label("Liste des produits finis :");
+        TableView<Produit> produitsTable = new TableView<>(listeProduits);
+        produitsTable.setPrefHeight(200);
+        produitsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Produit, String> idCol = new TableColumn<>("Identifiant");
         idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getId()));
 
         TableColumn<Produit, String> gammeCol = new TableColumn<>("Gamme utilisée");
         gammeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getGamme() == null ? "" : data.getValue().getGamme().getRefGamme()
+                data.getValue().getGamme() != null ? data.getValue().getGamme().getRefGamme() : "-"
         ));
 
-        TableColumn<Produit, Number> coutCol = new TableColumn<>("Coût total");
-        coutCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(
-                data.getValue().getGamme() == null ? 0 : data.getValue().getGamme().coutGamme()
+        TableColumn<Produit, Number> prixCol = new TableColumn<>("Coût (prix)");
+        prixCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(
+                data.getValue().getPrix()
         ));
 
-        TableColumn<Produit, Number> dureeCol = new TableColumn<>("Durée totale (h)");
+        TableColumn<Produit, Number> dureeCol = new TableColumn<>("Durée de production (h)");
         dureeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(
-                data.getValue().getGamme() == null ? 0 : data.getValue().getGamme().dureeGamme()
+                data.getValue().getDuree()
         ));
 
-        tableProduits.getColumns().addAll(idCol, gammeCol, coutCol, dureeCol);
+        produitsTable.getColumns().addAll(idCol, gammeCol, prixCol, dureeCol);
 
-        // Suppression
-        Button supprimerBtn = new Button("Supprimer sélection");
-        supprimerBtn.setOnAction(e -> {
-            Produit sel = tableProduits.getSelectionModel().getSelectedItem();
-            if (sel != null) {
-                listeProduits.remove(sel);
-                tableProduits.getSelectionModel().clearSelection();
+        Label detailsProduit = new Label();
+        detailsProduit.setStyle("-fx-font-size: 15px; -fx-padding: 12;");
+
+        produitsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Identifiant : ").append(newVal.getId()).append("\n");
+                if (newVal.getGamme() != null) {
+                    sb.append("Gamme : ").append(newVal.getGamme().getRefGamme()).append("\n");
+                    sb.append("Détail gamme :\n");
+                    for (int i = 0; i < newVal.getGamme().getOperations().size(); i++) {
+                        sb.append(" - Opération ").append(i+1).append(" : ")
+                                .append(newVal.getGamme().getOperations().get(i).getDescription()).append("\n");
+                    }
+                    sb.append("Coût total : ").append(newVal.getPrix()).append(" €\n");
+                    sb.append("Durée totale : ").append(newVal.getDuree()).append(" h");
+                }
+                detailsProduit.setText(sb.toString());
+            } else {
+                detailsProduit.setText("");
             }
         });
 
-        HBox actions = new HBox(12, ajouterBtn, supprimerBtn, retourBtn);
+        Button supprimerBtn = new Button("Supprimer");
+        supprimerBtn.setOnAction(e -> {
+            Produit prod = produitsTable.getSelectionModel().getSelectedItem();
+            if (prod != null) {
+                listeProduits.remove(prod);
+                detailsProduit.setText("");
+            }
+        });
+
+        Button retourBtn = new Button("Retour");
+        retourBtn.setOnAction(e -> {
+            if (onRetourAccueil != null) onRetourAccueil.run();
+        });
+
+        HBox actions = new HBox(12, supprimerBtn, retourBtn);
         actions.setStyle("-fx-alignment: center;");
 
         box.getChildren().addAll(
-                titre,
-                idField,
-                gammeCombo,
-                erreurLabel,
-                tableProduits,
-                actions
+            titre,
+            produitsTable,
+            detailsProduit,
+            actions
         );
-
         return box;
     }
 }
