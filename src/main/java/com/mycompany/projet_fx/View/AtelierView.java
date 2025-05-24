@@ -83,39 +83,50 @@ public class AtelierView extends Application {
         if (atelier.getPostes() != null) postesList.addAll(atelier.getPostes());
 
         // Barre de menu
-        MenuBar menuBar = new MenuBar();
-        menuBar.setStyle("-fx-font-family: 'Segoe UI Semibold', 'Arial', sans-serif; -fx-font-size: 15px;");
+MenuBar menuBar = new MenuBar();
+Menu menu = new Menu("Menu");
 
-        Menu menu = new Menu("Menu");
-        MenuItem accueilItem = new MenuItem("Accueil");
-        MenuItem machineItem = new MenuItem("Machines");
-        MenuItem personnesItem = new MenuItem("Personnes");
-        MenuItem operateurItem = new MenuItem("Opérateur");
-        MenuItem posteItem = new MenuItem("Poste");
-        MenuItem operationItem = new MenuItem("Opérations");
-        MenuItem produitItem = new MenuItem("Produit");
-        MenuItem gammeItem = new MenuItem("Gamme");
-        MenuItem listeProduitItem = new MenuItem("Produits finis");
-        MenuItem syntheseItem = new MenuItem("Synthèse");
-        menu.getItems().addAll(
-                accueilItem, machineItem, personnesItem, operateurItem, posteItem, operationItem,
-                produitItem, gammeItem, listeProduitItem, syntheseItem
-        );
-        menuBar.getMenus().add(menu);
+// Ordre : accueil, machines, poste, operations, personnes, operateur, gammes, produit, produits finis, fiabilite
+MenuItem accueilItem = new MenuItem("Accueil");
+MenuItem machineItem = new MenuItem("Machines");
+MenuItem posteItem = new MenuItem("Poste");
+MenuItem operationItem = new MenuItem("Opérations");
+MenuItem personnesItem = new MenuItem("Personnes");
+MenuItem operateurItem = new MenuItem("Opérateur");
+MenuItem gammeItem = new MenuItem("Gammes");
+MenuItem produitItem = new MenuItem("Produit");
+MenuItem listeProduitItem = new MenuItem("Produits finis");
+MenuItem fiabiliteItem = new MenuItem("Fiabilité");
 
-        root = new BorderPane();
-        root.setTop(menuBar);
+menu.getItems().addAll(
+    accueilItem,
+    machineItem,
+    posteItem,
+    operationItem,
+    personnesItem,
+    operateurItem,
+    gammeItem,
+    produitItem,
+    listeProduitItem,
+    fiabiliteItem
+);
+menuBar.getMenus().add(menu);
 
-        accueilItem.setOnAction(e -> afficherAccueil());
-        machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
-        posteItem.setOnAction(e -> afficherPoste());
-        operationItem.setOnAction(e -> afficherOperation());
-        produitItem.setOnAction(e -> afficherProduit());
-        gammeItem.setOnAction(e -> afficherGamme());
-        listeProduitItem.setOnAction(e -> afficherListeProduits());
-        syntheseItem.setOnAction(e -> afficherSynthese());
-        personnesItem.setOnAction(e -> afficherPersonne());
-        operateurItem.setOnAction(e -> afficherOperateur());
+root = new BorderPane();
+root.setTop(menuBar);
+
+// Actions menu
+accueilItem.setOnAction(e -> afficherAccueil());
+machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
+posteItem.setOnAction(e -> afficherPoste());
+operationItem.setOnAction(e -> afficherOperation());
+personnesItem.setOnAction(e -> afficherPersonne());
+operateurItem.setOnAction(e -> afficherOperateur());
+gammeItem.setOnAction(e -> afficherGamme());
+produitItem.setOnAction(e -> afficherProduit());
+listeProduitItem.setOnAction(e -> afficherListeProduits());
+fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteController).getView()));
+
 
         afficherAccueil();
 
