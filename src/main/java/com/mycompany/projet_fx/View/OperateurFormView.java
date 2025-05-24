@@ -2,12 +2,13 @@ package com.mycompany.projet_fx.View;
 
 import com.mycompany.projet_fx.Model.*;
 import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
+
+import java.util.Optional;
 
 public class OperateurFormView {
 
@@ -115,10 +116,10 @@ public class OperateurFormView {
                 infoLabel.setText("Sélectionnez un opérateur et un poste.");
                 return;
             }
-            // Vérifie que toutes les machines du poste sont disponibles
             boolean machineOccupee = poste.getMachines().stream().anyMatch(m -> m.getEtat() == Machine.ETAT.occupe);
-            if (machineOccupee) {
-                infoLabel.setText("Impossible : une machine du poste est occupée !");
+            boolean posteOccupe = poste.getOperateur() != null;
+            if (machineOccupee || posteOccupe) {
+                infoLabel.setText("Impossible : le poste ou une machine est occupé !");
                 return;
             }
             poste.setOperateur(operateur);
@@ -132,67 +133,72 @@ public class OperateurFormView {
             infoLabel.setText("Opérateur associé et machines occupées !");
         });
 
+        // Suppression
         Button supprimerBtn = new Button("Supprimer l'opérateur");
-supprimerBtn.setStyle("-fx-background-color: #ffc5c2; -fx-text-fill: #b22915; -fx-background-radius: 8; -fx-font-weight: bold;");
-supprimerBtn.setOnAction(e -> {
-    Operateur selected = tableOp.getSelectionModel().getSelectedItem();
-    if (selected != null) {
-        operateursList.remove(selected);
-        if (atelier != null) {
-            atelier.getOperateurs().clear();
-            atelier.getOperateurs().addAll(operateursList);
-            AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
-        }
-    }
-});
-
-Button modifierBtn = new Button("Modifier");
-modifierBtn.setStyle("-fx-background-color: #a8e0b6; -fx-text-fill: #14562d; -fx-background-radius: 8; -fx-font-weight: bold;");
-modifierBtn.setOnAction(e -> {
-    Operateur selected = tableOp.getSelectionModel().getSelectedItem();
-    if (selected != null) {
-        nomField.setText(selected.getNom());
-        prenomField.setText(selected.getPrenom());
-        idField.setText(String.valueOf(selected.getId_op()));
-        compField.setText(selected.getCompetences());
-        etatBox.setValue(selected.getEtat());
-        // Associer à un poste
-        ChoiceDialog<Poste> posteDialog = new ChoiceDialog<>(null, atelier.getPostes());
-        posteDialog.setTitle("Associer à un poste");
-        posteDialog.setHeaderText("Choisis un poste pour l'opérateur");
-        posteDialog.setContentText("Poste :");
-        Optional<Poste> res = posteDialog.showAndWait();
-        res.ifPresent(poste -> {
-            boolean posteLibre = (poste.getOperateur() == null);
-            boolean machinesLibres = poste.getMachines().stream().allMatch(m -> m.getEtat() == Machine.ETAT.disponible);
-            if (posteLibre && machinesLibres) {
-                selected.setNom(nomField.getText());
-                selected.setPrenom(prenomField.getText());
-                selected.setCompetences(compField.getText());
-                selected.setEtat(etatBox.getValue());
-                poste.setOperateur(selected);
-                for (Machine m : poste.getMachines()) {
-                    m.setEtat(Machine.ETAT.occupe);
-                    m.setOperateur(selected);
+        supprimerBtn.setStyle("-fx-background-color: #ffc5c2; -fx-text-fill: #b22915; -fx-background-radius: 8; -fx-font-weight: bold;");
+        supprimerBtn.setOnAction(e -> {
+            Operateur selected = tableOp.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                operateursList.remove(selected);
+                if (atelier != null) {
+                    atelier.getOperateurs().clear();
+                    atelier.getOperateurs().addAll(operateursList);
+                    AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
                 }
-                selected.setEtat(Machine.ETAT.occupe);
-                msg.setText("Opérateur mis à jour et associé au poste " + poste.getNomPoste());
-                AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
-                tableOp.refresh();
-            } else {
-                msg.setText("Le poste ou une machine est déjà occupé !");
             }
         });
-    } else {
-        msg.setText("Sélectionne un opérateur à modifier.");
-    }
-});
-rightBox.getChildren().addAll(listeTitre, tableOp, new HBox(10, supprimerBtn, modifierBtn));
 
+        // Modification & Re-association
+        Button modifierBtn = new Button("Modifier");
+        modifierBtn.setStyle("-fx-background-color: #a8e0b6; -fx-text-fill: #14562d; -fx-background-radius: 8; -fx-font-weight: bold;");
+        modifierBtn.setOnAction(e -> {
+            Operateur selected = tableOp.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                nomField.setText(selected.getNom());
+                prenomField.setText(selected.getPrenom());
+                idField.setText(String.valueOf(selected.getId_op()));
+                compField.setText(selected.getCompetences());
+                etatBox.setValue(selected.getEtat());
+                // Re-association
+                ChoiceDialog<Poste> posteDialog = new ChoiceDialog<>(null, atelier.getPostes());
+                posteDialog.setTitle("Associer à un poste");
+                posteDialog.setHeaderText("Choisis un poste pour l'opérateur");
+                posteDialog.setContentText("Poste :");
+                Optional<Poste> res = posteDialog.showAndWait();
+                res.ifPresent(poste -> {
+                    boolean posteLibre = (poste.getOperateur() == null);
+                    boolean machinesLibres = poste.getMachines().stream().allMatch(m -> m.getEtat() == Machine.ETAT.disponible);
+                    if (posteLibre && machinesLibres) {
+                        selected.setNom(nomField.getText());
+                        selected.setPrenom(prenomField.getText());
+                        selected.setCompetences(compField.getText());
+                        selected.setEtat(etatBox.getValue());
+                        poste.setOperateur(selected);
+                        for (Machine m : poste.getMachines()) {
+                            m.setEtat(Machine.ETAT.occupe);
+                            m.setOperateur(selected);
+                        }
+                        selected.setEtat(Machine.ETAT.occupe);
+                        msg.setText("Opérateur mis à jour et associé au poste " + poste.getNomPoste());
+                        AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+                        tableOp.refresh();
+                    } else {
+                        msg.setText("Le poste ou une machine est déjà occupé !");
+                    }
+                });
+            } else {
+                msg.setText("Sélectionne un opérateur à modifier.");
+            }
+        });
 
-        rightBox.getChildren().addAll(listeTitre, tableOp,
-            assocTitre, new HBox(10, comboPostes, associerBtn, infoLabel), supprimerBtn);
+        // Organisation droite
+        rightBox.getChildren().addAll(
+                listeTitre, tableOp,
+                assocTitre, new HBox(10, comboPostes, associerBtn, infoLabel),
+                new HBox(10, supprimerBtn, modifierBtn)
+        );
 
+        // Layout principal
         HBox hMain = new HBox(24, formBox, new Separator(), rightBox);
         hMain.setFillHeight(true);
         HBox.setHgrow(formBox, Priority.ALWAYS);
