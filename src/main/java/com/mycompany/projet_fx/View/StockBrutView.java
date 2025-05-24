@@ -26,6 +26,7 @@ public class StockBrutView extends VBox {
             // Logique pour ajouter un produit
             Produit nouveauProduit = new Produit(10,"Nouveau Produit"); // Exemple
             controller.ajouterProduitBrut(nouveauProduit);
+            AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
         });
 
         btnSupprimer.setOnAction(event -> {
@@ -33,6 +34,7 @@ public class StockBrutView extends VBox {
             Produit produitSelectionne = listViewProduits.getSelectionModel().getSelectedItem();
             if (produitSelectionne != null) {
                 controller.supprimerProduitBrut(produitSelectionne);
+                AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
             }
         });
 
