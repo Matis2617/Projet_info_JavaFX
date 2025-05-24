@@ -4,6 +4,10 @@ import com.mycompany.projet_fx.Model.Operation;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
+import com.mycompany.projet_fx.Model.Atelier;
+import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
+import java.util.ArrayList;
+
 
 public class OperationView {
     private VBox root;
