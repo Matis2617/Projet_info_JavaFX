@@ -48,6 +48,8 @@ public class MachineFormView {
                 int ord = Integer.parseInt(ordField.getText());
                 float cout = Float.parseFloat(coutField.getText());
                 Machine.ETAT etat = etatBox.getValue();
+                atelier.getEquipements().add(m);
+                AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
 
                 if (absc < 0 || absc >= 10 || ord < 0 || ord >= 10) {
                     erreurLabel.setText("Erreur : Coordonnées hors de l'atelier !");
