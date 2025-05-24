@@ -1,37 +1,19 @@
 package com.mycompany.projet_fx.View;
 
-import com.mycompany.projet_fx.Model.Poste;
-import com.mycompany.projet_fx.Model.Personne;
-import com.mycompany.projet_fx.Model.Operateur;
-import com.mycompany.projet_fx.Model.Operation;
+import com.mycompany.projet_fx.Model.*;
 import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.stage.Stage;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.io.*;
-import javafx.geometry.Insets;
-import com.mycompany.projet_fx.Model.Machine;
-import com.mycompany.projet_fx.Model.Atelier;
-import com.mycompany.projet_fx.Model.ChefAtelier;
-import com.mycompany.projet_fx.Model.Equipement;
-import com.mycompany.projet_fx.Model.Fiabilite;
-import com.mycompany.projet_fx.Model.FiabiliteUtils;
-import com.mycompany.projet_fx.Model.Gamme;
-import com.mycompany.projet_fx.Model.Operateur;
-import com.mycompany.projet_fx.Model.Operation;
-import com.mycompany.projet_fx.Model.Personne;
-import com.mycompany.projet_fx.Model.Poste;
-import com.mycompany.projet_fx.Model.Produit;
-import com.mycompany.projet_fx.Model.ProduitsFinis;
-import com.mycompany.projet_fx.Model.StockBrut;
 
 public class AtelierView extends Application {
 
@@ -39,11 +21,16 @@ public class AtelierView extends Application {
     private Atelier atelier;
     private String nomFichier;
     private ObservableList<Gamme> gammesList = FXCollections.observableArrayList();
-    private ObservableList<Produit> listeProduits = FXCollections.observableArrayList(); // Liste des produits
+    private ObservableList<Produit> listeProduits = FXCollections.observableArrayList();
+
+    private final Color[] couleursPostes = {
+            Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
+            Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
+    };
 
     @Override
     public void start(Stage primaryStage) {
-        // Saisie du nom de l'utilisateur
+        // --- Initialisation utilisateur/atelier ---
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Bienvenue !");
         dialog.setHeaderText("Bienvenue dans la gestion de l'atelier");
@@ -55,7 +42,6 @@ public class AtelierView extends Application {
         Atelier atelierCharge = null;
         File f = new File(nomFichier);
         if (f.exists()) {
-            // Proposer de charger ou de créer un nouveau
             Alert choix = new Alert(Alert.AlertType.CONFIRMATION);
             choix.setTitle("Projet existant trouvé");
             choix.setHeaderText("Un projet existe déjà sous ce prénom.");
@@ -65,7 +51,7 @@ public class AtelierView extends Application {
             choix.getButtonTypes().setAll(btnAncien, btnNouveau);
             Optional<ButtonType> option = choix.showAndWait();
             if (option.isPresent() && option.get() == btnAncien) {
-                atelierCharge = chargerAtelier(nomFichier);
+                atelierCharge = AtelierSauvegarde.chargerAtelier(nomFichier);
             }
         }
         if (atelierCharge == null) {
@@ -77,7 +63,7 @@ public class AtelierView extends Application {
             atelier = atelierCharge;
         }
 
-        // MenuBar/Menu
+        // --- Barre de menu ---
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Menu");
         MenuItem accueilItem = new MenuItem("Accueil");
@@ -86,8 +72,9 @@ public class AtelierView extends Application {
         MenuItem posteItem = new MenuItem("Poste");
         MenuItem produitItem = new MenuItem("Produit");
         MenuItem stockBrutItem = new MenuItem("Stock Brut");
-        MenuItem gammeItem = new MenuItem("Gamme"); // Ajout du module gamme
+        MenuItem gammeItem = new MenuItem("Gamme");
         MenuItem listeProduitItem = new MenuItem("Produits finis");
+
         menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, produitItem, stockBrutItem, gammeItem, listeProduitItem);
         menuBar.getMenus().add(menu);
 
@@ -95,13 +82,13 @@ public class AtelierView extends Application {
         root.setTop(menuBar);
 
         accueilItem.setOnAction(e -> afficherAccueil());
-        machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
-        personnesItem.setOnAction(e -> afficherPlaceholder("Module Personnes à venir..."));
-        posteItem.setOnAction(e -> afficherPoste());
-        produitItem.setOnAction(e -> afficherProduit());
-        stockBrutItem.setOnAction(e -> afficherPlaceholder("Module Stock Brut à venir..."));
-        gammeItem.setOnAction(e -> afficherGamme());
-        listeProduitItem.setOnAction(e -> afficherListeProduits());
+        machineItem.setOnAction(e -> root.setCenter(MachineFormView.getMachineForm(atelier, nomFichier, this::afficherAccueil)));
+        personnesItem.setOnAction(e -> root.setCenter(PlaceholderView.getPlaceholder("Module Personnes à venir...")));
+        posteItem.setOnAction(e -> root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::afficherAccueil)));
+        produitItem.setOnAction(e -> root.setCenter(ProduitFormView.getProduitForm(listeProduits, this::afficherAccueil)));
+        stockBrutItem.setOnAction(e -> root.setCenter(PlaceholderView.getPlaceholder("Module Stock Brut à venir...")));
+        gammeItem.setOnAction(e -> root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, this::afficherAccueil)));
+        listeProduitItem.setOnAction(e -> root.setCenter(ProduitFormView.getListeProduitsView(listeProduits, this::afficherAccueil)));
 
         afficherAccueil();
 
@@ -110,19 +97,10 @@ public class AtelierView extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-private void afficherAccueil() {
-    AccueilView accueilView = new AccueilView(atelier, couleursPostes);
-    root.setCenter(accueilView.getAccueilPane());
-}
 
-
-    
-    root.setCenter(MachineFormView.getMachineForm(atelier, nomFichier, this::afficherAccueil));
-    root.setCenter(PlaceholderView.getPlaceholder("Module Personnes à venir..."));
-    root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::afficherAccueil));
-    root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, this::afficherAccueil));
-    root.setCenter(ProduitFormView.getProduitForm(listeProduits, this::afficherAccueil));
-    root.setCenter(ProduitFormView.getListeProduitsView(listeProduits, this::afficherAccueil));
+    private void afficherAccueil() {
+        root.setCenter(new AccueilView(atelier, couleursPostes).getAccueilPane());
+    }
 
     public static void main(String[] args) {
         launch(args);
