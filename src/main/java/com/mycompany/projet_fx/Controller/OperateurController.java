@@ -19,6 +19,10 @@ public class OperateurController {
     public void ajouterOperateur(Operateur operateur) {
         operateurs.add(operateur);
     }
+    
+    public void supprimerOperateur(Operateur operateur) {
+        operateurs.remove(operateur);
+    }
 
     public ObservableList<Operateur> getOperateurs() {
         return operateurs;

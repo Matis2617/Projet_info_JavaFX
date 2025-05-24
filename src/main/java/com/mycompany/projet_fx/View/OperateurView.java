@@ -66,6 +66,20 @@ public class OperateurView {
                 etatBox.getSelectionModel().clearSelection();
             }
         });
+        
+        Button supprimerBtn = new Button("Supprimer");
+        supprimerBtn.setOnAction(e -> {
+            Operateur operateurSelectionne = operateurList.getSelectionModel().getSelectedItem();
+            if (operateurSelectionne != null) {
+                controller.supprimerOperateur(operateurSelectionne);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Aucune sélection");
+                alert.setHeaderText(null);
+                alert.setContentText("Veuillez sélectionner un opérateur à supprimer.");
+                alert.showAndWait();
+            }
+        });
 
         root.getChildren().addAll(titre, operateurList, nomField, prenomField, competencesField, idOpField, etatBox, ajouterBtn);
     }
