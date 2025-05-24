@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.mycompany.projet_fx.controller.FiabiliteController;
-import com.mycompany.projet_fx.view.FiabiliteView; // AJOUT : le bon import !
+import com.mycompany.projet_fx.view.FiabiliteView; 
+
 
 public class AtelierView extends Application {
 
