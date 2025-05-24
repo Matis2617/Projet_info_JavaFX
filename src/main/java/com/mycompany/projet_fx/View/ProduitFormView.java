@@ -11,47 +11,48 @@ import javafx.geometry.Insets;
 public class ProduitFormView {
 
     // Vue d'ajout d'un produit
-    public static Node getProduitForm(ObservableList<Produit> listeProduits, ObservableList<Gamme> gammesList, Runnable onRetourAccueil) {
-        VBox box = new VBox(18);
-        box.setStyle("-fx-padding: 30; -fx-alignment: center;");
+   public static Node getProduitForm(ObservableList<Produit> listeProduits, ObservableList<Gamme> gammesList, Runnable onRetourAccueil) {
+    VBox box = new VBox(10);
+    box.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
-        TextField idField = new TextField();
-        idField.setPromptText("Identifiant du produit fini");
+    TextField idField = new TextField();
+    idField.setPromptText("ID Produit");
 
-        ComboBox<Gamme> gammeCombo = new ComboBox<>(gammesList);
-        gammeCombo.setPromptText("Choisir la gamme utilisée");
+    ComboBox<Gamme> gammeCombo = new ComboBox<>(gammesList);
+    gammeCombo.setPromptText("Sélectionnez la gamme");
 
-        Label erreurLabel = new Label();
-        erreurLabel.setStyle("-fx-text-fill: red;");
+    Label erreurLabel = new Label();
+    erreurLabel.setStyle("-fx-text-fill: red;");
 
-        Button ajouterBtn = new Button("Ajouter le produit fini");
-        ajouterBtn.setOnAction(e -> {
+    Button ajouterBtn = new Button("Ajouter le produit");
+    ajouterBtn.setOnAction(e -> {
+        try {
             String id = idField.getText().trim();
-            Gamme gamme = gammeCombo.getValue();
-            if (id.isEmpty() || gamme == null) {
-                erreurLabel.setText("Veuillez renseigner l'identifiant et choisir une gamme.");
+            Gamme selectedGamme = gammeCombo.getValue();
+            if (id.isEmpty() || selectedGamme == null) {
+                erreurLabel.setText("ID produit et gamme obligatoires !");
                 return;
             }
-            Produit produit = new Produit(id, gamme);
+            Produit produit = new Produit(id, selectedGamme);
             listeProduits.add(produit);
-            idField.clear();
-            gammeCombo.setValue(null);
-            erreurLabel.setText("");
             if (onRetourAccueil != null) onRetourAccueil.run();
-        });
+        } catch (Exception ex) {
+            erreurLabel.setText("Erreur : Données invalides.");
+        }
+    });
 
-        Button retourBtn = new Button("Annuler");
-        retourBtn.setOnAction(e -> {
-            if (onRetourAccueil != null) onRetourAccueil.run();
-        });
+    Button retourBtn = new Button("Annuler");
+    retourBtn.setOnAction(e -> {
+        if (onRetourAccueil != null) onRetourAccueil.run();
+    });
 
-        box.getChildren().addAll(
-                new Label("Ajouter un produit fini :"),
-                idField, gammeCombo,
-                ajouterBtn, retourBtn, erreurLabel
-        );
-        return box;
-    }
+    box.getChildren().addAll(
+            new Label("Ajouter un produit :"),
+            idField, gammeCombo,
+            ajouterBtn, retourBtn, erreurLabel
+    );
+    return box;
+}
 
     // Vue d'affichage et gestion de la liste des produits finis
     public static Node getListeProduitsView(ObservableList<Produit> listeProduits, Runnable onRetourAccueil) {
