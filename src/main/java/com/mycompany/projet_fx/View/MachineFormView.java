@@ -24,10 +24,10 @@ public class MachineFormView {
         descField.setPromptText("Description");
 
         TextField abscField = new TextField();
-        abscField.setPromptText("Abscisse (0-4)");
+        abscField.setPromptText("Abscisse (0-9)");
 
         TextField ordField = new TextField();
-        ordField.setPromptText("Ordonnée (0-4)");
+        ordField.setPromptText("Ordonnée (0-9)");
 
         TextField coutField = new TextField();
         coutField.setPromptText("Coût");
