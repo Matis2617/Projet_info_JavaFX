@@ -90,9 +90,10 @@ public class AtelierView extends Application {
         MenuItem gammeItem = new MenuItem("Gamme");
         MenuItem listeProduitItem = new MenuItem("Produits finis");
         MenuItem fiabiliteItem = new MenuItem("Fiabilité");
+        MenuItem stockBrutItem = new MenuItem("Stock Brut");
         menu.getItems().addAll(
                 accueilItem, machineItem, personnesItem, posteItem, operationItem,
-                produitItem, gammeItem, listeProduitItem, fiabiliteItem
+                produitItem, gammeItem, listeProduitItem, fiabiliteItem, stockBrutItem
         );
         menuBar.getMenus().add(menu);
 
@@ -109,6 +110,7 @@ public class AtelierView extends Application {
         listeProduitItem.setOnAction(e -> afficherListeProduits());
         fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteController).getView()));
         personnesItem.setOnAction(e -> afficherPersonne());
+        stockBrutItem.setOnAction(e -> afficherStockBrut());
 
         afficherAccueil();
 
@@ -157,4 +159,10 @@ public class AtelierView extends Application {
         PersonneView personneView = new PersonneView(new PersonneController());
         root.setCenter(personneView.getView());
     }
+    private void afficherStockBrut() {
+    StockBrutController stockBrutController = new StockBrutController();
+    StockBrutView stockBrutView = new StockBrutView(stockBrutController);
+    root.setCenter(stockBrutView);
+}
+
 }
