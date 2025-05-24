@@ -13,9 +13,10 @@ public class PlanAtelierView {
     private Atelier atelier;
     private Color[] couleursPostes;
 
-    public static final int NB_LIGNES = 5;
-    public static final int NB_COLONNES = 5;
-    public static final int TAILLE_CASE = 80;
+    // Mettre ici la taille de l’atelier et des cases
+    public static final int NB_LIGNES = 10;
+    public static final int NB_COLONNES = 10;
+    public static final int TAILLE_CASE = 50;           // 50 pixels pour bien voir tout le plan
     public static final int TAILLE_PLAN = NB_LIGNES * TAILLE_CASE;
 
     public PlanAtelierView(Atelier atelier, Color[] couleursPostes) {
