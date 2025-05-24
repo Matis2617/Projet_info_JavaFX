@@ -5,17 +5,15 @@ import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.geometry.Pos;
 import javafx.scene.text.Font;
+import javafx.geometry.Insets;
 
 import com.mycompany.projet_fx.view.FiabiliteView;
-import com.mycompany.projet_fx.controller.FiabiliteController;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,7 +30,7 @@ public class AtelierView extends Application {
     private ObservableList<Operation> operationsList = FXCollections.observableArrayList();
     private ObservableList<Machine> machinesList = FXCollections.observableArrayList();
     private ObservableList<Poste> postesList = FXCollections.observableArrayList();
-    private ObservableList<Operateur> operateursList = FXCollections.observableArrayList(); // Ajouté
+    private ObservableList<Operateur> operateursList = FXCollections.observableArrayList();
 
     private final javafx.scene.paint.Color[] couleursPostes = {
             javafx.scene.paint.Color.ROYALBLUE, javafx.scene.paint.Color.DARKORANGE, javafx.scene.paint.Color.FORESTGREEN, javafx.scene.paint.Color.DARKVIOLET, javafx.scene.paint.Color.DARKCYAN,
@@ -86,48 +84,52 @@ public class AtelierView extends Application {
         }
         if (atelier.getPostes() != null) postesList.addAll(atelier.getPostes());
         if (atelier.getProduits() != null) listeProduits.addAll(atelier.getProduits());
-        if (atelier.getOperateurs() != null) operateursList.addAll(atelier.getOperateurs()); // Ajouté
-
-        // Barre de menu
-        MenuBar menuBar = new MenuBar();
-        Menu menu = new Menu("Menu");
-
-        // Ordre : accueil, machines, poste, operations, operateur, gammes, produits, fiabilite
-        MenuItem accueilItem = new MenuItem("Accueil");
-        MenuItem machineItem = new MenuItem("Machines");
-        MenuItem posteItem = new MenuItem("Poste");
-        MenuItem operationItem = new MenuItem("Opérations");
-        MenuItem operateurItem = new MenuItem("Opérateur"); // Personnes supprimé !
-        MenuItem gammeItem = new MenuItem("Gammes");
-        MenuItem produitItem = new MenuItem("Produits");
-        MenuItem fiabiliteItem = new MenuItem("Fiabilité");
-
-        menu.getItems().addAll(
-            accueilItem,
-            machineItem,
-            posteItem,
-            operationItem,
-            operateurItem, // ici
-            gammeItem,
-            produitItem,
-            fiabiliteItem
-        );
-        menuBar.getMenus().add(menu);
+        if (atelier.getOperateurs() != null) operateursList.addAll(atelier.getOperateurs());
 
         root = new BorderPane();
-        root.setTop(menuBar);
 
-        // Actions menu
-        accueilItem.setOnAction(e -> afficherAccueil());
-        machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
-        posteItem.setOnAction(e -> afficherPoste());
-        operationItem.setOnAction(e -> afficherOperation());
-        operateurItem.setOnAction(e -> afficherOperateur()); // ici
-        gammeItem.setOnAction(e -> afficherGamme());
-        produitItem.setOnAction(e -> afficherProduit());
-        fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView().getView()));
+        // ----------- Onglets / TabPane ----------- //
+        TabPane tabPane = new TabPane();
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
-        afficherAccueil();
+        Tab accueilTab = new Tab("Accueil");
+        Tab machineTab = new Tab("Machines");
+        Tab posteTab = new Tab("Postes");
+        Tab operationTab = new Tab("Opérations");
+        Tab operateurTab = new Tab("Opérateurs");
+        Tab gammeTab = new Tab("Gammes");
+        Tab produitTab = new Tab("Produits");
+        Tab fiabiliteTab = new Tab("Fiabilité");
+
+        // Pour chaque tab, setContent quand sélectionné
+        accueilTab.setOnSelectionChanged(e -> { if (accueilTab.isSelected()) afficherAccueil(); });
+        machineTab.setOnSelectionChanged(e -> { if (machineTab.isSelected()) afficherFormulaireAjoutMachine(); });
+        posteTab.setOnSelectionChanged(e -> { if (posteTab.isSelected()) afficherPoste(); });
+        operationTab.setOnSelectionChanged(e -> { if (operationTab.isSelected()) afficherOperation(); });
+        operateurTab.setOnSelectionChanged(e -> { if (operateurTab.isSelected()) afficherOperateur(); });
+        gammeTab.setOnSelectionChanged(e -> { if (gammeTab.isSelected()) afficherGamme(); });
+        produitTab.setOnSelectionChanged(e -> { if (produitTab.isSelected()) afficherProduit(); });
+        fiabiliteTab.setOnSelectionChanged(e -> { if (fiabiliteTab.isSelected()) afficherFiabilite(); });
+
+        tabPane.getTabs().addAll(
+                accueilTab,
+                machineTab,
+                posteTab,
+                operationTab,
+                operateurTab,
+                gammeTab,
+                produitTab,
+                fiabiliteTab
+        );
+
+        // Style responsive : onglets qui prennent toute la largeur (CSS interne simple)
+        tabPane.setStyle("-fx-tab-min-width: 120px; -fx-tab-max-width: 400px; -fx-tab-min-height: 35px; -fx-font-size: 15px;");
+        tabPane.tabMinWidthProperty().bind(root.widthProperty().divide(tabPane.getTabs().size()).subtract(5));
+        tabPane.prefWidthProperty().bind(root.widthProperty());
+
+        root.setTop(tabPane);
+
+        afficherAccueil(); // par défaut
 
         Scene scene = new Scene(root, 1120, 800);
         primaryStage.setTitle(getTitreAtelier());
@@ -135,7 +137,6 @@ public class AtelierView extends Application {
         primaryStage.show();
     }
 
-    // Ateliers de / d'
     private String getTitreAtelier() {
         if (nomUtilisateur.isEmpty()) return "Atelier";
         char first = Character.toLowerCase(nomUtilisateur.charAt(0));
@@ -147,16 +148,12 @@ public class AtelierView extends Application {
     private void afficherAccueil() {
         VBox vbox = new VBox(24);
         vbox.setAlignment(Pos.CENTER);
-
         Label titre = new Label("Bienvenue dans " + getTitreAtelier());
         titre.setFont(Font.font("Segoe UI Semibold", 26));
         titre.setStyle("-fx-text-fill: #284785; -fx-font-weight: bold; -fx-padding: 30 0 15 0;");
-
-        // Plan centré
         HBox centerHBox = new HBox();
         centerHBox.setAlignment(Pos.CENTER);
         centerHBox.getChildren().add(new PlanAtelierView(atelier, couleursPostes).creerPlanAtelier());
-
         vbox.getChildren().addAll(titre, centerHBox);
         root.setCenter(vbox);
     }
@@ -178,22 +175,24 @@ public class AtelierView extends Application {
     }
 
     private void afficherProduit() {
-        // Important : passer atelier ET nomFichier pour la sauvegarde des produits créés !
         root.setCenter(ProduitFormView.getProduitForm(listeProduits, gammesList, atelier, nomFichier, this::afficherAccueil));
     }
 
     private void afficherOperateur() {
-    root.setCenter(
-        OperateurFormView.getOperateurForm(
-            operateursList, // la même liste que celle partagée à l'atelier !
-            postesList,     // observable list des postes
-            atelier, nomFichier,
-            this::afficherAccueil
-        )
-    );
-}
+        root.setCenter(
+                OperateurFormView.getOperateurForm(
+                        operateursList,
+                        postesList,
+                        atelier, nomFichier,
+                        this::afficherAccueil
+                )
+        );
+    }
 
-    // --- Rafraîchissements : chaque modification doit remettre à jour les listes pour la vue synthétique ---
+    private void afficherFiabilite() {
+        root.setCenter(new FiabiliteView().getView());
+    }
+
     private void refreshAfterMachineChange() {
         machinesList.setAll();
         for (Equipement eq : atelier.getEquipements()) {
