@@ -8,9 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -20,18 +18,21 @@ public class AtelierView extends Application {
     private BorderPane root;
     private Atelier atelier;
     private String nomFichier;
+
+    // Listes observables partagées avec les vues
     private ObservableList<Gamme> gammesList = FXCollections.observableArrayList();
     private ObservableList<Produit> listeProduits = FXCollections.observableArrayList();
     private ObservableList<Operation> operationsList = FXCollections.observableArrayList();
-    
-    private final Color[] couleursPostes = {
-            Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
-            Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
+
+    // Couleurs pour l’affichage
+    private final javafx.scene.paint.Color[] couleursPostes = {
+            javafx.scene.paint.Color.ROYALBLUE, javafx.scene.paint.Color.DARKORANGE, javafx.scene.paint.Color.FORESTGREEN, javafx.scene.paint.Color.DARKVIOLET, javafx.scene.paint.Color.DARKCYAN,
+            javafx.scene.paint.Color.CRIMSON, javafx.scene.paint.Color.DARKMAGENTA, javafx.scene.paint.Color.GOLD, javafx.scene.paint.Color.MEDIUMPURPLE, javafx.scene.paint.Color.DARKSLATEGRAY
     };
 
     @Override
     public void start(Stage primaryStage) {
-        // --- Initialisation utilisateur/atelier ---
+        // Saisie nom utilisateur
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Bienvenue !");
         dialog.setHeaderText("Bienvenue dans la gestion de l'atelier");
@@ -64,34 +65,36 @@ public class AtelierView extends Application {
             atelier = atelierCharge;
         }
 
-        // --- Barre de menu ---
+        // Si tu veux recharger les opérations/gammes depuis atelier à l’ouverture
+        if (atelier.getGammes() != null) gammesList.addAll(atelier.getGammes());
+        if (atelier.getOperations() != null) operationsList.addAll(atelier.getOperations());
+
+        // Barre de menu
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Menu");
         MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem personnesItem = new MenuItem("Personnes");
         MenuItem posteItem = new MenuItem("Poste");
+        MenuItem operationItem = new MenuItem("Opérations");
         MenuItem produitItem = new MenuItem("Produit");
-        MenuItem stockBrutItem = new MenuItem("Stock Brut");
         MenuItem gammeItem = new MenuItem("Gamme");
         MenuItem listeProduitItem = new MenuItem("Produits finis");
-        MenuItem operationItem = new MenuItem("Opérations");
-
-        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, produitItem, stockBrutItem, gammeItem, listeProduitItem, operationItem);
+        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, operationItem, produitItem, gammeItem, listeProduitItem);
         menuBar.getMenus().add(menu);
 
         root = new BorderPane();
         root.setTop(menuBar);
 
+        // Actions menu
         accueilItem.setOnAction(e -> afficherAccueil());
-        machineItem.setOnAction(e -> root.setCenter(MachineFormView.getMachineForm(atelier, nomFichier, this::afficherAccueil)));
+        machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
         personnesItem.setOnAction(e -> root.setCenter(PlaceholderView.getPlaceholder("Module Personnes à venir...")));
-        posteItem.setOnAction(e -> root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::afficherAccueil)));
-        produitItem.setOnAction(e -> root.setCenter(ProduitFormView.getProduitForm(listeProduits, this::afficherAccueil)));
-        stockBrutItem.setOnAction(e -> root.setCenter(PlaceholderView.getPlaceholder("Module Stock Brut à venir...")));
-        gammeItem.setOnAction(e -> root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, this::afficherAccueil)));
-        listeProduitItem.setOnAction(e -> root.setCenter(ProduitFormView.getListeProduitsView(listeProduits, this::afficherAccueil)));
-        operationItem.setOnAction(e -> root.setCenter(new OperationView(operationsList, this::afficherAccueil).getView()));
+        posteItem.setOnAction(e -> afficherPoste());
+        operationItem.setOnAction(e -> afficherOperation());
+        produitItem.setOnAction(e -> afficherProduit());
+        gammeItem.setOnAction(e -> afficherGamme());
+        listeProduitItem.setOnAction(e -> afficherListeProduits());
 
         afficherAccueil();
 
@@ -102,7 +105,34 @@ public class AtelierView extends Application {
     }
 
     private void afficherAccueil() {
-        root.setCenter(new AccueilView(atelier, couleursPostes).getAccueilPane());
+        AccueilView accueilView = new AccueilView(atelier, couleursPostes);
+        root.setCenter(accueilView.getAccueilPane());
+    }
+
+    private void afficherFormulaireAjoutMachine() {
+        root.setCenter(MachineFormView.getMachineForm(atelier, nomFichier, this::afficherAccueil));
+    }
+
+    private void afficherPoste() {
+        root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::afficherAccueil));
+    }
+
+    private void afficherOperation() {
+        OperationView opView = new OperationView(operationsList, this::afficherAccueil);
+        root.setCenter(opView.getView());
+    }
+
+    private void afficherProduit() {
+        root.setCenter(ProduitFormView.getProduitForm(listeProduits, this::afficherAccueil));
+    }
+
+    private void afficherGamme() {
+        // Passe la liste observable des opérations pour la sélection des opérations dans une gamme
+        root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, this::afficherAccueil));
+    }
+
+    private void afficherListeProduits() {
+        root.setCenter(ProduitFormView.getListeProduitsView(listeProduits, this::afficherAccueil));
     }
 
     public static void main(String[] args) {
