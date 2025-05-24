@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.mycompany.projet_fx.controller.FiabiliteController;
-import com.mycompany.projet_fx.view.FiabiliteView; 
+import com.mycompany.projet_fx.view.FiabiliteView;
+import com.mycompany.projet_fx.controller.PersonneController;
+import com.mycompany.projet_fx.view.PersonneView;
 
 
 public class AtelierView extends Application {
@@ -99,13 +101,13 @@ public class AtelierView extends Application {
         // Actions menu
         accueilItem.setOnAction(e -> afficherAccueil());
         machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
-        personnesItem.setOnAction(e -> root.setCenter(PlaceholderView.getPlaceholder("Module Personnes à venir...")));
         posteItem.setOnAction(e -> afficherPoste());
         operationItem.setOnAction(e -> afficherOperation());
         produitItem.setOnAction(e -> afficherProduit());
         gammeItem.setOnAction(e -> afficherGamme());
         listeProduitItem.setOnAction(e -> afficherListeProduits());
         fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteController).getView()));
+        personnesItem.setOnAction(e -> root.setCenter(new PersonneView(new PersonneController()).getView()));
 
         afficherAccueil();
 

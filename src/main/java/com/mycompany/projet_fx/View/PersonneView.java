@@ -41,7 +41,6 @@ public class PersonneView {
                 Personne nouvellePersonne = new Personne(id, nom, prenom);
                 controller.ajouterPersonne(nouvellePersonne);
 
-                // Effacer les champs après l'ajout
                 idField.clear();
                 nomField.clear();
                 prenomField.clear();
