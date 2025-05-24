@@ -46,7 +46,7 @@ public class GammeFormView {
         // Table Opérations
         Label opLabel = new Label("Sélectionnez une opération :");
         TableView<Operation> tableOperations = new TableView<>(operationsList);
-        tableOperations.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        tableOperations.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         VBox.setVgrow(tableOperations, Priority.ALWAYS);
 
         TableColumn<Operation, Number> opIdCol = new TableColumn<>("ID");
@@ -66,7 +66,7 @@ public class GammeFormView {
 
         Label machLabel = new Label("Sélectionnez une machine :");
         TableView<Machine> tableMachines = new TableView<>(machinesList);
-        tableMachines.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        tableMachines.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         VBox.setVgrow(tableMachines, Priority.ALWAYS);
 
         TableColumn<Machine, Number> machIdCol = new TableColumn<>("ID");
@@ -151,7 +151,7 @@ public class GammeFormView {
         gammesLbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 2 0 2 0;");
 
         TableView<Gamme> gammeTable = new TableView<>(gammesList);
-        gammeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        gammeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         gammeTable.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(gammeTable, Priority.ALWAYS);
 
