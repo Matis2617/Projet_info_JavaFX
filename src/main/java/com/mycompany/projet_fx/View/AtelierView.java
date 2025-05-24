@@ -125,7 +125,8 @@ public class AtelierView extends Application {
         operateurItem.setOnAction(e -> afficherOperateur()); // ici
         gammeItem.setOnAction(e -> afficherGamme());
         produitItem.setOnAction(e -> afficherProduit());
-        fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(new FiabiliteController(atelier.getFiabilites()), atelier, nomFichier).getView()));
+        fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView().getView());
+
         afficherAccueil();
 
         Scene scene = new Scene(root, 1120, 800);
