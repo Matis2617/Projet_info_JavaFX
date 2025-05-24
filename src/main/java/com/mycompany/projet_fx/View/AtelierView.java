@@ -1,4 +1,3 @@
-// A tout seigneur tout honneur
 package com.mycompany.projet_fx.View;
 
 import com.mycompany.projet_fx.Model.*;
@@ -21,7 +20,6 @@ import com.mycompany.projet_fx.controller.PersonneController;
 import com.mycompany.projet_fx.view.PersonneView;
 import com.mycompany.projet_fx.controller.StockBrutController;
 import com.mycompany.projet_fx.view.StockBrutView;
-
 
 public class AtelierView extends Application {
 
@@ -136,7 +134,8 @@ public class AtelierView extends Application {
     }
 
     private void afficherOperation() {
-        OperationView opView = new OperationView(operationsList, this::afficherAccueil);
+        // Nouvelle signature : passe atelier, operationsList, nomFichier, callback
+        OperationView opView = new OperationView(atelier, operationsList, nomFichier, this::afficherAccueil);
         root.setCenter(opView.getView());
     }
 
@@ -145,27 +144,26 @@ public class AtelierView extends Application {
     }
 
     private void afficherGamme() {
-        // Passe la liste observable des opérations pour la sélection des opérations dans une gamme
-       root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, nomFichier, this::afficherAccueil));
-
+        // Passe bien le nomFichier (important pour la sauvegarde !)
+        root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, nomFichier, this::afficherAccueil));
     }
 
     private void afficherListeProduits() {
         root.setCenter(ProduitFormView.getListeProduitsView(listeProduits, this::afficherAccueil));
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-    
     private void afficherPersonne() {
         PersonneView personneView = new PersonneView(new PersonneController());
         root.setCenter(personneView.getView());
     }
-    private void afficherStockBrut() {
-    StockBrutController stockBrutController = new StockBrutController();
-    StockBrutView stockBrutView = new StockBrutView(stockBrutController);
-    root.setCenter(stockBrutView);
-}
 
+    private void afficherStockBrut() {
+        StockBrutController stockBrutController = new StockBrutController();
+        StockBrutView stockBrutView = new StockBrutView(stockBrutController);
+        root.setCenter(stockBrutView);
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 }
