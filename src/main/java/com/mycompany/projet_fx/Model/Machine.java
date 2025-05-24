@@ -48,14 +48,15 @@ public class Machine extends Equipement implements Serializable {
     public void setEtat(ETAT etat) { this.etat = etat; }
 
     @Override
-    public String affiche() {
-        return super.affiche()
-            + ", identifiant machine = " + refmachine
-            + ", description = " + dmachine
-            + ", abscisse = " + abscisse
-            + ", ordonnée = " + ordonnee
-            + ", coût = " + c
-            + ", temps = " + t
-            + ", état = " + etat;
-    }
+public String affiche() {
+    return "Identifiant équipement : " + refequipement
+        + ", identifiant machine : " + refmachine
+        + ", description = " + dmachine
+        + ", abscisse = " + abscisse
+        + ", ordonnée = " + ordonnee
+        + ", coût = " + c
+        + ", temps = " + t
+        + ", état = " + etat;
+}
+
 }
