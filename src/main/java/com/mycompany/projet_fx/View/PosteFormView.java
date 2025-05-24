@@ -53,7 +53,7 @@ public class PosteFormView {
         posteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Poste, String> posteNomCol = new TableColumn<>("Nom Poste");
-        posteNomCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDposte()));
+        posteNomCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNomPoste())); // CORRIGÉ !
         // Couleur
         TableColumn<Poste, Poste> colorCol = new TableColumn<>("Couleur");
         colorCol.setCellFactory(tc -> new TableCell<>() {
@@ -66,10 +66,6 @@ public class PosteFormView {
                     Rectangle rect = new Rectangle(18, 18, getColorForPoste(postesList.indexOf(poste)));
                     setGraphic(rect);
                 }
-            }
-            @Override
-            public void updateIndex(int i) {
-                super.updateIndex(i);
             }
         });
         colorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue()));
@@ -117,12 +113,13 @@ public class PosteFormView {
                 return;
             }
             // Vérifier unicité
-            for (Poste p : postesList) if (p.getDposte().equalsIgnoreCase(nom)) {
-                msgLabel.setText("Nom déjà pris.");
-                return;
+            for (Poste p : postesList) {
+                if (p.getNomPoste().equalsIgnoreCase(nom)) { // CORRIGÉ !
+                    msgLabel.setText("Nom déjà pris.");
+                    return;
+                }
             }
-            // Création avec refposte auto (taille + 1), nom, liste vide, id_equipement fictif (peut être adapté)
-            Poste p = new Poste(postesList.size() + 1, nom, new ArrayList<>(), atelier.getEquipements().size() + 1);
+            Poste p = new Poste(nom); // CORRIGÉ !
             postesList.add(p);
             atelier.getPostes().add(p);
             AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
@@ -142,7 +139,7 @@ public class PosteFormView {
                 msgLabel.setText("Le nom ne peut pas être vide.");
                 return;
             }
-            sel.setDposte(nom);
+            sel.setNomPoste(nom); // CORRIGÉ !
             posteTable.refresh();
             AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
             msgLabel.setText("Nom modifié.");
