@@ -8,12 +8,13 @@ public class Atelier implements Serializable {
 
     private int id;
     private String nom;
-    private ArrayList<Equipement> equipements;     // nom pluriel plus clair
+    private ArrayList<Equipement> equipements;     
     private ArrayList<Operateur> operateurs;
     private ArrayList<Personne> personnes;
     private ArrayList<Poste> postes = new ArrayList<>();
     private ArrayList<Operation> operations = new ArrayList<>();
-    private ArrayList<Gamme> gammes = new ArrayList<>();  // AJOUT ICI
+    private ArrayList<Gamme> gammes = new ArrayList<>();
+    private ArrayList<Produit> produits = new ArrayList<>(); // AJOUT
 
     // Constructeur
     public Atelier(int id, String nom, ArrayList<Equipement> equipements, ArrayList<Operateur> operateurs, ArrayList<Personne> personnes) {
@@ -46,7 +47,10 @@ public class Atelier implements Serializable {
     public ArrayList<Operation> getOperations() { return operations; }
     public void setOperations(ArrayList<Operation> operations) { this.operations = operations; }
 
-    // AJOUT ICI
     public ArrayList<Gamme> getGammes() { return gammes; }
     public void setGammes(ArrayList<Gamme> gammes) { this.gammes = gammes; }
+
+    // AJOUT PRODUITS
+    public ArrayList<Produit> getProduits() { return produits; }
+    public void setProduits(ArrayList<Produit> produits) { this.produits = produits; }
 }
