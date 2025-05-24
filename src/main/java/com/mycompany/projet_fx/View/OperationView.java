@@ -10,11 +10,14 @@ public class OperationView {
     private final ObservableList<Operation> operations;
     private final Runnable onRetourAccueil;
 
-    public OperationView(ObservableList<Operation> operations, Runnable onRetourAccueil) {
-        this.operations = operations;
-        this.onRetourAccueil = onRetourAccueil;
-        createView();
-    }
+    public OperationView(Atelier atelier, ObservableList<Operation> operations, String nomFichier, Runnable onRetourAccueil) {
+    this.atelier = atelier;
+    this.operations = operations;
+    this.nomFichier = nomFichier;
+    this.onRetourAccueil = onRetourAccueil;
+    createView();
+}
+
 
     private void createView() {
         root = new VBox(15);
@@ -54,6 +57,8 @@ public class OperationView {
                 }
                 Operation op = new Operation(idOp, description);
                 operations.add(op);
+                atelier.setOperations(new ArrayList<>(operations));
+                AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
                 idField.clear();
                 descField.clear();
                 errorLabel.setText("");
