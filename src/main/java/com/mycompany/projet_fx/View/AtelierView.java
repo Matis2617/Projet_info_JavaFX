@@ -22,7 +22,8 @@ public class AtelierView extends Application {
     private String nomFichier;
     private ObservableList<Gamme> gammesList = FXCollections.observableArrayList();
     private ObservableList<Produit> listeProduits = FXCollections.observableArrayList();
-
+    private ObservableList<Operation> operationsList = FXCollections.observableArrayList();
+    
     private final Color[] couleursPostes = {
             Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
             Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
@@ -74,8 +75,9 @@ public class AtelierView extends Application {
         MenuItem stockBrutItem = new MenuItem("Stock Brut");
         MenuItem gammeItem = new MenuItem("Gamme");
         MenuItem listeProduitItem = new MenuItem("Produits finis");
+        MenuuItem operationItem = new MenuItem("Opérations");
 
-        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, produitItem, stockBrutItem, gammeItem, listeProduitItem);
+        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, produitItem, stockBrutItem, gammeItem, listeProduitItem, operationItem);
         menuBar.getMenus().add(menu);
 
         root = new BorderPane();
@@ -87,8 +89,9 @@ public class AtelierView extends Application {
         posteItem.setOnAction(e -> root.setCenter(PosteFormView.getPosteForm(atelier, nomFichier, this::afficherAccueil)));
         produitItem.setOnAction(e -> root.setCenter(ProduitFormView.getProduitForm(listeProduits, this::afficherAccueil)));
         stockBrutItem.setOnAction(e -> root.setCenter(PlaceholderView.getPlaceholder("Module Stock Brut à venir...")));
-        gammeItem.setOnAction(e -> root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, this::afficherAccueil)));
+        gammeItem.setOnAction(e -> root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationslist, this::afficherAccueil)));
         listeProduitItem.setOnAction(e -> root.setCenter(ProduitFormView.getListeProduitsView(listeProduits, this::afficherAccueil)));
+        operationItem.setOnAction(e -> root.setCenter(new OperationView(operationsList, this::afficherAccueil).getView()));
 
         afficherAccueil();
 
