@@ -159,7 +159,7 @@ public class AtelierView extends Application {
 
     private void afficherStockBrut() {
         StockBrutController stockBrutController = new StockBrutController();
-        StockBrutView stockBrutView = new StockBrutView(stockBrutController);
+        StockBrutView stockBrutView = new StockBrutView(stockBrutController,atelier,nomFichier);
         root.setCenter(stockBrutView);
     }
 
