@@ -9,7 +9,6 @@ import javafx.geometry.Insets;
 
 public class ProduitFormView {
 
-    // Vue principale avec création et tableau permanent
     public static Node getProduitForm(ObservableList<Produit> listeProduits, ObservableList<Gamme> gammesList, Runnable onRetourAccueil) {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(30));
@@ -24,30 +23,68 @@ public class ProduitFormView {
         TextField idField = new TextField();
         idField.setPromptText("Identifiant du produit");
 
-        // ComboBox pour choisir la gamme, affichage détaillé
+        // ComboBox personnalisée façon "table"
         ComboBox<Gamme> gammeCombo = new ComboBox<>(gammesList);
         gammeCombo.setPromptText("Choisir la gamme utilisée");
-        gammeCombo.setPrefWidth(480);
+        gammeCombo.setPrefWidth(540);
 
-        gammeCombo.setCellFactory(listView -> new ListCell<>() {
-            @Override
-            protected void updateItem(Gamme gamme, boolean empty) {
-                super.updateItem(gamme, empty);
-                if (empty || gamme == null) {
-                    setText(null);
-                } else {
-                    setText(formatGammeDetail(gamme));
-                }
-            }
+        // Tableau fictif pour le "popup"
+        TableView<Gamme> tablePopup = new TableView<>(gammesList);
+        tablePopup.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        TableColumn<Gamme, String> idCol = new TableColumn<>("ID");
+        idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getRefGamme()));
+
+        TableColumn<Gamme, String> machinesCol = new TableColumn<>("Machines");
+        machinesCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+            data.getValue().getListeEquipements().stream()
+                .filter(eq -> eq instanceof Machine)
+                .map(eq -> ((Machine) eq).getDmachine())
+                .reduce((a, b) -> a + ", " + b).orElse("-")
+        ));
+
+        TableColumn<Gamme, String> opCol = new TableColumn<>("Opérations");
+        opCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+            data.getValue().getOperations().stream()
+                .map(Operation::getDescription)
+                .reduce((a, b) -> a + ", " + b).orElse("-")
+        ));
+
+        tablePopup.getColumns().addAll(idCol, machinesCol, opCol);
+        tablePopup.setPrefHeight(180);
+        tablePopup.setMaxWidth(520);
+
+        // Lien ComboBox/table
+        gammeCombo.setOnMouseClicked(e -> {
+            if (!tablePopup.isVisible()) tablePopup.setVisible(true);
         });
+        tablePopup.setVisible(false);
+
         gammeCombo.setButtonCell(new ListCell<>() {
             @Override
             protected void updateItem(Gamme gamme, boolean empty) {
                 super.updateItem(gamme, empty);
-                setText(empty || gamme == null ? null : formatGammeDetail(gamme));
+                if (empty || gamme == null) {
+                    setText("");
+                } else {
+                    setText("[ID: " + gamme.getRefGamme() + "] " +
+                        machinesCol.getCellObservableValue(gamme).getValue() +
+                        " | " + opCol.getCellObservableValue(gamme).getValue());
+                }
             }
         });
 
+        tablePopup.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            if (selected != null) {
+                gammeCombo.getSelectionModel().select(selected);
+                tablePopup.setVisible(false);
+            }
+        });
+
+        // Style pour la table-popup
+        tablePopup.setStyle("-fx-border-color: #c0c0c0; -fx-background-color: #f7f7fc;");
+
+        // Ajout produit
         Button ajouterBtn = new Button("Ajouter le produit");
         Label msg = new Label();
         msg.setStyle("-fx-text-fill: green;");
@@ -56,17 +93,19 @@ public class ProduitFormView {
             String id = idField.getText().trim();
             Gamme gamme = gammeCombo.getValue();
             if (id.isEmpty() || gamme == null) {
+                msg.setStyle("-fx-text-fill: red;");
                 msg.setText("Remplis tous les champs !");
                 return;
             }
-            // Vérifie unicité (optionnel)
             boolean existe = listeProduits.stream().anyMatch(p -> p.getId().equals(id));
             if (existe) {
+                msg.setStyle("-fx-text-fill: red;");
                 msg.setText("Cet identifiant de produit existe déjà !");
                 return;
             }
             Produit produit = new Produit(id, gamme);
             listeProduits.add(produit);
+            msg.setStyle("-fx-text-fill: green;");
             msg.setText("Produit ajouté !");
             idField.clear();
             gammeCombo.getSelectionModel().clearSelection();
@@ -82,9 +121,10 @@ public class ProduitFormView {
                 idField,
                 new Label("Choisir la gamme de fabrication :"),
                 gammeCombo,
+                tablePopup,
                 ajouterBtn, retourBtn, msg
         );
-        leftBox.setPrefWidth(480);
+        leftBox.setPrefWidth(540);
 
         // -------- Tableau des produits finis à droite -------
         VBox rightBox = new VBox(16);
@@ -97,16 +137,16 @@ public class ProduitFormView {
         table.setPrefHeight(450);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        TableColumn<Produit, String> idCol = new TableColumn<>("Identifiant");
-        idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getId()));
+        TableColumn<Produit, String> prodIdCol = new TableColumn<>("Identifiant");
+        prodIdCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getId()));
 
-        TableColumn<Produit, String> gammeCol = new TableColumn<>("Gamme utilisée");
-        gammeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        TableColumn<Produit, String> prodGammeCol = new TableColumn<>("Gamme utilisée");
+        prodGammeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
             data.getValue().getGamme() == null ? "-" : data.getValue().getGamme().getRefGamme()
         ));
 
-        TableColumn<Produit, String> machinesCol = new TableColumn<>("Machines utilisées");
-        machinesCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        TableColumn<Produit, String> prodMachinesCol = new TableColumn<>("Machines");
+        prodMachinesCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
             data.getValue().getGamme() == null ? "-" :
             data.getValue().getGamme().getListeEquipements().stream()
                 .filter(eq -> eq instanceof Machine)
@@ -114,27 +154,46 @@ public class ProduitFormView {
                 .reduce((a, b) -> a + ", " + b).orElse("-")
         ));
 
-        TableColumn<Produit, String> operationsCol = new TableColumn<>("Opérations");
-        operationsCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        TableColumn<Produit, String> prodOpCol = new TableColumn<>("Opérations");
+        prodOpCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
             data.getValue().getGamme() == null ? "-" :
             data.getValue().getGamme().getOperations().stream()
                 .map(Operation::getDescription)
                 .reduce((a, b) -> a + ", " + b).orElse("-")
         ));
 
-        table.getColumns().addAll(idCol, gammeCol, machinesCol, operationsCol);
+        TableColumn<Produit, String> prodCoutCol = new TableColumn<>("Prix (€)");
+        prodCoutCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+            data.getValue().getGamme() == null ? "-" :
+            String.format("%.2f", data.getValue().getGamme().coutGamme())
+        ));
 
-        // Zone de détail produit
-        Label detail = new Label("Sélectionnez un produit pour voir les détails.");
-        detail.setStyle("-fx-font-size: 14px; -fx-padding: 14; -fx-background-color: #f5f7fb; -fx-border-radius: 7; -fx-background-radius: 7;");
-        detail.setWrapText(true);
-        detail.setMaxWidth(450);
+        TableColumn<Produit, String> prodDureeCol = new TableColumn<>("Durée (h)");
+        prodDureeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+            data.getValue().getGamme() == null ? "-" :
+            String.format("%.2f", data.getValue().getGamme().dureeGamme())
+        ));
+
+        table.getColumns().addAll(prodIdCol, prodGammeCol, prodMachinesCol, prodOpCol, prodCoutCol, prodDureeCol);
+
+        // Zone de détail produit (présentation moderne)
+        VBox detailBox = new VBox(7);
+        detailBox.setPadding(new Insets(15, 10, 10, 10));
+        detailBox.setStyle("-fx-background-color: #f7faff; -fx-border-color: #aac4ea; -fx-border-radius: 10; -fx-background-radius: 10;");
+
+        Label detailTitre = new Label("Détail du produit sélectionné");
+        detailTitre.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2856a8;");
+        Label detailContent = new Label("Sélectionnez un produit pour voir les détails.");
+        detailContent.setWrapText(true);
+        detailContent.setStyle("-fx-font-size: 14px;");
+
+        detailBox.getChildren().addAll(detailTitre, detailContent);
 
         table.getSelectionModel().selectedItemProperty().addListener((obs, old, prod) -> {
             if (prod == null) {
-                detail.setText("Sélectionnez un produit pour voir les détails.");
+                detailContent.setText("Sélectionnez un produit pour voir les détails.");
             } else {
-                detail.setText(formatProduitDetail(prod));
+                detailContent.setText(formatProduitDetail(prod));
             }
         });
 
@@ -144,14 +203,14 @@ public class ProduitFormView {
             Produit selected = table.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 listeProduits.remove(selected);
-                detail.setText("Produit supprimé.");
+                detailContent.setText("Produit supprimé.");
             }
         });
 
         HBox actions = new HBox(10, supprimerBtn);
         actions.setStyle("-fx-alignment: center;");
 
-        rightBox.getChildren().addAll(listeTitre, table, detail, actions);
+        rightBox.getChildren().addAll(listeTitre, table, detailBox, actions);
 
         // --- Organisation responsive
         HBox hMain = new HBox(16, leftBox, new Separator(), rightBox);
@@ -163,45 +222,26 @@ public class ProduitFormView {
         return root;
     }
 
-    // Helper pour formater la présentation d'une gamme dans la ComboBox
-    private static String formatGammeDetail(Gamme gamme) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[ID: ").append(gamme.getRefGamme()).append("] ");
-        sb.append("Machines: ");
-        String machines = gamme.getListeEquipements().stream()
-                .filter(eq -> eq instanceof Machine)
-                .map(eq -> ((Machine) eq).getDmachine())
-                .reduce((a, b) -> a + ", " + b).orElse("Aucune");
-        sb.append(machines).append(" | ");
-        sb.append("Opérations: ");
-        String ops = gamme.getOperations().stream()
-                .map(Operation::getDescription)
-                .reduce((a, b) -> a + ", " + b).orElse("Aucune");
-        sb.append(ops);
-        return sb.toString();
-    }
-
-    // Helper pour formater les détails d'un produit
+    // Helper : présentation améliorée d’un produit
     private static String formatProduitDetail(Produit produit) {
         StringBuilder sb = new StringBuilder();
-        sb.append("🔎 **Détail du produit**\n\n");
-        sb.append("• Identifiant : ").append(produit.getId()).append("\n");
+        sb.append("🟦 Identifiant : ").append(produit.getId()).append("\n\n");
         if (produit.getGamme() != null) {
             Gamme gamme = produit.getGamme();
-            sb.append("• Gamme utilisée : ").append(gamme.getRefGamme()).append("\n");
-            sb.append("• Machines utilisées : ");
+            sb.append("➡️  Gamme : ").append(gamme.getRefGamme()).append("\n");
+            sb.append("🛠️ Machines utilisées : ");
             String machines = gamme.getListeEquipements().stream()
                     .filter(eq -> eq instanceof Machine)
                     .map(eq -> ((Machine) eq).getDmachine())
                     .reduce((a, b) -> a + ", " + b).orElse("Aucune");
             sb.append(machines).append("\n");
-            sb.append("• Opérations réalisées : ");
+            sb.append("📝 Opérations : ");
             String ops = gamme.getOperations().stream()
                     .map(Operation::getDescription)
                     .reduce((a, b) -> a + ", " + b).orElse("Aucune");
             sb.append(ops).append("\n");
-            sb.append("• Coût total gamme : ").append(gamme.coutGamme()).append(" €\n");
-            sb.append("• Durée totale gamme : ").append(gamme.dureeGamme()).append(" h");
+            sb.append("💶 Prix (coût total) : ").append(String.format("%.2f", gamme.coutGamme())).append(" €\n");
+            sb.append("⏱️ Durée totale : ").append(String.format("%.2f", gamme.dureeGamme())).append(" h");
         } else {
             sb.append("• Gamme : -");
         }
