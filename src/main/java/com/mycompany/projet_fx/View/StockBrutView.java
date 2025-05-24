@@ -1,8 +1,9 @@
 package com.mycompany.projet_fx.view;
 
 import com.mycompany.projet_fx.Model.Produit;
+import com.mycompany.projet_fx.Model.Atelier;
+import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
 import com.mycompany.projet_fx.controller.StockBrutController;
-import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
@@ -10,9 +11,13 @@ import javafx.scene.layout.VBox;
 public class StockBrutView extends VBox {
     private StockBrutController controller;
     private ListView<Produit> listViewProduits;
+    private Atelier atelier;
+    private String nomFichier;
 
-    public StockBrutView(StockBrutController controller) {
+    public StockBrutView(StockBrutController controller, Atelier atelier, String nomFichier) {
         this.controller = controller;
+        this.atelier = atelier;
+        this.nomFichier = nomFichier;
 
         // Initialisation de la ListView pour afficher les produits
         listViewProduits = new ListView<>(controller.getProduitsBruts());
@@ -24,7 +29,7 @@ public class StockBrutView extends VBox {
         // Gestion des événements pour les boutons
         btnAjouter.setOnAction(event -> {
             // Logique pour ajouter un produit
-            Produit nouveauProduit = new Produit(10,"Nouveau Produit"); // Exemple
+            Produit nouveauProduit = new Produit(10, "Nouveau Produit"); // Exemple
             controller.ajouterProduitBrut(nouveauProduit);
             AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
         });
