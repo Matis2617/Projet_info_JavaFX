@@ -12,8 +12,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GammeFormView {
+
+    // Palette de couleurs pour postes (doit être identique partout !)
+    private static final Color[] couleursPostes = {
+            Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
+            Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
+    };
 
     public static Node getGammeForm(
             Atelier atelier,
@@ -22,14 +29,21 @@ public class GammeFormView {
             String nomFichier,
             Runnable onRetourAccueil
     ) {
-        HBox root = new HBox(30);
-        root.setPadding(new Insets(20, 35, 20, 35));
+        HBox root = new HBox(32);
+        root.setPadding(new Insets(22, 38, 22, 38));
 
-        // ----------- TABLEAU DES OPERATIONS -----------
-        TableView<Operation> opTable = new TableView<>(operationsList);
-        opTable.setPrefHeight(180);
-        opTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        opTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        // --- Section gauche : Sélection opération/machine ---
+        VBox leftBox = new VBox(18);
+        leftBox.setPrefWidth(350);
+
+        Label titreForm = new Label("Créer une gamme");
+        titreForm.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        // Tableau opérations
+        Label opLabel = new Label("Sélectionnez une opération :");
+        TableView<Operation> tableOperations = new TableView<>(operationsList);
+        tableOperations.setPrefHeight(150);
+        tableOperations.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Operation, Number> opIdCol = new TableColumn<>("ID");
         opIdCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getId_operation()));
@@ -37,59 +51,108 @@ public class GammeFormView {
         opDescCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDescription()));
         TableColumn<Operation, Number> opDureeCol = new TableColumn<>("Durée (h)");
         opDureeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(data.getValue().getDuree()));
-        opTable.getColumns().addAll(opIdCol, opDescCol, opDureeCol);
+        tableOperations.getColumns().addAll(opIdCol, opDescCol, opDureeCol);
 
-        // ----------- TABLEAU DES MACHINES -----------
+        // Tableau machines
         ObservableList<Machine> machinesList = FXCollections.observableArrayList();
         for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) machinesList.add((Machine) eq);
         }
 
-        TableView<Machine> machTable = new TableView<>(machinesList);
-        machTable.setPrefHeight(180);
-        machTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        machTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        // Pour les postes (pour trouver couleur et nom de poste)
+        ObservableList<Poste> postesList = FXCollections.observableArrayList(atelier.getPostes());
+
+        Label machLabel = new Label("Sélectionnez une machine :");
+        TableView<Machine> tableMachines = new TableView<>(machinesList);
+        tableMachines.setPrefHeight(150);
+        tableMachines.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Machine, Number> machIdCol = new TableColumn<>("ID");
         machIdCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getRefmachine()));
         TableColumn<Machine, String> machDescCol = new TableColumn<>("Description");
         machDescCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDmachine()));
         TableColumn<Machine, String> machPosteCol = new TableColumn<>("Poste");
-        machPosteCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                getPosteNameForMachine(data.getValue(), atelier.getPostes())
-        ));
-        TableColumn<Machine, Color> machColorCol = new TableColumn<>("Couleur");
-        machColorCol.setCellFactory(col -> new TableCell<>() {
+        machPosteCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(getPosteNameForMachine(data.getValue(), postesList)));
+        TableColumn<Machine, Color> machColorCol = new TableColumn<>("Couleur Poste");
+        machColorCol.setCellFactory(col -> new TableCell<Machine, Color>() {
             @Override
             protected void updateItem(Color color, boolean empty) {
                 super.updateItem(color, empty);
                 setText(null);
-                if (empty || color == null) setGraphic(null);
-                else setGraphic(new Rectangle(16, 16, color));
+                if (empty || color == null) {
+                    setGraphic(null);
+                } else {
+                    Rectangle r = new Rectangle(16, 16, color);
+                    setGraphic(r);
+                }
             }
         });
-        machColorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(
-                getColorForMachine(data.getValue(), atelier.getPostes())
-        ));
-        machTable.getColumns().addAll(machIdCol, machDescCol, machPosteCol, machColorCol);
+        machColorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(getColorForMachine(data.getValue(), postesList)));
+        tableMachines.getColumns().addAll(machIdCol, machDescCol, machPosteCol, machColorCol);
 
-        // ----------- TABLEAU DES GAMMES -----------
+        // Champ référence
+        Label refGammeLabel = new Label("Référence de la gamme :");
+        TextField refGammeInput = new TextField();
+
+        // Boutons
+        Button creerBtn = new Button("Créer la gamme");
+        creerBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #8fd14f;");
+        Label creerMsg = new Label();
+        creerMsg.setStyle("-fx-text-fill: green;");
+
+        creerBtn.setOnAction(e -> {
+            String ref = refGammeInput.getText().trim();
+            Operation op = tableOperations.getSelectionModel().getSelectedItem();
+            Machine mach = tableMachines.getSelectionModel().getSelectedItem();
+            if (ref.isEmpty()) {
+                creerMsg.setText("Référence obligatoire !");
+                return;
+            }
+            if (op == null || mach == null) {
+                creerMsg.setText("Sélectionnez une opération ET une machine !");
+                return;
+            }
+            Gamme gamme = new Gamme(new ArrayList<>());
+            gamme.setRefGamme(ref);
+            gamme.getOperations().add(op);
+            gamme.getListeEquipements().add(mach);
+            gammesList.add(gamme);
+            atelier.setGammes(new ArrayList<>(gammesList));
+            AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+            creerMsg.setText("Gamme créée !");
+            refGammeInput.clear();
+            tableOperations.getSelectionModel().clearSelection();
+            tableMachines.getSelectionModel().clearSelection();
+        });
+
+        Button retourBtn = new Button("Retour Accueil");
+        retourBtn.setOnAction(e -> { if (onRetourAccueil != null) onRetourAccueil.run(); });
+
+        leftBox.getChildren().addAll(
+                titreForm,
+                opLabel, tableOperations,
+                machLabel, tableMachines,
+                refGammeLabel, refGammeInput,
+                creerBtn, creerMsg, retourBtn
+        );
+
+        // --- Section droite : Gammes créées et détails ---
+        VBox rightBox = new VBox(14);
+        rightBox.setPrefWidth(440);
+
+        Label gammesLbl = new Label("Gammes créées");
+        gammesLbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
         TableView<Gamme> gammeTable = new TableView<>(gammesList);
-        gammeTable.setPrefHeight(180);
+        gammeTable.setPrefHeight(210);
         gammeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        gammeTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        TableColumn<Gamme, String> gammeRefCol = new TableColumn<>("Réf");
-        gammeRefCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getRefGamme() == null ? "" : data.getValue().getRefGamme()));
-
+        TableColumn<Gamme, String> gammeRefCol = new TableColumn<>("Référence");
+        gammeRefCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getRefGamme() == null ? "" : data.getValue().getRefGamme()));
         TableColumn<Gamme, String> gammeOpCol = new TableColumn<>("Opération");
         gammeOpCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getOperations().isEmpty()
-                        ? "-"
-                        : data.getValue().getOperations().get(0).getDescription()
+                data.getValue().getOperations().isEmpty() ? "-" : data.getValue().getOperations().get(0).getDescription()
         ));
-
         TableColumn<Gamme, String> gammeMachCol = new TableColumn<>("Machine");
         gammeMachCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
                 data.getValue().getListeEquipements().isEmpty()
@@ -98,120 +161,79 @@ public class GammeFormView {
                         ? ((Machine) data.getValue().getListeEquipements().get(0)).getDmachine()
                         : data.getValue().getListeEquipements().get(0).affiche())
         ));
-
         gammeTable.getColumns().addAll(gammeRefCol, gammeOpCol, gammeMachCol);
 
-        // ----------- INFOS DETAILLEES GAMME -----------
-        Label infoGamme = new Label("Sélectionnez une gamme pour voir les détails.");
-        infoGamme.setStyle("-fx-background-color: #f6f6f6; -fx-font-size: 15px; -fx-padding: 9;");
-        infoGamme.setMinWidth(320);
-        infoGamme.setWrapText(true);
+        // Label/VBox détails de la gamme
+        Label detailsTitre = new Label("Détails de la gamme sélectionnée");
+        detailsTitre.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-underline: true;");
 
-        gammeTable.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
-            if (selected != null) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Référence : ").append(selected.getRefGamme()).append("\n");
-                sb.append("Opérations :\n");
-                for (Operation op : selected.getOperations()) {
-                    sb.append("  - [#").append(op.getId_operation()).append("] ").append(op.getDescription()).append(" (")
-                            .append(op.getDuree()).append("h)\n");
+        VBox gammeDetailsBox = new VBox(7);
+        gammeDetailsBox.setStyle("-fx-background-color: #f6f8fa; -fx-padding: 16; -fx-border-color: #b3b3b3; -fx-border-radius: 8; -fx-background-radius: 8;");
+        gammeDetailsBox.setMinWidth(350);
+
+        gammeTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, gamme) -> {
+            gammeDetailsBox.getChildren().clear();
+            if (gamme != null) {
+                Label ref = new Label("Référence : " + gamme.getRefGamme());
+                ref.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #2b3a67;");
+                Separator sep1 = new Separator();
+
+                Label ops = new Label("Opérations associées :");
+                ops.setStyle("-fx-font-weight: bold;");
+                VBox opsBox = new VBox(2);
+                for (Operation op : gamme.getOperations()) {
+                    Label l = new Label("• " + op.getId_operation() + " — " + op.getDescription() + " (" + op.getDuree() + "h)");
+                    l.setStyle("-fx-padding: 0 0 0 8;");
+                    opsBox.getChildren().add(l);
                 }
-                sb.append("Machines/Eq. utilisées :\n");
-                for (Equipement eq : selected.getListeEquipements()) {
-                    if (eq instanceof Machine) {
-                        Machine m = (Machine) eq;
-                        sb.append("  - Machine: ").append(m.getDmachine());
-                        sb.append(" [poste: ").append(getPosteNameForMachine(m, atelier.getPostes())).append("]");
-                        sb.append(", coût horaire: ").append(m.getC()).append(" €\n");
-                    } else {
-                        sb.append("  - ").append(eq.affiche()).append("\n");
-                    }
+                Separator sep2 = new Separator();
+
+                Label eqs = new Label("Machines / Équipements :");
+                eqs.setStyle("-fx-font-weight: bold;");
+                VBox eqBox = new VBox(2);
+                for (Equipement eq : gamme.getListeEquipements()) {
+                    String txt = (eq instanceof Machine)
+                            ? "• " + ((Machine) eq).getDmachine() + " (coût horaire : " + ((Machine) eq).getC() + " €)"
+                            : "• " + eq.affiche();
+                    Label l = new Label(txt);
+                    l.setStyle("-fx-padding: 0 0 0 8;");
+                    eqBox.getChildren().add(l);
                 }
-                sb.append("\nCoût total de la gamme : ").append(selected.coutGamme()).append(" €");
-                sb.append("\nDurée totale de la gamme : ").append(selected.dureeGamme()).append(" h");
-                infoGamme.setText(sb.toString());
+                Separator sep3 = new Separator();
+
+                Label cout = new Label("Coût total : " + String.format("%.2f", gamme.coutGamme()) + " €");
+                cout.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c974b;");
+                Label duree = new Label("Durée totale : " + String.format("%.2f", gamme.dureeGamme()) + " h");
+                duree.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c974b;");
+
+                gammeDetailsBox.getChildren().addAll(ref, sep1, ops, opsBox, sep2, eqs, eqBox, sep3, cout, duree);
             } else {
-                infoGamme.setText("Sélectionnez une gamme pour voir les détails.");
+                gammeDetailsBox.getChildren().add(new Label("Sélectionnez une gamme pour voir les détails."));
             }
         });
 
-        // ----------- CREATION GAMME -----------
-        TextField refGammeInput = new TextField();
-        refGammeInput.setPromptText("Référence gamme (obligatoire)");
-
-        Button creerBtn = new Button("Créer la gamme");
-        creerBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #8fd14f;");
-        Label creerMsg = new Label();
-        creerMsg.setStyle("-fx-text-fill: green;");
-
-        creerBtn.setOnAction(e -> {
-            String ref = refGammeInput.getText().trim();
-            Operation op = opTable.getSelectionModel().getSelectedItem();
-            Machine m = machTable.getSelectionModel().getSelectedItem();
-            if (ref.isEmpty()) {
-                creerMsg.setText("Référence obligatoire !");
-                return;
-            }
-            if (op == null || m == null) {
-                creerMsg.setText("Sélectionnez une opération et une machine !");
-                return;
-            }
-            Gamme gamme = new Gamme();
-            gamme.setRefGamme(ref);
-            ArrayList<Operation> ops = new ArrayList<>();
-            ops.add(op);
-            ArrayList<Equipement> eqs = new ArrayList<>();
-            eqs.add(m);
-            gamme.setOperations(ops);
-            gamme.setListeEquipements(eqs);
-
-            gammesList.add(gamme);
-            atelier.setGammes(new ArrayList<>(gammesList));
-            AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
-
-            creerMsg.setText("Gamme créée !");
-            refGammeInput.clear();
-            opTable.getSelectionModel().clearSelection();
-            machTable.getSelectionModel().clearSelection();
-        });
-
-        Button retourBtn = new Button("Retour Accueil");
-        retourBtn.setOnAction(e -> { if (onRetourAccueil != null) onRetourAccueil.run(); });
-
-        // ----------- LAYOUTS -----------
-        VBox vboxForm = new VBox(14,
-                new Label("Sélectionnez une opération :"), opTable,
-                new Label("Sélectionnez une machine :"), machTable,
-                new Label("Référence de la gamme :"), refGammeInput, creerBtn, creerMsg, retourBtn
+        rightBox.getChildren().addAll(
+                gammesLbl, gammeTable,
+                detailsTitre, gammeDetailsBox
         );
-        vboxForm.setPrefWidth(370);
 
-        VBox vboxListe = new VBox(15,
-                new Label("Gammes créées :"), gammeTable, infoGamme
-        );
-        vboxListe.setPrefWidth(420);
-
-        root.getChildren().addAll(vboxForm, new Separator(javafx.geometry.Orientation.VERTICAL), vboxListe);
+        root.getChildren().addAll(leftBox, new Separator(javafx.geometry.Orientation.VERTICAL), rightBox);
         return root;
     }
 
-    // Utilitaires couleurs et poste pour affichage machine
-    private static String getPosteNameForMachine(Machine m, java.util.List<Poste> postesList) {
+    // Utilitaires pour trouver le poste associé à une machine
+    private static String getPosteNameForMachine(Machine m, List<Poste> postesList) {
         for (Poste poste : postesList) {
             if (poste.getMachines().contains(m)) return poste.getNomPoste();
         }
         return "-";
     }
 
-    private static Color getColorForMachine(Machine m, java.util.List<Poste> postesList) {
-        Color[] couleurs = {
-            Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
-            Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
-        };
+    private static Color getColorForMachine(Machine m, List<Poste> postesList) {
         for (int i = 0; i < postesList.size(); i++) {
             Poste poste = postesList.get(i);
             if (poste.getMachines().contains(m)) {
-                return couleurs[i % couleurs.length];
+                return couleursPostes[i % couleursPostes.length];
             }
         }
         return Color.LIGHTGRAY;
