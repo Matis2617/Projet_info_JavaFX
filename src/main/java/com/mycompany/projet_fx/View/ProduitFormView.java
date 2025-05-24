@@ -45,7 +45,8 @@ public class ProduitFormView {
                 }
                 sb.append("\n<b>Machines utilisées :</b>\n");
                 for (Equipement eq : g.getListeEquipements()) {
-                    if (eq instanceof Machine m) {
+                    if (eq instanceof Machine) {
+                        Machine m = (Machine) eq;
                         sb.append("   • ").append(m.getDmachine())
                           .append(" (Coût horaire : ").append(m.getC()).append(" €)").append("\n");
                     } else {
