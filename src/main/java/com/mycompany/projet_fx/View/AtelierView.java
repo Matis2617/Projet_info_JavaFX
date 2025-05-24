@@ -18,6 +18,8 @@ import com.mycompany.projet_fx.controller.FiabiliteController;
 import com.mycompany.projet_fx.view.FiabiliteView;
 import com.mycompany.projet_fx.controller.PersonneController;
 import com.mycompany.projet_fx.view.PersonneView;
+import com.mycompany.projet_fx.controller.OperateurController;
+import com.mycompany.projet_fx.view.OperateurView;
 import com.mycompany.projet_fx.controller.StockBrutController;
 import com.mycompany.projet_fx.view.StockBrutView;
 
@@ -84,6 +86,7 @@ public class AtelierView extends Application {
         MenuItem accueilItem = new MenuItem("Accueil");
         MenuItem machineItem = new MenuItem("Machines");
         MenuItem personnesItem = new MenuItem("Personnes");
+        MenuItem operateurItem = new MenuItem("Operateur");
         MenuItem posteItem = new MenuItem("Poste");
         MenuItem operationItem = new MenuItem("Opérations");
         MenuItem produitItem = new MenuItem("Produit");
@@ -110,6 +113,7 @@ public class AtelierView extends Application {
         listeProduitItem.setOnAction(e -> afficherListeProduits());
         fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteController).getView()));
         personnesItem.setOnAction(e -> afficherPersonne());
+        operateurItem.setOnAction(e -> afficherOperateur());
         stockBrutItem.setOnAction(e -> afficherStockBrut());
 
         afficherAccueil();
@@ -155,6 +159,11 @@ public class AtelierView extends Application {
     private void afficherPersonne() {
         PersonneView personneView = new PersonneView(new PersonneController());
         root.setCenter(personneView.getView());
+    }
+    
+    private void afficherOperateur() {
+        OperateurView operateurView = new OperateurView(new OperateurController());
+        root.setCenter(operateurView.getView());
     }
 
     private void afficherStockBrut() {

@@ -2,13 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.projet_fx.View;
+package com.mycompany.projet_fx.view;
 
 /**
  *
  * @author Oscar
  */
-import com.mycompany.projet_fx.Controller.OperateurController;
+import com.mycompany.projet_fx.controller.OperateurController;
 import com.mycompany.projet_fx.Model.Operateur;
 import com.mycompany.projet_fx.Model.Machine.ETAT;
 import javafx.scene.control.*;
