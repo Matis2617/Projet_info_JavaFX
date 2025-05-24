@@ -19,6 +19,8 @@ import com.mycompany.projet_fx.controller.FiabiliteController;
 import com.mycompany.projet_fx.view.FiabiliteView;
 import com.mycompany.projet_fx.controller.PersonneController;
 import com.mycompany.projet_fx.view.PersonneView;
+import com.mycompany.projet_fx.controller.StockBrutController;
+import com.mycompany.projet_fx.view.StockBrutView;
 
 
 public class AtelierView extends Application {
