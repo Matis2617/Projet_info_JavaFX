@@ -12,12 +12,17 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Optional;
+import com.mycompany.projet_fx.controller.FiabiliteController;
+import com.mycompany.projet_fx.view.FiabiliteView;
+
 
 public class AtelierView extends Application {
 
     private BorderPane root;
     private Atelier atelier;
     private String nomFichier;
+    private FiabiliteController fiabiliteController = new FiabiliteController();
+
 
     // Listes observables partagées avec les vues
     private ObservableList<Gamme> gammesList = FXCollections.observableArrayList();
@@ -80,7 +85,8 @@ public class AtelierView extends Application {
         MenuItem produitItem = new MenuItem("Produit");
         MenuItem gammeItem = new MenuItem("Gamme");
         MenuItem listeProduitItem = new MenuItem("Produits finis");
-        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, operationItem, produitItem, gammeItem, listeProduitItem);
+        MenuItem fiabiliteItem = new MenuItem("Fiabilité");
+        menu.getItems().addAll(accueilItem, machineItem, personnesItem, posteItem, operationItem, produitItem, gammeItem, listeProduitItem, fiabiliteItem);
         menuBar.getMenus().add(menu);
 
         root = new BorderPane();
@@ -95,6 +101,10 @@ public class AtelierView extends Application {
         produitItem.setOnAction(e -> afficherProduit());
         gammeItem.setOnAction(e -> afficherGamme());
         listeProduitItem.setOnAction(e -> afficherListeProduits());
+        fiabiliteItem.setOnAction(e -> {
+    FiabiliteView fiabView = new FiabiliteView(fiabiliteController);
+    root.setCenter(fiabView.getView());
+});
 
         afficherAccueil();
 
