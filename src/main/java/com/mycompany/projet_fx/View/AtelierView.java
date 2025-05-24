@@ -162,8 +162,10 @@ public class AtelierView extends Application {
     }
 
     private void afficherAccueil() {
-        root.setCenter(getAccueilPaneBeau());
-    }
+    AccueilView accueilView = new AccueilView(atelier, couleursPostes);
+    root.setCenter(accueilView.getAccueilPane());
+}
+
 
     private void afficherFormulaireAjoutMachine() {
         root.setCenter(MachineFormView.getMachineForm(atelier, nomFichier, this::afficherAccueil));
