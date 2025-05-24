@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.text.Font;
 import com.mycompany.projet_fx.view.FiabiliteView;
-import com.mycompany.projet_fx.Controller.FiabiliteController;
+import com.mycompany.projet_fx.controller.FiabiliteController;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,6 +38,8 @@ public class AtelierView extends Application {
     };
 
     private String nomUtilisateur;
+
+    private final FiabiliteController fiabiliteController = new FiabiliteController();
 
     @Override
     public void start(Stage primaryStage) {
@@ -85,50 +87,49 @@ public class AtelierView extends Application {
         if (atelier.getPostes() != null) postesList.addAll(atelier.getPostes());
 
         // Barre de menu
-MenuBar menuBar = new MenuBar();
-Menu menu = new Menu("Menu");
+        MenuBar menuBar = new MenuBar();
+        Menu menu = new Menu("Menu");
 
-// Ordre : accueil, machines, poste, operations, personnes, operateur, gammes, produit, produits finis, fiabilite
-MenuItem accueilItem = new MenuItem("Accueil");
-MenuItem machineItem = new MenuItem("Machines");
-MenuItem posteItem = new MenuItem("Poste");
-MenuItem operationItem = new MenuItem("Opérations");
-MenuItem personnesItem = new MenuItem("Personnes");
-MenuItem operateurItem = new MenuItem("Opérateur");
-MenuItem gammeItem = new MenuItem("Gammes");
-MenuItem produitItem = new MenuItem("Produit");
-MenuItem listeProduitItem = new MenuItem("Produits finis");
-MenuItem fiabiliteItem = new MenuItem("Fiabilité");
+        // Ordre : accueil, machines, poste, operations, personnes, operateur, gammes, produit, produits finis, fiabilite
+        MenuItem accueilItem = new MenuItem("Accueil");
+        MenuItem machineItem = new MenuItem("Machines");
+        MenuItem posteItem = new MenuItem("Poste");
+        MenuItem operationItem = new MenuItem("Opérations");
+        MenuItem personnesItem = new MenuItem("Personnes");
+        MenuItem operateurItem = new MenuItem("Opérateur");
+        MenuItem gammeItem = new MenuItem("Gammes");
+        MenuItem produitItem = new MenuItem("Produit");
+        MenuItem listeProduitItem = new MenuItem("Produits finis");
+        MenuItem fiabiliteItem = new MenuItem("Fiabilité");
 
-menu.getItems().addAll(
-    accueilItem,
-    machineItem,
-    posteItem,
-    operationItem,
-    personnesItem,
-    operateurItem,
-    gammeItem,
-    produitItem,
-    listeProduitItem,
-    fiabiliteItem
-);
-menuBar.getMenus().add(menu);
+        menu.getItems().addAll(
+                accueilItem,
+                machineItem,
+                posteItem,
+                operationItem,
+                personnesItem,
+                operateurItem,
+                gammeItem,
+                produitItem,
+                listeProduitItem,
+                fiabiliteItem
+        );
+        menuBar.getMenus().add(menu);
 
-root = new BorderPane();
-root.setTop(menuBar);
+        root = new BorderPane();
+        root.setTop(menuBar);
 
-// Actions menu
-accueilItem.setOnAction(e -> afficherAccueil());
-machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
-posteItem.setOnAction(e -> afficherPoste());
-operationItem.setOnAction(e -> afficherOperation());
-personnesItem.setOnAction(e -> afficherPersonne());
-operateurItem.setOnAction(e -> afficherOperateur());
-gammeItem.setOnAction(e -> afficherGamme());
-produitItem.setOnAction(e -> afficherProduit());
-listeProduitItem.setOnAction(e -> afficherListeProduits());
-fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteController).getView()));
-
+        // Actions menu
+        accueilItem.setOnAction(e -> afficherAccueil());
+        machineItem.setOnAction(e -> afficherFormulaireAjoutMachine());
+        posteItem.setOnAction(e -> afficherPoste());
+        operationItem.setOnAction(e -> afficherOperation());
+        personnesItem.setOnAction(e -> afficherPersonne());
+        operateurItem.setOnAction(e -> afficherOperateur());
+        gammeItem.setOnAction(e -> afficherGamme());
+        produitItem.setOnAction(e -> afficherProduit());
+        listeProduitItem.setOnAction(e -> afficherListeProduits());
+        fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteController).getView()));
 
         afficherAccueil();
 
@@ -189,28 +190,26 @@ fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteControl
     }
 
     private void afficherPersonne() {
-        // À compléter selon ta logique de PersonneView
+        // Remplacer ceci par la vraie vue personne si elle existe
+        Label l = new Label("Vue Personnes à implémenter !");
+        l.setStyle("-fx-font-size: 22px; -fx-text-fill: #3B5998; -fx-padding: 120;");
+        VBox v = new VBox(l);
+        v.setAlignment(Pos.CENTER);
+        root.setCenter(v);
     }
 
     private void afficherOperateur() {
-        // À compléter selon ta logique de OperateurView
-    }
-
-    private void afficherSynthese() {
-        // On met à jour les listes pour la synthèse
-        machinesList.setAll();
-        for (Equipement eq : atelier.getEquipements()) {
-            if (eq instanceof Machine) machinesList.add((Machine) eq);
-        }
-        postesList.setAll(atelier.getPostes());
-        gammesList.setAll(atelier.getGammes());
-        operationsList.setAll(atelier.getOperations());
-
+        // Remplacer ceci par la vraie vue opérateur si elle existe
+        Label l = new Label("Vue Opérateur à implémenter !");
+        l.setStyle("-fx-font-size: 22px; -fx-text-fill: #009688; -fx-padding: 120;");
+        VBox v = new VBox(l);
+        v.setAlignment(Pos.CENTER);
+        root.setCenter(v);
     }
 
     // --- Rafraîchissements : chaque modification doit remettre à jour les listes pour la vue synthétique ---
     private void refreshAfterMachineChange() {
-        machinesList.setAll();
+        machinesList.clear();
         for (Equipement eq : atelier.getEquipements()) {
             if (eq instanceof Machine) machinesList.add((Machine) eq);
         }
