@@ -1,15 +1,16 @@
 package com.mycompany.projet_fx.View;
 
-import com.mycompany.projet_fx.Model.Atelier;
-import com.mycompany.projet_fx.Model.Gamme;
-import com.mycompany.projet_fx.Model.Operation;
-import com.mycompany.projet_fx.Model.Equipement;
+import com.mycompany.projet_fx.Model.*;
+import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
 import java.util.ArrayList;
 
 public class GammeFormView {
@@ -21,43 +22,122 @@ public class GammeFormView {
             String nomFichier,
             Runnable onRetourAccueil
     ) {
-        HBox root = new HBox(25);
-        root.setPadding(new Insets(16, 32, 16, 32));
+        HBox root = new HBox(30);
+        root.setPadding(new Insets(20, 35, 20, 35));
 
-        // ---- Formulaire de création/modif à gauche ----
-        VBox vboxForm = new VBox(14);
-        vboxForm.setPadding(new Insets(5));
-        vboxForm.setPrefWidth(370);
+        // ----------- TABLEAU DES OPERATIONS -----------
+        TableView<Operation> opTable = new TableView<>(operationsList);
+        opTable.setPrefHeight(180);
+        opTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        opTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        Label titre = new Label("Créer une gamme");
-        titre.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        TableColumn<Operation, Number> opIdCol = new TableColumn<>("ID");
+        opIdCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getId_operation()));
+        TableColumn<Operation, String> opDescCol = new TableColumn<>("Description");
+        opDescCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDescription()));
+        TableColumn<Operation, Number> opDureeCol = new TableColumn<>("Durée (h)");
+        opDureeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(data.getValue().getDuree()));
+        opTable.getColumns().addAll(opIdCol, opDescCol, opDureeCol);
 
-        Label opLabel = new Label("Opérations :");
-        ListView<Operation> listOp = new ListView<>();
-        listOp.setItems(operationsList);
-        listOp.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        listOp.setCellFactory(lv -> new ListCell<>() {
+        // ----------- TABLEAU DES MACHINES -----------
+        ObservableList<Machine> machinesList = FXCollections.observableArrayList();
+        for (Equipement eq : atelier.getEquipements()) {
+            if (eq instanceof Machine) machinesList.add((Machine) eq);
+        }
+
+        TableView<Machine> machTable = new TableView<>(machinesList);
+        machTable.setPrefHeight(180);
+        machTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        machTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        TableColumn<Machine, Number> machIdCol = new TableColumn<>("ID");
+        machIdCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getRefmachine()));
+        TableColumn<Machine, String> machDescCol = new TableColumn<>("Description");
+        machDescCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDmachine()));
+        TableColumn<Machine, String> machPosteCol = new TableColumn<>("Poste");
+        machPosteCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                getPosteNameForMachine(data.getValue(), atelier.getPostes())
+        ));
+        TableColumn<Machine, Color> machColorCol = new TableColumn<>("Couleur");
+        machColorCol.setCellFactory(col -> new TableCell<>() {
             @Override
-            protected void updateItem(Operation op, boolean empty) {
-                super.updateItem(op, empty);
-                setText((empty || op == null) ? "" : op.toString());
+            protected void updateItem(Color color, boolean empty) {
+                super.updateItem(color, empty);
+                setText(null);
+                if (empty || color == null) setGraphic(null);
+                else setGraphic(new Rectangle(16, 16, color));
+            }
+        });
+        machColorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(
+                getColorForMachine(data.getValue(), atelier.getPostes())
+        ));
+        machTable.getColumns().addAll(machIdCol, machDescCol, machPosteCol, machColorCol);
+
+        // ----------- TABLEAU DES GAMMES -----------
+        TableView<Gamme> gammeTable = new TableView<>(gammesList);
+        gammeTable.setPrefHeight(180);
+        gammeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        gammeTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        TableColumn<Gamme, String> gammeRefCol = new TableColumn<>("Réf");
+        gammeRefCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                data.getValue().getRefGamme() == null ? "" : data.getValue().getRefGamme()));
+
+        TableColumn<Gamme, String> gammeOpCol = new TableColumn<>("Opération");
+        gammeOpCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                data.getValue().getOperations().isEmpty()
+                        ? "-"
+                        : data.getValue().getOperations().get(0).getDescription()
+        ));
+
+        TableColumn<Gamme, String> gammeMachCol = new TableColumn<>("Machine");
+        gammeMachCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                data.getValue().getListeEquipements().isEmpty()
+                        ? "-"
+                        : (data.getValue().getListeEquipements().get(0) instanceof Machine
+                        ? ((Machine) data.getValue().getListeEquipements().get(0)).getDmachine()
+                        : data.getValue().getListeEquipements().get(0).affiche())
+        ));
+
+        gammeTable.getColumns().addAll(gammeRefCol, gammeOpCol, gammeMachCol);
+
+        // ----------- INFOS DETAILLEES GAMME -----------
+        Label infoGamme = new Label("Sélectionnez une gamme pour voir les détails.");
+        infoGamme.setStyle("-fx-background-color: #f6f6f6; -fx-font-size: 15px; -fx-padding: 9;");
+        infoGamme.setMinWidth(320);
+        infoGamme.setWrapText(true);
+
+        gammeTable.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            if (selected != null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Référence : ").append(selected.getRefGamme()).append("\n");
+                sb.append("Opérations :\n");
+                for (Operation op : selected.getOperations()) {
+                    sb.append("  - [#").append(op.getId_operation()).append("] ").append(op.getDescription()).append(" (")
+                            .append(op.getDuree()).append("h)\n");
+                }
+                sb.append("Machines/Eq. utilisées :\n");
+                for (Equipement eq : selected.getListeEquipements()) {
+                    if (eq instanceof Machine) {
+                        Machine m = (Machine) eq;
+                        sb.append("  - Machine: ").append(m.getDmachine());
+                        sb.append(" [poste: ").append(getPosteNameForMachine(m, atelier.getPostes())).append("]");
+                        sb.append(", coût horaire: ").append(m.getC()).append(" €\n");
+                    } else {
+                        sb.append("  - ").append(eq.affiche()).append("\n");
+                    }
+                }
+                sb.append("\nCoût total de la gamme : ").append(selected.coutGamme()).append(" €");
+                sb.append("\nDurée totale de la gamme : ").append(selected.dureeGamme()).append(" h");
+                infoGamme.setText(sb.toString());
+            } else {
+                infoGamme.setText("Sélectionnez une gamme pour voir les détails.");
             }
         });
 
-        Label eqLabel = new Label("Équipements :");
-        ListView<Equipement> listEq = new ListView<>();
-        listEq.getItems().addAll(atelier.getEquipements());
-        listEq.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        listEq.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Equipement eq, boolean empty) {
-                super.updateItem(eq, empty);
-                setText((empty || eq == null) ? "" : eq.affiche());
-            }
-        });
-
-        Label refGammeLabel = new Label("Référence :");
+        // ----------- CREATION GAMME -----------
         TextField refGammeInput = new TextField();
+        refGammeInput.setPromptText("Référence gamme (obligatoire)");
 
         Button creerBtn = new Button("Créer la gamme");
         creerBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #8fd14f;");
@@ -66,174 +146,74 @@ public class GammeFormView {
 
         creerBtn.setOnAction(e -> {
             String ref = refGammeInput.getText().trim();
+            Operation op = opTable.getSelectionModel().getSelectedItem();
+            Machine m = machTable.getSelectionModel().getSelectedItem();
             if (ref.isEmpty()) {
                 creerMsg.setText("Référence obligatoire !");
                 return;
             }
-            var selectedOps = listOp.getSelectionModel().getSelectedItems();
-            var selectedEqs = listEq.getSelectionModel().getSelectedItems();
-            if (selectedOps == null || selectedOps.isEmpty() || selectedEqs == null || selectedEqs.isEmpty()) {
-                creerMsg.setText("Sélectionnez opérations ET équipements !");
+            if (op == null || m == null) {
+                creerMsg.setText("Sélectionnez une opération et une machine !");
                 return;
             }
-            Gamme gamme = new Gamme(new ArrayList<>(selectedOps));
+            Gamme gamme = new Gamme();
             gamme.setRefGamme(ref);
-            gamme.setListeEquipements(new ArrayList<>(selectedEqs));
+            ArrayList<Operation> ops = new ArrayList<>();
+            ops.add(op);
+            ArrayList<Equipement> eqs = new ArrayList<>();
+            eqs.add(m);
+            gamme.setOperations(ops);
+            gamme.setListeEquipements(eqs);
+
             gammesList.add(gamme);
             atelier.setGammes(new ArrayList<>(gammesList));
             AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
 
             creerMsg.setText("Gamme créée !");
             refGammeInput.clear();
-            listOp.getSelectionModel().clearSelection();
-            listEq.getSelectionModel().clearSelection();
+            opTable.getSelectionModel().clearSelection();
+            machTable.getSelectionModel().clearSelection();
         });
 
         Button retourBtn = new Button("Retour Accueil");
         retourBtn.setOnAction(e -> { if (onRetourAccueil != null) onRetourAccueil.run(); });
 
-        vboxForm.getChildren().addAll(
-            titre,
-            opLabel, listOp,
-            eqLabel, listEq,
-            refGammeLabel, refGammeInput,
-            creerBtn, retourBtn, creerMsg
+        // ----------- LAYOUTS -----------
+        VBox vboxForm = new VBox(14,
+                new Label("Sélectionnez une opération :"), opTable,
+                new Label("Sélectionnez une machine :"), machTable,
+                new Label("Référence de la gamme :"), refGammeInput, creerBtn, creerMsg, retourBtn
         );
+        vboxForm.setPrefWidth(370);
 
-        // ---- Liste et détails des gammes à droite ----
-        VBox vboxListe = new VBox(16);
-        vboxListe.setPadding(new Insets(5));
-        vboxListe.setPrefWidth(400);
-
-        Label gammesLbl = new Label("Gammes créées");
-        gammesLbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-
-        ListView<Gamme> gammesView = new ListView<>(gammesList);
-        gammesView.setPrefHeight(220);
-        gammesView.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Gamme g, boolean empty) {
-                super.updateItem(g, empty);
-                setText((empty || g == null) ? "" : (
-                    "Réf: " + g.getRefGamme()
-                    + " | Opérations: " + g.getOperations().size()
-                    + " | Équipements: " + g.getListeEquipements().size()
-                ));
-            }
-        });
-
-        // Label de détail qui s'affiche instantanément quand on clique sur une gamme
-        Label infoGamme = new Label();
-        infoGamme.setStyle("-fx-font-size: 13px; -fx-padding: 6; -fx-background-color: #f4f4f4;");
-        infoGamme.setMinHeight(120);
-        infoGamme.setMaxWidth(390);
-        infoGamme.setWrapText(true);
-
-        // Bouton Modifier gamme (popup)
-        Button modifierBtn = new Button("Modifier cette gamme");
-        modifierBtn.setStyle("-fx-background-color: #ffca3a; -fx-font-weight: bold;");
-
-        gammesView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, g) -> {
-            if (g != null) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Référence : ").append(g.getRefGamme()).append("\n\n");
-                sb.append("Opérations :\n");
-                for (Operation op : g.getOperations())
-                    sb.append(" - ").append(op.toString()).append("\n");
-                sb.append("\nÉquipements :\n");
-                for (Equipement eq : g.getListeEquipements())
-                    sb.append(" - ").append(eq.affiche()).append("\n");
-                sb.append("\nCoût total : ").append(g.coutGamme());
-                sb.append("\nDurée totale : ").append(g.dureeGamme()).append(" min\n");
-                infoGamme.setText(sb.toString());
-            } else {
-                infoGamme.setText("");
-            }
-        });
-
-        modifierBtn.setOnAction(e -> {
-            Gamme selectedGamme = gammesView.getSelectionModel().getSelectedItem();
-            if (selectedGamme == null) return;
-            afficherPopupModificationGamme(selectedGamme, atelier, operationsList, gammesList);
-        });
-
-        vboxListe.getChildren().addAll(
-            gammesLbl, gammesView, infoGamme, modifierBtn
+        VBox vboxListe = new VBox(15,
+                new Label("Gammes créées :"), gammeTable, infoGamme
         );
+        vboxListe.setPrefWidth(420);
 
         root.getChildren().addAll(vboxForm, new Separator(javafx.geometry.Orientation.VERTICAL), vboxListe);
         return root;
     }
 
-    private static void afficherPopupModificationGamme(
-            Gamme gamme,
-            Atelier atelier,
-            ObservableList<Operation> operationsList,
-            ObservableList<Gamme> gammesList
-    ) {
-        Dialog<Void> modifDlg = new Dialog<>();
-        modifDlg.setTitle("Modifier la gamme");
-        VBox modifBox = new VBox(10);
-        modifBox.setPadding(new Insets(10));
+    // Utilitaires couleurs et poste pour affichage machine
+    private static String getPosteNameForMachine(Machine m, java.util.List<Poste> postesList) {
+        for (Poste poste : postesList) {
+            if (poste.getMachines().contains(m)) return poste.getNomPoste();
+        }
+        return "-";
+    }
 
-        TextField refField = new TextField(gamme.getRefGamme());
-
-        ListView<Operation> opEdit = new ListView<>();
-        opEdit.getItems().addAll(operationsList);
-        opEdit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        opEdit.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Operation op, boolean empty) {
-                super.updateItem(op, empty);
-                setText((empty || op == null) ? "" : op.toString());
+    private static Color getColorForMachine(Machine m, java.util.List<Poste> postesList) {
+        Color[] couleurs = {
+            Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
+            Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
+        };
+        for (int i = 0; i < postesList.size(); i++) {
+            Poste poste = postesList.get(i);
+            if (poste.getMachines().contains(m)) {
+                return couleurs[i % couleurs.length];
             }
-        });
-        for (Operation op : gamme.getOperations())
-            opEdit.getSelectionModel().select(op);
-
-        ListView<Equipement> eqEdit = new ListView<>();
-        eqEdit.getItems().addAll(atelier.getEquipements());
-        eqEdit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        eqEdit.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Equipement eq, boolean empty) {
-                super.updateItem(eq, empty);
-                setText((empty || eq == null) ? "" : eq.affiche());
-            }
-        });
-        for (Equipement eq : gamme.getListeEquipements())
-            eqEdit.getSelectionModel().select(eq);
-
-        Button valider = new Button("Valider");
-        valider.setStyle("-fx-background-color: #8fd14f; -fx-font-weight: bold;");
-        Label modifMsg = new Label();
-        modifMsg.setStyle("-fx-text-fill: green;");
-
-        valider.setOnAction(ev -> {
-            String ref = refField.getText().trim();
-            if (ref.isEmpty()) {
-                modifMsg.setText("Référence obligatoire !");
-                return;
-            }
-            if (opEdit.getSelectionModel().isEmpty() || eqEdit.getSelectionModel().isEmpty()) {
-                modifMsg.setText("Sélectionnez opérations ET équipements !");
-                return;
-            }
-            gamme.setRefGamme(ref);
-            gamme.setOperations(new ArrayList<>(opEdit.getSelectionModel().getSelectedItems()));
-            gamme.setListeEquipements(new ArrayList<>(eqEdit.getSelectionModel().getSelectedItems()));
-            modifDlg.setResult(null);
-            modifDlg.close();
-        });
-
-        modifBox.getChildren().addAll(
-            new Label("Modifier référence :"), refField,
-            new Label("Modifier opérations :"), opEdit,
-            new Label("Modifier équipements :"), eqEdit,
-            valider, modifMsg
-        );
-        modifDlg.getDialogPane().setContent(modifBox);
-        modifDlg.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        modifDlg.showAndWait();
+        }
+        return Color.LIGHTGRAY;
     }
 }
