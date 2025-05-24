@@ -26,10 +26,8 @@ public class OperateurView {
     private void createView() {
         root = new VBox(15);
         root.setStyle("-fx-padding: 30;");
-
         Label titre = new Label("Gestion des Opérateurs");
         titre.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-
         ListView<Operateur> operateurList = new ListView<>(controller.getOperateurs());
         operateurList.setPrefHeight(120);
 
@@ -81,4 +79,3 @@ public class OperateurView {
         return root;
     }
 }
-
