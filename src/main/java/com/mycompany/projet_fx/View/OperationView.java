@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.control.*;
 import javafx.geometry.Insets;
 import javafx.collections.FXCollections;
+import com.mycompany.projet_fx.Model.Operation;
 
 import java.util.ArrayList;
 
