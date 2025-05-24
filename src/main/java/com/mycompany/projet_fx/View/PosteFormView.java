@@ -53,7 +53,7 @@ public class PosteFormView {
         posteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Poste, String> posteNomCol = new TableColumn<>("Nom Poste");
-        posteNomCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNomPoste())); // CORRIGÉ !
+        posteNomCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNomPoste()));
         // Couleur
         TableColumn<Poste, Poste> colorCol = new TableColumn<>("Couleur");
         colorCol.setCellFactory(tc -> new TableCell<>() {
@@ -114,12 +114,12 @@ public class PosteFormView {
             }
             // Vérifier unicité
             for (Poste p : postesList) {
-                if (p.getNomPoste().equalsIgnoreCase(nom)) { // CORRIGÉ !
+                if (p.getNomPoste().equalsIgnoreCase(nom)) {
                     msgLabel.setText("Nom déjà pris.");
                     return;
                 }
             }
-            Poste p = new Poste(nom); // CORRIGÉ !
+            Poste p = new Poste(nom);
             postesList.add(p);
             atelier.getPostes().add(p);
             AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
@@ -139,7 +139,7 @@ public class PosteFormView {
                 msgLabel.setText("Le nom ne peut pas être vide.");
                 return;
             }
-            sel.setNomPoste(nom); // CORRIGÉ !
+            sel.setNomPoste(nom);
             posteTable.refresh();
             AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
             msgLabel.setText("Nom modifié.");
@@ -180,6 +180,8 @@ public class PosteFormView {
                 AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
                 msgLabel.setText("Machine(s) affectée(s).");
                 posteTable.getSelectionModel().select(p);
+                // Rafraîchit le plan de l'accueil si besoin
+                if (onRetourAccueil != null) onRetourAccueil.run();
             } else {
                 msgLabel.setText("Machines déjà dans ce poste.");
             }
@@ -207,6 +209,7 @@ public class PosteFormView {
                 AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
                 msgLabel.setText("Machine retirée.");
                 posteTable.getSelectionModel().select(p);
+                if (onRetourAccueil != null) onRetourAccueil.run();
             });
         });
 
@@ -229,11 +232,10 @@ public class PosteFormView {
     }
 
     private static Color getColorForPoste(int i) {
-    Color[] couleurs = {
-        Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
-        Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
-    };
-    return couleurs[i % couleurs.length];
-}
-
+        Color[] couleurs = {
+            Color.ROYALBLUE, Color.DARKORANGE, Color.FORESTGREEN, Color.DARKVIOLET, Color.DARKCYAN,
+            Color.CRIMSON, Color.DARKMAGENTA, Color.GOLD, Color.MEDIUMPURPLE, Color.DARKSLATEGRAY
+        };
+        return couleurs[i % couleurs.length];
+    }
 }
