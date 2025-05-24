@@ -79,6 +79,9 @@ public class GammeFormView {
             gamme.setRefGamme(ref);
             gamme.setListeEquipements(new ArrayList<>(selectedEqs));
             gammesList.add(gamme);
+            atelier.setGammes(new ArrayList<>(gammesList));
+            AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+
             creerMsg.setText("Gamme créée !");
             refGammeInput.clear();
             listOp.getSelectionModel().clearSelection();
