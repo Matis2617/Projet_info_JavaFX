@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.text.Font;
+import com.mycompany.projet_fx.view.FiabiliteView;
 
 import java.io.File;
 import java.util.ArrayList;
