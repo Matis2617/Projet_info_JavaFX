@@ -23,14 +23,14 @@ public class ProduitFormView {
         TextField idField = new TextField();
         idField.setPromptText("Identifiant du produit");
 
-        // ComboBox personnalisée façon "table"
-        ComboBox<Gamme> gammeCombo = new ComboBox<>(gammesList);
-        gammeCombo.setPromptText("Choisir la gamme utilisée");
-        gammeCombo.setPrefWidth(540);
+        // Tableau de sélection de gamme
+        Label gammeTableLabel = new Label("Sélectionnez une gamme utilisée :");
+        gammeTableLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold;");
 
-        // Tableau fictif pour le "popup"
-        TableView<Gamme> tablePopup = new TableView<>(gammesList);
-        tablePopup.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        TableView<Gamme> gammeTable = new TableView<>(gammesList);
+        gammeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        gammeTable.setPrefHeight(180);
+        gammeTable.setMaxWidth(520);
 
         TableColumn<Gamme, String> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getRefGamme()));
@@ -50,51 +50,21 @@ public class ProduitFormView {
                 .reduce((a, b) -> a + ", " + b).orElse("-")
         ));
 
-        tablePopup.getColumns().addAll(idCol, machinesCol, opCol);
-        tablePopup.setPrefHeight(180);
-        tablePopup.setMaxWidth(520);
+        gammeTable.getColumns().addAll(idCol, machinesCol, opCol);
 
-        // Lien ComboBox/table
-        gammeCombo.setOnMouseClicked(e -> {
-            if (!tablePopup.isVisible()) tablePopup.setVisible(true);
-        });
-        tablePopup.setVisible(false);
+        // Sélection unique !
+        gammeTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        gammeCombo.setButtonCell(new ListCell<>() {
-            @Override
-            protected void updateItem(Gamme gamme, boolean empty) {
-                super.updateItem(gamme, empty);
-                if (empty || gamme == null) {
-                    setText("");
-                } else {
-                    setText("[ID: " + gamme.getRefGamme() + "] " +
-                        machinesCol.getCellObservableValue(gamme).getValue() +
-                        " | " + opCol.getCellObservableValue(gamme).getValue());
-                }
-            }
-        });
-
-        tablePopup.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
-            if (selected != null) {
-                gammeCombo.getSelectionModel().select(selected);
-                tablePopup.setVisible(false);
-            }
-        });
-
-        // Style pour la table-popup
-        tablePopup.setStyle("-fx-border-color: #c0c0c0; -fx-background-color: #f7f7fc;");
-
-        // Ajout produit
         Button ajouterBtn = new Button("Ajouter le produit");
         Label msg = new Label();
         msg.setStyle("-fx-text-fill: green;");
 
         ajouterBtn.setOnAction(e -> {
             String id = idField.getText().trim();
-            Gamme gamme = gammeCombo.getValue();
+            Gamme gamme = gammeTable.getSelectionModel().getSelectedItem();
             if (id.isEmpty() || gamme == null) {
                 msg.setStyle("-fx-text-fill: red;");
-                msg.setText("Remplis tous les champs !");
+                msg.setText("Remplis tous les champs et sélectionne une gamme !");
                 return;
             }
             boolean existe = listeProduits.stream().anyMatch(p -> p.getId().equals(id));
@@ -108,7 +78,7 @@ public class ProduitFormView {
             msg.setStyle("-fx-text-fill: green;");
             msg.setText("Produit ajouté !");
             idField.clear();
-            gammeCombo.getSelectionModel().clearSelection();
+            gammeTable.getSelectionModel().clearSelection();
         });
 
         Button retourBtn = new Button("Retour");
@@ -119,9 +89,8 @@ public class ProduitFormView {
         leftBox.getChildren().addAll(
                 titre,
                 idField,
-                new Label("Choisir la gamme de fabrication :"),
-                gammeCombo,
-                tablePopup,
+                gammeTableLabel,
+                gammeTable,
                 ajouterBtn, retourBtn, msg
         );
         leftBox.setPrefWidth(540);
