@@ -80,8 +80,30 @@ public class OperateurView {
                 alert.showAndWait();
             }
         });
+        
+        ComboBox<ETAT> modifierEtatBox = new ComboBox<>();
+        modifierEtatBox.getItems().addAll(ETAT.values());
+        modifierEtatBox.setPromptText("Nouvel État");
+        
+        Button modifierEtatBtn = new Button("Modifier État");
+        modifierEtatBtn.setOnAction(e -> {
+            Operateur operateurSelectionne = operateurList.getSelectionModel().getSelectedItem();
+            ETAT nouvelEtat = modifierEtatBox.getValue();
 
-        root.getChildren().addAll(titre, operateurList, nomField, prenomField, competencesField, idOpField, etatBox, ajouterBtn, supprimerBtn);
+            if (operateurSelectionne != null && nouvelEtat != null) {
+                controller.setEtat(nouvelEtat, operateurSelectionne);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Aucune sélection");
+                alert.setHeaderText(null);
+                alert.setContentText("Veuillez sélectionner un opérateur et un nouvel état.");
+                alert.showAndWait();
+            }
+        });
+
+        root.getChildren().addAll(titre, operateurList, nomField, prenomField, competencesField,
+                idOpField, etatBox, ajouterBtn, supprimerBtn, modifierEtatBox);
+        
     }
 
     public VBox getView() {
