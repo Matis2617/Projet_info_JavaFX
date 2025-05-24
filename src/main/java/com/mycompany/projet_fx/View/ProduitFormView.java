@@ -10,14 +10,8 @@ import javafx.geometry.Insets;
 
 public class ProduitFormView {
 
-    // Vue principale avec création et tableau permanent
-    public static Node getProduitForm(
-            ObservableList<Produit> listeProduits,
-            ObservableList<Gamme> gammesList,
-            Runnable onRetourAccueil,
-            Atelier atelier,
-            String nomFichier
-    ) {
+    // ----- Vue de création + tableau permanent -----
+    public static Node getProduitForm(ObservableList<Produit> listeProduits, ObservableList<Gamme> gammesList, Runnable onRetourAccueil) {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(30));
 
@@ -31,33 +25,36 @@ public class ProduitFormView {
         TextField idField = new TextField();
         idField.setPromptText("Identifiant du produit");
 
-        // Table des gammes pour choisir la gamme utilisée
+        // Tableau des gammes (au lieu d'une combo box)
         TableView<Gamme> gammeTable = new TableView<>(gammesList);
-        gammeTable.setPrefHeight(200);
+        gammeTable.setPrefHeight(220);
         gammeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Gamme, String> refCol = new TableColumn<>("Identifiant");
         refCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getRefGamme()));
 
-        TableColumn<Gamme, String> machinesCol = new TableColumn<>("Machines");
+        TableColumn<Gamme, String> machinesCol = new TableColumn<>("Machines utilisées");
         machinesCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getListeEquipements().stream()
-                        .filter(eq -> eq instanceof Machine)
-                        .map(eq -> ((Machine) eq).getDmachine())
-                        .reduce((a, b) -> a + ", " + b).orElse("-")
+            data.getValue().getListeEquipements().stream()
+                .filter(eq -> eq instanceof Machine)
+                .map(eq -> ((Machine) eq).getDmachine())
+                .reduce((a, b) -> a + ", " + b).orElse("-")
         ));
 
-        TableColumn<Gamme, String> operationsCol = new TableColumn<>("Opérations");
-        operationsCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getOperations().stream()
-                        .map(Operation::getDescription)
-                        .reduce((a, b) -> a + ", " + b).orElse("-")
+        TableColumn<Gamme, String> opsCol = new TableColumn<>("Opérations");
+        opsCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+            data.getValue().getOperations().stream()
+                .map(Operation::getDescription)
+                .reduce((a, b) -> a + ", " + b).orElse("-")
         ));
 
-        gammeTable.getColumns().addAll(refCol, machinesCol, operationsCol);
+        gammeTable.getColumns().addAll(refCol, machinesCol, opsCol);
 
-        Label gammeLabel = new Label("Sélectionne une gamme :");
-        gammeLabel.setStyle("-fx-font-size: 13px;");
+        // Pour sélectionner la gamme choisie
+        final Gamme[] gammeSelectionnee = {null};
+        gammeTable.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            gammeSelectionnee[0] = selected;
+        });
 
         Button ajouterBtn = new Button("Ajouter le produit");
         Label msg = new Label();
@@ -65,25 +62,25 @@ public class ProduitFormView {
 
         ajouterBtn.setOnAction(e -> {
             String id = idField.getText().trim();
-            Gamme gamme = gammeTable.getSelectionModel().getSelectedItem();
+            Gamme gamme = gammeSelectionnee[0];
             if (id.isEmpty() || gamme == null) {
-                msg.setStyle("-fx-text-fill: red;");
-                msg.setText("Remplis tous les champs et sélectionne une gamme !");
+                msg.setText("Remplis tous les champs !");
                 return;
             }
-            // Vérifie unicité (optionnel)
+            // Vérifie unicité
             boolean existe = listeProduits.stream().anyMatch(p -> p.getId().equals(id));
             if (existe) {
-                msg.setStyle("-fx-text-fill: red;");
                 msg.setText("Cet identifiant de produit existe déjà !");
                 return;
             }
             Produit produit = new Produit(id, gamme);
             listeProduits.add(produit);
-            // Ajout dans l'atelier et sauvegarde immédiate
-            atelier.getProduits().add(produit);
-            AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
-            msg.setStyle("-fx-text-fill: green;");
+            // Sauvegarde auto
+            if (gamme != null && gamme.getAtelier() != null) {
+                Atelier at = gamme.getAtelier();
+                if (!at.getProduits().contains(produit)) at.getProduits().add(produit);
+                AtelierSauvegarde.sauvegarderAtelier(at, "atelier_" + at.getNom().toLowerCase() + ".ser");
+            }
             msg.setText("Produit ajouté !");
             idField.clear();
             gammeTable.getSelectionModel().clearSelection();
@@ -97,7 +94,7 @@ public class ProduitFormView {
         leftBox.getChildren().addAll(
                 titre,
                 idField,
-                gammeLabel,
+                new Label("Sélectionnez une gamme de fabrication :"),
                 gammeTable,
                 ajouterBtn, retourBtn, msg
         );
@@ -119,27 +116,27 @@ public class ProduitFormView {
 
         TableColumn<Produit, String> gammeCol = new TableColumn<>("Gamme utilisée");
         gammeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getGamme() == null ? "-" : data.getValue().getGamme().getRefGamme()
+            data.getValue().getGamme() == null ? "-" : data.getValue().getGamme().getRefGamme()
         ));
 
-        TableColumn<Produit, String> machinesColP = new TableColumn<>("Machines utilisées");
-        machinesColP.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getGamme() == null ? "-" :
-                        data.getValue().getGamme().getListeEquipements().stream()
-                                .filter(eq -> eq instanceof Machine)
-                                .map(eq -> ((Machine) eq).getDmachine())
-                                .reduce((a, b) -> a + ", " + b).orElse("-")
+        TableColumn<Produit, String> machinesProdCol = new TableColumn<>("Machines utilisées");
+        machinesProdCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+            data.getValue().getGamme() == null ? "-" :
+            data.getValue().getGamme().getListeEquipements().stream()
+                .filter(eq -> eq instanceof Machine)
+                .map(eq -> ((Machine)eq).getDmachine())
+                .reduce((a, b) -> a + ", " + b).orElse("-")
         ));
 
-        TableColumn<Produit, String> operationsColP = new TableColumn<>("Opérations");
-        operationsColP.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getGamme() == null ? "-" :
-                        data.getValue().getGamme().getOperations().stream()
-                                .map(Operation::getDescription)
-                                .reduce((a, b) -> a + ", " + b).orElse("-")
+        TableColumn<Produit, String> operationsCol = new TableColumn<>("Opérations");
+        operationsCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+            data.getValue().getGamme() == null ? "-" :
+            data.getValue().getGamme().getOperations().stream()
+                .map(Operation::getDescription)
+                .reduce((a, b) -> a + ", " + b).orElse("-")
         ));
 
-        table.getColumns().addAll(idCol, gammeCol, machinesColP, operationsColP);
+        table.getColumns().addAll(idCol, gammeCol, machinesProdCol, operationsCol);
 
         // Zone de détail produit
         Label detail = new Label("Sélectionnez un produit pour voir les détails.");
@@ -161,8 +158,11 @@ public class ProduitFormView {
             Produit selected = table.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 listeProduits.remove(selected);
-                atelier.getProduits().remove(selected);
-                AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+                if (selected.getGamme() != null && selected.getGamme().getAtelier() != null) {
+                    Atelier at = selected.getGamme().getAtelier();
+                    at.getProduits().remove(selected);
+                    AtelierSauvegarde.sauvegarderAtelier(at, "atelier_" + at.getNom().toLowerCase() + ".ser");
+                }
                 detail.setText("Produit supprimé.");
             }
         });
