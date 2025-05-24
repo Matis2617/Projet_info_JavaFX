@@ -45,7 +45,7 @@ public class OperationView {
                     return;
                 }
                 double duree = Double.parseDouble(dureeStr);
-                Operation op = new Operation(idOp, duree); // Adapte selon ton constructeur
+                Operation op = new Operation(idOp, duree, refEq); // Adapte selon ton constructeur
                 operations.add(op);
                 idField.clear();
                 dureeField.clear();
