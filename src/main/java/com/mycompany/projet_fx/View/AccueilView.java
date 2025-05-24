@@ -1,12 +1,10 @@
 package com.mycompany.projet_fx.View;
 
 import com.mycompany.projet_fx.Model.Atelier;
-import com.mycompany.projet_fx.Model.Machine;
-import com.mycompany.projet_fx.Model.Equipement;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class AccueilView {
@@ -22,60 +20,32 @@ public class AccueilView {
     public VBox getAccueilPane() {
         VBox accueil = new VBox(15);
         accueil.setStyle("-fx-alignment: center; -fx-padding: 20;");
-        accueil.getChildren().add(new Label("Bienvenue dans l'atelier de " + atelier.getNom() + "."));
-        accueil.getChildren().add(new Label("Plan de l'atelier :"));
 
-        HBox hbox = new HBox();
-        hbox.setStyle("-fx-alignment: center;");
+        // Message de bienvenue stylé
+        Label bienvenue = new Label("Bienvenue dans l'atelier " +
+                (commenceParVoyelle(atelier.getNom()) ? "d'" : "de ") + atelier.getNom() + ".");
+        bienvenue.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI', 'Arial', sans-serif; -fx-text-fill: #23374d; -fx-padding: 0 0 10 0;");
+
+        // Titre du plan
+        Label titrePlan = new Label("Plan de l'atelier :");
+        titrePlan.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-padding: 0 0 8 0;");
+
+        // Centrer le plan de l'atelier
+        HBox planBox = new HBox();
+        planBox.setAlignment(javafx.geometry.Pos.CENTER);
+        planBox.setPadding(new Insets(15, 0, 0, 0));
         PlanAtelierView planView = new PlanAtelierView(atelier, couleursPostes);
-        hbox.getChildren().add(planView.creerPlanAtelier());
-        accueil.getChildren().add(hbox);
+        planBox.getChildren().add(planView.creerPlanAtelier());
+
+        accueil.getChildren().addAll(bienvenue, titrePlan, planBox);
 
         return accueil;
     }
 
-    // Génération du plan de l’atelier
-    private Pane creerPlanAtelier() {
-        Pane planPane = new Pane();
-        int tailleAtelier = 500;
-        int grille = 50;
-        double unite = (double) tailleAtelier / grille;
-
-        planPane.setPrefSize(tailleAtelier, tailleAtelier);
-
-        // Fond atelier
-        javafx.scene.shape.Rectangle fond = new javafx.scene.shape.Rectangle(0, 0, tailleAtelier, tailleAtelier);
-        fond.setFill(Color.LIGHTGRAY);
-        fond.setStroke(Color.GRAY);
-        planPane.getChildren().add(fond);
-
-        // Dessine les machines
-        for (Equipement eq : atelier.getEquipements()) {
-            if (eq instanceof Machine) {
-                Machine m = (Machine) eq;
-                double x = m.getAbscisse() * unite;
-                double y = m.getOrdonnee() * unite;
-
-                javafx.scene.shape.Rectangle carre = new javafx.scene.shape.Rectangle(x, y, unite, unite);
-                carre.setFill(getColorForMachine(m));
-                carre.setStroke(Color.DARKBLUE);
-                carre.setArcWidth(8); carre.setArcHeight(8);
-
-                // TODO : ajouter un event au clic si besoin
-
-                planPane.getChildren().add(carre);
-            }
-        }
-        return planPane;
-    }
-
-    // Donne la couleur du poste auquel appartient la machine
-    private Color getColorForMachine(Machine m) {
-        for (int i = 0; i < atelier.getPostes().size(); i++) {
-            if (atelier.getPostes().get(i).getMachines().contains(m)) {
-                return couleursPostes[i % couleursPostes.length];
-            }
-        }
-        return Color.BLACK; // machine sans poste
+    // Utilitaire pour l'apostrophe selon la première lettre
+    private boolean commenceParVoyelle(String nom) {
+        if (nom == null || nom.isEmpty()) return false;
+        char c = Character.toLowerCase(nom.charAt(0));
+        return "aeiouy".indexOf(c) != -1;
     }
 }
