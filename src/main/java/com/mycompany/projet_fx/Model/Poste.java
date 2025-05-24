@@ -7,6 +7,7 @@ import java.util.List;
 public class Poste extends Equipement implements Serializable {
     private String nomPoste;
     private List<Machine> machines;
+    private Operateur operateur; // Ajouté
 
     // --- CONSTRUCTEUR ---
     public Poste(String nomPoste) {
@@ -22,6 +23,9 @@ public class Poste extends Equipement implements Serializable {
     public List<Machine> getMachines() { return machines; }
     public void setMachines(List<Machine> machines) { this.machines = machines; }
 
+    public Operateur getOperateur() { return operateur; }
+    public void setOperateur(Operateur operateur) { this.operateur = operateur; }
+
     // Pour l'affichage dans TableView ou ComboBox
     @Override
     public String toString() {
@@ -32,15 +36,4 @@ public class Poste extends Equipement implements Serializable {
     public String affiche() {
         return "Nom du poste : " + nomPoste;
     }
-    private Operateur operateur;
-public Operateur getOperateur() { return operateur; }
-public void setOperateur(Operateur operateur) { this.operateur = operateur; }
-
-public List<Machine> getMachines() {
-    List<Machine> machines = new ArrayList<>();
-    for (Equipement eq : this.getEquipements()) {
-        if (eq instanceof Machine) machines.add((Machine) eq);
-    }
-    return machines;
-}
 }
