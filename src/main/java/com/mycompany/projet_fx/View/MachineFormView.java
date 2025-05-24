@@ -114,14 +114,15 @@ public class MachineFormView {
                 }
 
                 Machine m = new Machine(
-            id,                                  // refmachine
-            desc,                                // description
-            absc,
-            ord,
-            cout,
-            etat,
-            atelier.getEquipements().size() + 1, // id_equipement unique interne
-        );
+    id,                                   // refmachine (identifiant)
+    desc,                                 // dmachine (description)
+    absc,                                 // abscisse
+    ord,                                  // ordonnee
+    cout,                                 // coût horaire
+    etat,                                 // état
+    atelier.getEquipements().size() + 1   // id_equipement
+);
+
                 
                 atelier.getEquipements().add(m);
                 machinesList.add(m);
