@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.List;
+import com.mycompany.projet_fx.Model.FiabiliteUtils;
+
 
 
 public class FiabiliteView {
