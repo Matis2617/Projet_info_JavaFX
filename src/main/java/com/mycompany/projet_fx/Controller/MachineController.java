@@ -1,6 +1,7 @@
 package com.mycompany.projet_fx.controller;
 
 import com.mycompany.projet_fx.Model.Machine;
+import com.mycompany.projet_fx.Model.Operateur;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -18,4 +19,9 @@ public class MachineController {
     public void supprimerMachine(Machine machine) {
         machines.remove(machine);
     }
+    
+    public void lierOperateur(Machine machine, Operateur operateur) {
+    // Logique pour lier l'opérateur à la machine
+    machine.setOperateur(operateur);
+}
 }

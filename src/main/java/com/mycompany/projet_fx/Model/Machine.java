@@ -11,8 +11,9 @@ public class Machine extends Equipement implements Serializable {
     private int ordonnee;
     private float c;
     private ETAT etat;
+    private Operateur operateur;
 
-    public Machine(int id_equipement, int refmachine, String dmachine, int abscisse, int ordonnee, float c, ETAT etat) {
+    public Machine(int refmachine, String dmachine, int abscisse, int ordonnee, float c, ETAT etat, int id_equipement) {
         super(id_equipement);
         this.refmachine = refmachine;
         this.dmachine = dmachine;
@@ -23,32 +24,65 @@ public class Machine extends Equipement implements Serializable {
     }
 
     // GETTERS/SETTERS
-    public int getRefmachine() { return refmachine; }
-    public void setRefmachine(int refmachine) { this.refmachine = refmachine; }
 
-    public String getDmachine() { return dmachine; }
-    public void setDmachine(String dmachine) { this.dmachine = dmachine; }
+    public int getRefmachine() {
+        return refmachine;
+    }
 
-    public int getAbscisse() { return abscisse; }
-    public void setAbscisse(int abscisse) { this.abscisse = abscisse; }
+    public void setRefmachine(int refmachine) {
+        this.refmachine = refmachine;
+    }
 
-    public int getOrdonnee() { return ordonnee; }
-    public void setOrdonnee(int ordonnee) { this.ordonnee = ordonnee; }
+    public String getDmachine() {
+        return dmachine;
+    }
 
-    public float getC() { return c; }
-    public void setC(float c) { this.c = c; }
+    public void setDmachine(String dmachine) {
+        this.dmachine = dmachine;
+    }
 
-    public ETAT getEtat() { return etat; }
-    public void setEtat(ETAT etat) { this.etat = etat; }
+    public int getAbscisse() {
+        return abscisse;
+    }
+
+    public void setAbscisse(int abscisse) {
+        this.abscisse = abscisse;
+    }
+
+    public int getOrdonnee() {
+        return ordonnee;
+    }
+
+    public void setOrdonnee(int ordonnee) {
+        this.ordonnee = ordonnee;
+    }
+
+    public float getC() {
+        return c;
+    }
+
+    public void setC(float c) {
+        this.c = c;
+    }
+
+    public ETAT getEtat() {
+        return etat;
+    }
+
+    public void setEtat(ETAT etat) {
+        this.etat = etat;
+    }
+
+    public Operateur getOperateur() {
+        return operateur;
+    }
+
+    public void setOperateur(Operateur operateur) {
+        this.operateur = operateur;
+    }
 
     @Override
-    public String affiche() {
-        return "Identifiant équipement : " + getId_equipement()
-            + ", identifiant machine : " + refmachine
-            + ", description = " + dmachine
-            + ", abscisse = " + abscisse
-            + ", ordonnée = " + ordonnee
-            + ", coût = " + c
-            + ", état = " + etat;
+    public String toString() {
+        return "Machine{" + "refmachine=" + refmachine + ", dmachine=" + dmachine + ", abscisse=" + abscisse + ", ordonnee=" + ordonnee + ", c=" + c + ", etat=" + etat + ", operateur=" + operateur + '}';
     }
 }
