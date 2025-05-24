@@ -107,7 +107,7 @@ public class AtelierView extends Application {
         gammeItem.setOnAction(e -> afficherGamme());
         listeProduitItem.setOnAction(e -> afficherListeProduits());
         fiabiliteItem.setOnAction(e -> root.setCenter(new FiabiliteView(fiabiliteController).getView()));
-        personnesItem.setOnAction(e -> root.setCenter(new PersonneView(new PersonneController()).getView()));
+        personnesItem.setOnAction(e -> afficherPersonne());
 
         afficherAccueil();
 
@@ -150,5 +150,10 @@ public class AtelierView extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+    
+    private void afficherPersonne() {
+        PersonneView personneView = new PersonneView(new PersonneController());
+        root.setCenter(personneView.getView());
     }
 }
