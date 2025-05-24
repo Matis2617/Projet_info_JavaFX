@@ -146,7 +146,8 @@ public class AtelierView extends Application {
 
     private void afficherGamme() {
         // Passe la liste observable des opérations pour la sélection des opérations dans une gamme
-        root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, this::afficherAccueil));
+       root.setCenter(GammeFormView.getGammeForm(atelier, gammesList, operationsList, nomFichier, this::afficherAccueil));
+
     }
 
     private void afficherListeProduits() {
