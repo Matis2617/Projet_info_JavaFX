@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class GammeFormView {
 
-    public static Node getGammeForm(Atelier atelier, ObservableList<Gamme> gammesList, Runnable onRetourAccueil) {
+    public static Node getGammeForm(Atelier atelier, ObservableList<Gamme> gammesList, ObservableList<Operation> operationsList, Runnable onRetourAccueil) {
         VBox vbox = new VBox(15);
         vbox.setPadding(new Insets(20));
 
@@ -23,9 +23,7 @@ public class GammeFormView {
         // Listes à sélectionner pour composer la gamme
         Label opLabel = new Label("Opérations disponibles :");
         ListView<Operation> listOp = new ListView<>();
-        if (atelier.getOperations() != null) {
-            listOp.getItems().addAll(atelier.getOperations());
-        }
+        listOp.setItems(operationsList); 
         listOp.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         Label eqLabel = new Label("Équipements disponibles :");
