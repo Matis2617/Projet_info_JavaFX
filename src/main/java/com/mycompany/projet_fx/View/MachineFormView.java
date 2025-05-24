@@ -101,4 +101,48 @@ public class MachineFormView {
         );
         return box;
     }
+    public static void modifierMachine(Machine machine, Atelier atelier, String nomFichier, Runnable onRefresh) {
+    Dialog<Void> dlg = new Dialog<>();
+    dlg.setTitle("Modifier la machine");
+    VBox box = new VBox(10);
+    box.setPadding(new Insets(8));
+
+    TextField descField = new TextField(machine.getDmachine());
+    TextField abscField = new TextField(String.valueOf(machine.getAbscisse()));
+    TextField ordField = new TextField(String.valueOf(machine.getOrdonnee()));
+    TextField coutField = new TextField(String.valueOf(machine.getC()));
+    TextField tempsField = new TextField(String.valueOf(machine.getT()));
+    ComboBox<Machine.ETAT> etatBox = new ComboBox<>();
+    etatBox.getItems().addAll(Machine.ETAT.values());
+    etatBox.setValue(machine.getEtat());
+
+    Button valider = new Button("Valider");
+    valider.setOnAction(ev -> {
+        machine.setDmachine(descField.getText());
+        machine.setAbscisse(Integer.parseInt(abscField.getText()));
+        machine.setOrdonnee(Integer.parseInt(ordField.getText()));
+        machine.setC(Float.parseFloat(coutField.getText()));
+        machine.setT(Float.parseFloat(tempsField.getText()));
+        machine.setEtat(etatBox.getValue());
+        // Sauvegarder atelier...
+        // AtelierSauvegarde.sauvegarderAtelier(atelier, nomFichier);
+        dlg.setResult(null);
+        dlg.close();
+        if (onRefresh != null) onRefresh.run();
+    });
+
+    box.getChildren().addAll(
+        new Label("Description :"), descField,
+        new Label("Abscisse :"), abscField,
+        new Label("Ordonnée :"), ordField,
+        new Label("Coût :"), coutField,
+        new Label("Temps préparation :"), tempsField,
+        new Label("État :"), etatBox,
+        valider
+    );
+    dlg.getDialogPane().setContent(box);
+    dlg.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+    dlg.showAndWait();
+}
+
 }
