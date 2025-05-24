@@ -22,17 +22,33 @@ public class PersonneView {
         ListView<Personne> personneList = new ListView<>(controller.getPersonnes());
         personneList.setPrefHeight(120);
 
+        TextField idField = new TextField();
+        idField.setPromptText("ID");
+
         TextField nomField = new TextField();
         nomField.setPromptText("Nom");
+
         TextField prenomField = new TextField();
         prenomField.setPromptText("Prénom");
 
         Button ajouterBtn = new Button("Ajouter");
         ajouterBtn.setOnAction(e -> {
-            // Créer une personne
+            String id = idField.getText();
+            String nom = nomField.getText();
+            String prenom = prenomField.getText();
+
+            if (!id.isEmpty() && !nom.isEmpty() && !prenom.isEmpty()) {
+                Personne nouvellePersonne = new Personne(id, nom, prenom);
+                controller.ajouterPersonne(nouvellePersonne);
+
+                // Effacer les champs après l'ajout
+                idField.clear();
+                nomField.clear();
+                prenomField.clear();
+            }
         });
 
-        root.getChildren().addAll(titre, personneList, nomField, prenomField, ajouterBtn);
+        root.getChildren().addAll(titre, personneList, idField, nomField, prenomField, ajouterBtn);
     }
 
     public VBox getView() { return root; }

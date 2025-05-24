@@ -29,9 +29,4 @@ public class Personne implements Serializable {
     public String toString() {
         return "ID: " + idpersonne + " | Nom: " + nom + " | Prénom: " + prenom;
     }
-
-    // (Optionnel, si tu veux garder la méthode ancienne)
-    public String affiche() {
-        return "identifiant = " + idpersonne + ", Nom = " + nom + ", Prenom = " + prenom;
-    }
 }
