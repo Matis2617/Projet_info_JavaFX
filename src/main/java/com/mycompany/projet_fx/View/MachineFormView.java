@@ -9,6 +9,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.collections.ObservableList;
 
+import javafx.geometry.Insets;
+
 public class MachineFormView {
 
     // Peut renvoyer un VBox prêt à être inséré dans le root.setCenter(box)
