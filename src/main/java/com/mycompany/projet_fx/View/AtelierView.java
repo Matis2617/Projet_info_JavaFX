@@ -12,6 +12,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
 import javafx.geometry.Insets;
+import javafx.stage.Screen;
 
 import com.mycompany.projet_fx.view.FiabiliteView;
 
@@ -179,8 +180,14 @@ public class AtelierView extends Application {
 
         // Affiche d'abord l'accueil
         tabPane.getSelectionModel().select(0);
+        
+        // Obtenir les dimensions de l'écran
+        javafx.geometry.Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
 
-        Scene scene = new Scene(root, 1120, 800);
+        // Créer la scène avec les dimensions de l'écran
+        Scene scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
+
+        
         primaryStage.setTitle(getTitreAtelier());
         primaryStage.setScene(scene);
         primaryStage.show();
