@@ -11,6 +11,10 @@ public class MachineController {
     public ObservableList<Machine> getMachines() {
         return machines;
     }
+    
+    public MachineController(ObservableList<Machine> machines) {
+        this.machines = machines;
+    }
 
     public void ajouterMachine(Machine machine) {
         machines.add(machine);

@@ -2,6 +2,7 @@ package com.mycompany.projet_fx.View;
 
 import com.mycompany.projet_fx.Model.*;
 import com.mycompany.projet_fx.Utils.AtelierSauvegarde;
+import com.mycompany.projet_fx.controller.MachineController;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -246,7 +247,8 @@ public class AtelierView extends Application {
     }
 
     private void afficherFiabilite() {
-        root.setCenter(new FiabiliteView().getView());
+        FiabiliteView fiabiliteView = new FiabiliteView(new MachineController(machinesList));
+        root.setCenter(fiabiliteView.getView());
     }
 
     private void refreshAfterMachineChange() {
