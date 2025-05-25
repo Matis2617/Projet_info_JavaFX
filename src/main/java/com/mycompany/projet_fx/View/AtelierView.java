@@ -24,6 +24,7 @@ public class AtelierView extends Application {
     private BorderPane root;
     private Atelier atelier;
     private String nomFichier;
+    private String nomUtilisateur;
 
     private ObservableList<Gamme> gammesList = FXCollections.observableArrayList();
     private ObservableList<Produit> listeProduits = FXCollections.observableArrayList();
@@ -37,74 +38,71 @@ public class AtelierView extends Application {
             javafx.scene.paint.Color.CRIMSON, javafx.scene.paint.Color.DARKMAGENTA, javafx.scene.paint.Color.GOLD, javafx.scene.paint.Color.MEDIUMPURPLE, javafx.scene.paint.Color.DARKSLATEGRAY
     };
 
-    private String nomUtilisateur;
-
     @Override
     public void start(Stage primaryStage) {
-        // Saisie nom utilisateur
         // ----------- Boîte de saisie personnalisée pour le nom utilisateur -----------
-Dialog<String> dialog = new Dialog<>();
-dialog.setTitle("Bienvenue !");
-dialog.setHeaderText(null);
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Bienvenue !");
+        dialog.setHeaderText(null);
 
-dialog.getDialogPane().setStyle("-fx-background-color: #f8fbff; -fx-border-radius: 14; -fx-background-radius: 14;");
+        dialog.getDialogPane().setStyle("-fx-background-color: #f8fbff; -fx-border-radius: 14; -fx-background-radius: 14;");
 
-Label titre = new Label("Bienvenue dans la gestion de l'atelier");
-titre.setStyle("-fx-font-size: 20px; -fx-font-family: 'Segoe UI', 'Arial', sans-serif; -fx-font-weight: bold; -fx-text-fill: #23374d;");
+        Label titre = new Label("Bienvenue dans la gestion de l'atelier");
+        titre.setStyle("-fx-font-size: 20px; -fx-font-family: 'Segoe UI', 'Arial', sans-serif; -fx-font-weight: bold; -fx-text-fill: #23374d;");
 
-Label prompt = new Label("Veuillez entrer votre nom :");
-prompt.setStyle("-fx-font-size: 14px; -fx-text-fill: #274472; -fx-padding: 12 0 4 0;");
+        Label prompt = new Label("Veuillez entrer votre nom :");
+        prompt.setStyle("-fx-font-size: 14px; -fx-text-fill: #274472; -fx-padding: 12 0 4 0;");
 
-TextField nameField = new TextField();
-nameField.setPromptText("Votre prénom...");
-nameField.setStyle("-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #bcd4f6; -fx-background-color: #fff; -fx-font-size: 15px; -fx-padding: 8;");
+        TextField nameField = new TextField();
+        nameField.setPromptText("Votre prénom...");
+        nameField.setStyle("-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #bcd4f6; -fx-background-color: #fff; -fx-font-size: 15px; -fx-padding: 8;");
 
-VBox vbox = new VBox(10, titre, prompt, nameField);
-vbox.setStyle("-fx-padding: 20;");
-vbox.setAlignment(Pos.CENTER_LEFT);
+        VBox vbox = new VBox(10, titre, prompt, nameField);
+        vbox.setStyle("-fx-padding: 20;");
+        vbox.setAlignment(Pos.CENTER_LEFT);
 
-dialog.getDialogPane().setContent(vbox);
-ButtonType valider = new ButtonType("Valider", ButtonBar.ButtonData.OK_DONE);
-dialog.getDialogPane().getButtonTypes().setAll(valider);
+        dialog.getDialogPane().setContent(vbox);
+        ButtonType valider = new ButtonType("Valider", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().setAll(valider);
 
-dialog.setResultConverter(b -> {
-    if (b == valider) {
-        return nameField.getText();
-    }
-    return null;
-});
+        dialog.setResultConverter(b -> {
+            if (b == valider) {
+                return nameField.getText();
+            }
+            return null;
+        });
 
-Optional<String> result = dialog.showAndWait();
-String nomUtilisateur = result.orElse("Utilisateur").trim();
-if (nomUtilisateur.isEmpty()) nomUtilisateur = "Utilisateur";
-String nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
+        Optional<String> result = dialog.showAndWait();
+        nomUtilisateur = result.orElse("Utilisateur").trim();
+        if (nomUtilisateur.isEmpty()) nomUtilisateur = "Utilisateur";
+        nomFichier = "atelier_" + nomUtilisateur.toLowerCase() + ".ser";
 
         Atelier atelierCharge = null;
         File f = new File(nomFichier);
         if (f.exists()) {
             Dialog<ButtonType> choix = new Dialog<>();
-choix.setTitle("Projet existant trouvé");
-choix.setHeaderText(null);
+            choix.setTitle("Projet existant trouvé");
+            choix.setHeaderText(null);
 
-choix.getDialogPane().setStyle("-fx-background-color: #f4faff; -fx-border-radius: 14; -fx-background-radius: 14;");
+            choix.getDialogPane().setStyle("-fx-background-color: #f4faff; -fx-border-radius: 14; -fx-background-radius: 14;");
 
-Label titre2 = new Label("Ce nom existe déjà dans les projets sauvegardés.");
-titre2.setStyle("-fx-font-size: 17px; -fx-font-family: 'Segoe UI', 'Arial', sans-serif; -fx-font-weight: bold; -fx-text-fill: #23374d;");
+            Label titre2 = new Label("Ce nom existe déjà dans les projets sauvegardés.");
+            titre2.setStyle("-fx-font-size: 17px; -fx-font-family: 'Segoe UI', 'Arial', sans-serif; -fx-font-weight: bold; -fx-text-fill: #23374d;");
 
-Label contenu = new Label("Voulez-vous poursuivre l'ancien projet ou en créer un nouveau ?");
-contenu.setStyle("-fx-font-size: 14px; -fx-text-fill: #274472; -fx-padding: 10 0 4 0;");
+            Label contenu = new Label("Voulez-vous poursuivre l'ancien projet ou en créer un nouveau ?");
+            contenu.setStyle("-fx-font-size: 14px; -fx-text-fill: #274472; -fx-padding: 10 0 4 0;");
 
-VBox vbox2 = new VBox(8, titre2, contenu);
-vbox2.setStyle("-fx-padding: 22;");
+            VBox vbox2 = new VBox(8, titre2, contenu);
+            vbox2.setStyle("-fx-padding: 22;");
 
-choix.getDialogPane().setContent(vbox2);
+            choix.getDialogPane().setContent(vbox2);
 
-ButtonType btnAncien = new ButtonType("Poursuivre", ButtonBar.ButtonData.YES);
-ButtonType btnNouveau = new ButtonType("Nouveau projet", ButtonBar.ButtonData.NO);
+            ButtonType btnAncien = new ButtonType("Poursuivre", ButtonBar.ButtonData.YES);
+            ButtonType btnNouveau = new ButtonType("Nouveau projet", ButtonBar.ButtonData.NO);
 
-choix.getDialogPane().getButtonTypes().setAll(btnAncien, btnNouveau);
+            choix.getDialogPane().getButtonTypes().setAll(btnAncien, btnNouveau);
 
-Optional<ButtonType> option = choix.showAndWait();
+            Optional<ButtonType> option = choix.showAndWait();
 
             if (option.isPresent() && option.get() == btnAncien) {
                 atelierCharge = AtelierSauvegarde.chargerAtelier(nomFichier);
@@ -157,12 +155,10 @@ Optional<ButtonType> option = choix.showAndWait();
         );
 
         // Style: chaque tab prend toute la largeur, adaptatif
-        // Utilise un listener pour changer dynamiquement la largeur de chaque tab
         tabPane.widthProperty().addListener((obs, oldVal, newVal) -> {
             double largeur = newVal.doubleValue();
             double largeurTab = largeur / tabPane.getTabs().size();
             for (Tab tab : tabPane.getTabs()) {
-                // Hack : JavaFX ne propose pas de setter direct, alors on change le style du label du tab
                 tab.setStyle("-fx-tab-min-width: " + largeurTab + "px; -fx-tab-max-width: " + largeurTab + "px;");
             }
         });
@@ -182,7 +178,7 @@ Optional<ButtonType> option = choix.showAndWait();
         root.setTop(tabPane);
 
         // Affiche d'abord l'accueil
-        tabPane.getSelectionModel().select(0); // sélectionne le premier onglet
+        tabPane.getSelectionModel().select(0);
 
         Scene scene = new Scene(root, 1120, 800);
         primaryStage.setTitle(getTitreAtelier());
@@ -191,7 +187,7 @@ Optional<ButtonType> option = choix.showAndWait();
     }
 
     private String getTitreAtelier() {
-        if (nomUtilisateur.isEmpty()) return "Atelier";
+        if (nomUtilisateur == null || nomUtilisateur.isEmpty()) return "Atelier";
         char first = Character.toLowerCase(nomUtilisateur.charAt(0));
         String voyelles = "aeiouyéèêëàâäîïôöùûü";
         String prefixe = voyelles.indexOf(first) >= 0 ? "Atelier d'" : "Atelier de ";
